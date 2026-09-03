@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Acesso | Administração MEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-color: #12141d; --card-bg: #1e212b; --primary-green: #00a859; --primary-hover: #008f4c; --text-main: #f8f9fa; --text-muted: #8b92a5; --border-color: #2d313f; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; align-items: center; justify-content: center; min-height: 100vh; background-image: radial-gradient(circle at top right, rgba(0, 168, 89, 0.1), transparent 40%); }
+        .login-wrapper { background-color: var(--card-bg); width: 100%; max-width: 440px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); position: relative; overflow: hidden; border: 1px solid var(--border-color); }
+        .login-wrapper::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--primary-green); }
+        .login-content { padding: 40px; }
+        .brand-header { text-align: center; margin-bottom: 30px; }
+        .brand-header h2 { font-size: 22px; font-weight: 900; margin-bottom: 5px; }
+        .brand-header p { font-size: 13.5px; color: var(--text-muted); }
+        .alert-box { background-color: rgba(0, 168, 89, 0.1); color: #28a745; border-left: 4px solid #28a745; padding: 14px; border-radius: 6px; font-size: 13.5px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .alert-error { background-color: rgba(255, 107, 107, 0.1); color: #ff6b6b; border-left: 4px solid #ff6b6b; }
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group i { position: absolute; top: 50%; transform: translateY(-50%); left: 16px; color: #5c6275; font-size: 14px; }
+        .input-group input { width: 100%; background-color: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 14px 14px 14px 40px; border-radius: 8px; font-size: 14px; outline: none; transition: all 0.3s; }
+        .input-group input:focus { border-color: var(--primary-green); box-shadow: 0 0 0 3px rgba(0, 168, 89, 0.15); }
+        .btn-submit { width: 100%; background-color: var(--primary-green); color: #fff; border: none; padding: 15px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; margin-top: 10px; }
+        .btn-submit:hover { background-color: var(--primary-hover); }
+        .footer-links { margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); text-align: center; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 13.5px; font-weight: 500; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--text-main); }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-content">
+            <div class="brand-header">
+                <h2>Solicitação de Acesso</h2>
+                <p>Crie suas credenciais para aprovação interna</p>
+            </div>
+
+            {% if sucesso %}
+            <div class="alert-box"><i class="fas fa-check-circle"></i> <span>{{ sucesso }}</span></div>
+            {% endif %}
+            {% if erro %}
+            <div class="alert-box alert-error"><i class="fas fa-exclamation-circle"></i> <span>{{ erro }}</span></div>
+            {% endif %}
+
+            <form method="POST" action="/solicitar_acesso">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="input-group">
+                    <input type="text" name="nome" placeholder="Seu Nome Completo" required>
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <div class="input-group">
+                    <input type="text" name="cargo" placeholder="Cargo/Função" required>
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="input-group">
+                    <input type="text" name="usuario" placeholder="Crie um Usuário de Login" required autocomplete="off">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="senha" placeholder="Crie uma Senha" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+                <button type="submit" class="btn-submit">Enviar Solicitação <i class="fas fa-paper-plane"></i></button>
+            </form>
+
+            <div class="footer-links">
+                <a href="/login"><i class="fas fa-arrow-left"></i> Voltar para o Login</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

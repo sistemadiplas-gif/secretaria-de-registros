@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 style="color: #0056b3; text-align: left;">Excluir Aluno</h1>
+<form method="POST" action="/excluir" style="display: flex; gap: 10px; margin-bottom: 30px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="text" name="termo" placeholder="Digite o Nome ou CPF exato..." style="flex: 1;" required>
+    <button type="submit" style="padding: 10px 20px; background-color: #0056b3; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Pesquisar</button>
+</form>
+{% if alunos %}
+    <table style="width: 100%; border-collapse: collapse; background-color: #2a2a35; border-radius: 8px; overflow: hidden; margin-bottom: 30px;">
+        <tr style="background-color: #0056b3; color: white; text-align: left;">
+            <th style="padding: 15px;">Nome</th>
+            <th style="padding: 15px;">CPF</th>
+            <th style="padding: 15px;">Curso</th>
+            <th style="padding: 15px;">Ação</th>
+        </tr>
+        {% for aluno in alunos %}
+        <tr style="border-bottom: 1px solid #3a3a45;">
+            <td style="padding: 15px; color: #ccc;">{{ aluno['nome'] }}</td>
+            <td style="padding: 15px; color: #ccc;">{{ aluno['cpf'] }}</td>
+            <td style="padding: 15px; color: #ccc;">{{ aluno['curso'] }}</td>
+            <td style="padding: 15px;">
+                <form method="POST" action="/deletar/{{ aluno['id'] }}" style="display: inline; margin: 0;" onsubmit="return confirm('Tem certeza que deseja excluir permanentemente o cadastro de {{ aluno['nome'] }}?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" style="background-color: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-family: inherit;">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+<!-- Botão Master de Exclusão -->
+<div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #3a3a45; text-align: right;">
+    <form method="POST" action="/deletar_todos" style="display: inline; margin: 0;" onsubmit="return confirmarApagarTodos(this);">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="senha_confirmacao" id="senha_confirmacao_todos">
+        <button type="submit" style="background-color: #8b0000; color: white; padding: 12px 20px; border-radius: 5px; font-weight: bold; border: 1px solid #ff4c4c; cursor: pointer; font-family: inherit;">⚠️ Apagar Todos os Cadastros</button>
+    </form>
+</div>
+<script>
+function confirmarApagarTodos(form) {
+    if (!confirm('ATENÇÃO: Isso vai apagar TODOS os alunos cadastrados no banco de dados. Esta ação não pode ser desfeita. Tem certeza absoluta?')) {
+        return false;
+    }
+    var senha = prompt('Para confirmar, digite a senha de administrador:');
+    if (senha === null || senha === '') {
+        return false;
+    }
+    form.querySelector('#senha_confirmacao_todos').value = senha;
+    return true;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOL - Serviços Online da PUC</title>
+    
+    <!-- Fonte Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: #f4f3f0; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .top-right-banner {
+            position: absolute;
+            top: -200px;
+            right: 320px;
+            width: 450px;
+            height: 450px; 
+            background-color: #f08221;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .puc-text {
+            position: absolute;
+            bottom: 160px;
+            left: 125px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .puc-text h1 {
+            color: #fff;
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1;
+            position: relative;
+        }
+
+        .puc-text h1 span.beta {
+            font-size: 10px;
+            font-weight: 700;
+            position: absolute;
+            top: -4px;
+            right: -32px;
+            color: #fff;
+        }
+
+        .puc-text p {
+            color: #e0600b;
+            font-size: 24px;
+            font-weight: 400;
+            line-height: 1;
+            margin-top: 4px;
+        }
+
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 40px;
+        }
+
+        .login-card {
+            background-color: #fff;
+            width: 380px;
+            padding: 40px;
+            border-radius: 4px;
+            border: 1px solid #dcdcdc;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            text-align: center;
+        }
+
+        .logo-puc {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .logo-brasao {
+            width: 50px;
+            height: 60px;
+        }
+        
+        .logo-texto {
+            text-align: left;
+            line-height: 1;
+        }
+        
+        .logo-texto .titulo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-texto .subtitulo {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111;
+            letter-spacing: -0.5px;
+            margin-top: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #b3c5c0; 
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+            outline: none;
+            background-color: #fafafa;
+        }
+
+        .form-input::placeholder {
+            color: #999;
+        }
+
+        .form-input:focus {
+            border-color: #f08221;
+            background-color: #fff;
+        }
+
+        .btn-acessar {
+            background-color: #f4d03f;
+            color: #2c3e50; 
+            padding: 10px 35px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px 0 20px 0;
+            transition: background 0.2s;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .btn-acessar:hover {
+            background-color: #e5c234;
+        }
+
+        .links-recuperacao {
+            font-size: 13px;
+            color: #5bc0de;
+            margin-bottom: 22px;
+        }
+        
+        .links-recuperacao a {
+            color: #5bc0de;
+            text-decoration: none;
+        }
+        
+        .links-recuperacao a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-boletos {
+            background-color: #5bc0de;
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 4px;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 22px;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        
+        .btn-boletos:hover {
+            background-color: #46b8da;
+        }
+
+        .aviso-vermelho {
+            background-color: #d9534f;
+            color: white;
+            padding: 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .aviso-vermelho strong {
+            font-weight: 800;
+        }
+
+        #msg-erro {
+            color: #d9534f;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 11px;
+            color: #aaa;
+            font-weight: 600;
+            z-index: 1;
+            width: 100%;
+        }
+
+        #painel-interno {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            background-color: #f4f6f9; 
+            z-index: 20;
+            position: relative;
+        }
+
+        #tela-login {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- A TELA DE LOGIN -->
+    <div id="tela-login">
+        
+        <div class="top-right-banner">
+            <div class="puc-text">
+                <h1>SOU PUC <span class="beta">BETA</span></h1>
+                <p>sou aluno</p>
+            </div>
+        </div>
+
+        <div class="login-wrapper">
+            <div class="login-card">
+                
+                <div class="logo-puc">
+                    <svg class="logo-brasao" viewBox="0 0 100 120" fill="none" stroke="#2b2b2b" stroke-width="2">
+                        <path d="M 20 30 L 50 10 L 80 30 L 75 40 L 25 40 Z"/>
+                        <path d="M 40 40 L 40 18 M 60 40 L 60 18"/>
+                        <circle cx="50" cy="5" r="4" fill="#2b2b2b"/>
+                        <path d="M 30 45 L 70 45 L 70 80 C 70 100 50 110 50 110 C 50 110 30 100 30 80 Z"/>
+                        <circle cx="50" cy="70" r="8"/>
+                        <path d="M 50 55 L 50 60 M 50 80 L 50 85 M 35 70 L 40 70 M 60 70 L 65 70"/>
+                        <path d="M 40 60 L 43 63 M 57 77 L 60 80 M 60 60 L 57 63 M 40 80 L 43 77"/>
+                        <path d="M 15 105 L 45 100 L 50 115 L 50 100 L 85 105"/>
+                    </svg>
+                    <div class="logo-texto">
+                        <div class="titulo">PUC</div>
+                        
+                        {% set estado = "GOIÁS" %}
+                        {% if aluno['endereco'] %}
+                            {% if "/SP" in aluno['endereco'] | upper or "- SP" in aluno['endereco'] | upper %}
+                                {% set estado = "SÃO PAULO" %}
+                            {% elif "/RJ" in aluno['endereco'] | upper or "- RJ" in aluno['endereco'] | upper %}
+                                {% set estado = "RIO DE JANEIRO" %}
+                            {% elif "/MG" in aluno['endereco'] | upper or "- MG" in aluno['endereco'] | upper %}
+                                {% set estado = "MINAS GERAIS" %}
+                            {% elif "/PR" in aluno['endereco'] | upper or "- PR" in aluno['endereco'] | upper %}
+                                {% set estado = "PARANÁ" %}
+                            {% elif "/DF" in aluno['endereco'] | upper or "- DF" in aluno['endereco'] | upper %}
+                                {% set estado = "DISTRITO FEDERAL" %}
+                            {% endif %}
+                        {% endif %}
+                        
+                        <div class="subtitulo">{{ estado }}</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" id="matricula_input" class="form-input" placeholder="Matrícula" value="{{ aluno['matricula'] }}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" id="senha_input" class="form-input" placeholder="Digite seu CPF">
+                </div>
+                
+                <div id="msg-erro">Por favor, digite o CPF para continuar.</div>
+
+                <button type="button" class="btn-acessar" onclick="validarLogin()">Acessar</button>
+
+                <div class="links-recuperacao">
+                    <a href="#">Criar nova senha</a> | <a href="#">Esqueci minha senha</a>
+                </div>
+
+                <button class="btn-boletos">Emissão de Boletos Online</button>
+
+                <div class="aviso-vermelho">
+                    Ainda não conhece o Sol?<br>
+                    Clique aqui para acessar o tutorial<br>
+                    e saiba também como <strong>ativar seu Office.</strong>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 - PUC {{ estado | title }} - Todos direitos reservados.
+        </div>
+    </div>
+
+
+    <!-- SEGUNDA TELA / PAINEL INTERNO COM AVISO DE EM ANDAMENTO -->
+    <div id="painel-interno">
+        <div style="background-color: #2a2a35; padding: 40px; text-align: left;">
+            <h1 style="color: #fff; margin: 0;">Bem-vindo(a), {{ aluno['nome'] }}</h1>
+            <p style="color: #aaa; font-size: 18px;">Portal do Aluno - PUC {{ estado | title }}</p>
+        </div>
+        
+        <div style="padding: 60px 40px; text-align: center;">
+            <div style="background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto; border-top: 5px solid #f08221;">
+                <h2 style="color: #333; margin-bottom: 15px; font-size: 26px;">🚧 Módulo em Andamento</h2>
+                <p style="color: #666; font-size: 18px; line-height: 1.6;">
+                    Identificação realizada com sucesso! A próxima etapa e os documentos completos estarão disponíveis em breve.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT FLEXÍVEL QUE ABRE A SEGUNDA TELA IMEDIATAMENTE -->
+    <script>
+        function validarLogin() {
+            var inputSenha = document.getElementById('senha_input').value;
+            var msgErro = document.getElementById('msg-erro');
+            
+            var senhaLimpa = inputSenha.replace(/\D/g, "");
+            
+            // Aceita qualquer entrada que tenha pelo menos 3 dígitos para garantir que abra imediatamente
+            if (senhaLimpa.length >= 3) {
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('painel-interno').style.display = 'block';
+                document.body.style.backgroundColor = "#f4f6f9";
+            } else {
+                msgErro.style.display = 'block';
+                var card = document.querySelector('.login-card');
+                card.style.transform = "translateX(5px)";
+                setTimeout(() => card.style.transform = "translateX(-5px)", 100);
+                setTimeout(() => card.style.transform = "translateX(0)", 200);
+            }
+        }
+
+        document.getElementById('senha_input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                validarLogin();
+            }
+        });
+    </script>
+</body>
+</html>

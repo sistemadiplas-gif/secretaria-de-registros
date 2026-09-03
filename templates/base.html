@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECRETARIA DE REGISTROS CNE|MEC</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; height: 100vh; background-color: #1e1e24; color: white; }
+        .sidebar { width: 250px; background-color: #0056b3; color: white; display: flex; flex-direction: column; position: fixed; height: 100%; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
+        .sidebar h2 { text-align: center; padding: 20px 0; margin: 0; font-size: 18px; border-bottom: 1px solid #003d82; text-transform: uppercase; }
+        .sidebar a { padding: 15px 20px; text-decoration: none; color: white; font-weight: bold; border-bottom: 1px solid #003d82; transition: 0.3s; }
+        .sidebar a:hover { background-color: #003d82; }
+        .content { margin-left: 250px; padding: 50px; width: calc(100% - 250px); text-align: center; overflow-y: auto; }
+        .content h1 { font-size: 36px; margin-bottom: 20px; }
+        select, input { padding: 10px; width: 60%; max-width: 500px; border-radius: 5px; border: none; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>SECRETARIA DE REGISTROS CNE|MEC</h2>
+        <a href="/">Início</a>
+        <a href="/cadastro">Cadastro</a>
+        <a href="/alterar">Alterar</a>
+        <a href="/excluir">Excluir</a>
+        <a href="/informacoes/graduacao">🎓 Graduações</a>
+        <a href="/informacoes/concurso">🏛️ Concursos</a>
+        <a href="/logout">Sair</a>
+    </div>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

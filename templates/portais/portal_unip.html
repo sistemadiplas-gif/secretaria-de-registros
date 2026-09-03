@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área do(a) Aluno(a) - Universidade Paulista</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: #e5e7eb;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* TELA 1: Painel Esquerdo Azul do Login */
+        .left-panel {
+            width: 46%;
+            background-image: 
+                linear-gradient(135deg, rgba(15, 65, 145, 0.85) 0%, rgba(25, 95, 185, 0.92) 100%),
+                url('https://www.unip.br/aluno/central/assets/img/login/login-desktop.png');
+            background-size: cover;
+            background-position: center left;
+            color: #ffffff;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding-left: 80px;
+            border-radius: 0 180px 180px 0 / 0 75% 75% 0;
+            box-shadow: 18px 0 35px rgba(0,0,0,0.12);
+            z-index: 2;
+        }
+
+        .left-content { max-width: 500px; position: relative; margin-top: -30px; }
+        .logo-img { width: 230px; display: block; margin-bottom: 40px; margin-left: 175px; }
+        .title { font-size: 34px; font-weight: bold; margin-bottom: 18px; letter-spacing: -0.5px; }
+        .subtitle { font-size: 15.5px; font-weight: bold; line-height: 1.4; margin-bottom: 18px; letter-spacing: 0.2px; }
+        .description { font-size: 13.5px; line-height: 1.5; color: #e2e8f0; margin-bottom: 0; }
+        .carousel-dots { display: flex; flex-direction: column; gap: 12px; position: absolute; left: -40px; top: 72%; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background-color: #ffffff; opacity: 0.25; }
+        .dot.active { opacity: 1; }
+
+        /* TELA 1: Painel Direito do Login */
+        .right-panel {
+            width: 54%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 40px;
+            background-color: #f2f4f7;
+            position: relative;
+        }
+        .top-link { text-align: right; font-size: 13px; font-weight: bold; color: #1a1a1a; text-decoration: none; padding-right: 20px; }
+        .login-container { max-width: 400px; margin: 220px auto auto auto; width: 100%; }
+        #titulo-area-aluno { font-size: 28px !important; font-weight: 900 !important; color: #0052b8 !important; margin-bottom: 8px !important; letter-spacing: -0.5px !important; }
+        .login-subtitle { font-size: 13px; color: #6b7280; margin-bottom: 30px; }
+        .input-group { margin-bottom: 22px; }
+        .input-group input { width: 100%; height: 64px; padding: 0 20px; border: 1px solid #ced4da; border-radius: 6px; font-size: 13px; background-color: transparent; color: #1f2937; outline: none; transition: border-color 0.2s; }
+        .input-group input::placeholder { color: #6b7280; font-weight: 700; }
+        .input-group input:focus { border-color: #4c7ba8; }
+        .btn-entrar { width: 100%; padding: 18px; background-color: #6c8ebf; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 5px; margin-bottom: 25px; transition: background-color 0.2s; }
+        .btn-entrar:hover { background-color: #5578a9; }
+        #msg-erro { color: #dc3545; font-size: 13px; font-weight: bold; margin-bottom: 15px; display: none; }
+        .action-links { display: flex; gap: 12px; justify-content: center; }
+        .action-btn { padding: 11px 20px; border: 1px solid #cbd5e1; background: transparent; border-radius: 6px; color: #0d6efd; font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: none; transition: background-color 0.2s; }
+        .action-btn:hover { background-color: #e2e8f0; }
+        .footer { text-align: right; font-size: 10px; color: #9ca3af; padding-bottom: 10px; padding-right: 20px; }
+        .footer a { color: #3f709b; text-decoration: none; font-weight: bold; }
+
+        /* ============================================================
+           SEGUNDA TELA: PAINEL INTERNO E CABEÇALHOS
+           ============================================================ */
+        #painel-interno {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            background-color: #e5e7eb;
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .unip-header {
+            background-color: #111111;
+            padding: 5px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .unip-header-left { display: flex; align-items: center; }
+        .unip-header-title { font-size: 22px; color: #9ca3af; font-weight: normal; border-left: 1px solid #4b5563; padding-left: 15px; margin-left: 10px; }
+        .unip-header-right { display: flex; align-items: center; gap: 15px; text-align: right; font-size: 12px; }
+        .unip-user-info { display: flex; flex-direction: column; line-height: 1.5; }
+        .btn-sair-header { background-color: #dc2626; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+
+        .unip-subnav {
+            background-color: #18285c;
+            padding: 10px 30px;
+            font-size: 13px;
+            display: flex;
+            gap: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .unip-subnav a { color: #60a5fa; text-decoration: none; cursor: pointer; }
+        .unip-subnav a:hover { color: white; }
+
+        /* GRADE DE CARDS (SERVIÇOS) */
+        #grid-servicos {
+            display: block; /* Visível por padrão ao logar */
+        }
+
+        .unip-grid-container {
+            max-width: 1400px;
+            width: 95%;
+            margin: 40px auto;
+        }
+
+        .unip-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+        }
+
+        .unip-card {
+            background: linear-gradient(to bottom, #ffffff 0%, #f4f6f8 100%);
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            transition: all 0.2s ease;
+        }
+
+        .unip-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .unip-card-icon { font-size: 50px; color: #3b82f6; margin-bottom: 20px; }
+        .unip-card-text { font-size: 14px; font-weight: bold; color: #1d4ed8; line-height: 1.4; }
+        .unip-card-subtext { font-size: 11px; color: #60a5fa; margin-top: 6px; font-weight: normal; }
+
+
+        /* ============================================================
+           TERCEIRA TELA: MEUS DADOS (RELATÓRIO VERTICAL)
+           ============================================================ */
+        #tela-dados {
+            display: none; 
+            max-width: 900px;
+            margin: 40px auto;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 40px;
+        }
+
+        .dados-section-title {
+            font-size: 22px;
+            color: #18285c;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Animação do Ponto Verde */
+        @keyframes piscar {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            display: inline-block;
+            animation: piscar 1.5s infinite;
+        }
+
+        .dados-row {
+            display: flex;
+            border-bottom: 1px solid #f3f4f6;
+            padding: 14px 10px;
+            transition: background-color 0.2s;
+        }
+
+        .dados-row:hover {
+            background-color: #f8fafc;
+        }
+
+        .dados-row:last-child {
+            border-bottom: none;
+        }
+
+        .dados-label {
+            width: 35%;
+            font-weight: bold;
+            color: #4b5563;
+            font-size: 14px;
+        }
+
+        .dados-value {
+            width: 65%;
+            color: #111827;
+            font-size: 15px;
+        }
+
+        .btn-voltar {
+            margin-top: 35px;
+            padding: 12px 25px;
+            background-color: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-voltar:hover {
+            background-color: #e5e7eb;
+            color: #111827;
+        }
+
+        /* Modal Documentos */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: left; }
+    </style>
+</head>
+<body>
+
+    <!-- ELEMENTO INVISÍVEL COM O CPF PURO DO BANCO -->
+    <div id="cpf-servidor" style="display:none;">{{ aluno['cpf'] }}</div>
+
+    <!-- TELA DE LOGIN -->
+    <div id="tela-login" style="display: flex; width: 100%; height: 100vh;">
+        <div class="left-panel">
+            <div class="left-content">
+                <img src="https://www.unip.br/aluno/central/assets/img/login/logo-unip-branco.svg" alt="UNIP" class="logo-img">
+                <div class="title">Ensino de Excelência</div>
+                <div class="subtitle">Professores altamente qualificados e metodologias inovadoras de<br>aprendizado.</div>
+                <div class="description">Graduação, pós-graduação e extensão com qualidade reconhecida pelo MEC.</div>
+                <div class="carousel-dots"><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
+            </div>
+        </div>
+        <div class="right-panel">
+            <a href="https://www.unip.br/" class="top-link">Voltar para o site da UNIP</a>
+            <div class="login-container">
+                <h1 id="titulo-area-aluno">Área do(a) Aluno(a)</h1>
+                <p class="login-subtitle">Acesse seu ambiente acadêmico</p>
+                <form onsubmit="event.preventDefault(); validarLogin();">
+                    <div class="input-group">
+                        <input type="text" id="matricula_input" value="{{ aluno['matricula'] }}" placeholder="RA (NÚMERO DE MATRÍCULA)" readonly>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="senha_input" placeholder="SENHA" required>
+                    </div>
+                    <div id="msg-erro">Senha inválida (utilize o CPF).</div>
+                    <button type="submit" class="btn-entrar">Entrar</button>
+                </form>
+                <div class="action-links"><a href="#" class="action-btn">Esqueceu a senha?</a><a href="#" class="action-btn">Como acessar</a></div>
+            </div>
+            <div class="footer">Copyright ©️ 1997-<span id="ano-corrente"></span> UNIP - Universidade Paulista. Todos os direitos reservados. <a href="#">Política de Privacidade</a> v2.11</div>
+        </div>
+    </div>
+
+
+    <!-- PAINEL INTERNO COMPLETO -->
+    <div id="painel-interno">
+        
+        <!-- CABEÇALHO -->
+        <div class="unip-header">
+            <div class="unip-header-left">
+                <!-- Logo Fixa UNIP -->
+                <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; line-height: 1; transform: scale(0.85); transform-origin: left center;">
+                    <div style="font-family: 'Arial Black', Impact, sans-serif; font-size: 42px; font-weight: 900; font-style: italic; color: #fde047; -webkit-text-stroke: 1.5px #000; text-shadow: 2px 2px 0px rgba(0,0,0,0.3); letter-spacing: 1px; margin-left: 15px; margin-bottom: -3px;">
+                        UNIP
+                    </div>
+                    <div style="background-color: #dc2626; padding: 3px 12px; transform: skewX(-15deg);">
+                        <div style="transform: skewX(15deg); color: #ffffff; font-family: Arial, sans-serif; font-size: 11px; font-weight: bold; font-style: italic; letter-spacing: 0.5px;">
+                            UNIVERSIDADE PAULISTA
+                        </div>
+                    </div>
+                </div>
+                <div class="unip-header-title">Área do(a) aluno(a)</div>
+            </div>
+            <div class="unip-header-right">
+                <div class="unip-user-info">
+                    <span style="color: #9ca3af;">{{ aluno['nome'] }} | <i class="fa-regular fa-envelope"></i></span>
+                    <span style="color: #3b82f6;">aluno.ra{{ aluno['matricula'] }}@aluno.unip.br</span>
+                </div>
+                <a href="#" onclick="window.location.reload()" class="btn-sair-header"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </div>
+        </div>
+
+        <!-- MENU AZUL -->
+        <div class="unip-subnav">
+            <a onclick="voltarParaGrid()">Serviços <i class="fa-solid fa-caret-down" style="margin-left:4px; font-size: 10px;"></i></a>
+            <a onclick="mostrarTelaDados()">Meus dados <i class="fa-solid fa-caret-down" style="margin-left:4px; font-size: 10px;"></i></a>
+        </div>
+
+
+        <!-- ==============================================
+             GRADE DE SERVIÇOS (TELA 2)
+             ============================================== -->
+        <div id="grid-servicos" class="unip-grid-container">
+            <div class="unip-grid">
+                <div class="unip-card" onclick="alert('Ambiente Virtual de Aprendizagem (AVA) sincronizado com sucesso.')">
+                    <div class="unip-card-icon"><i class="fa-solid fa-desktop"></i></div><div class="unip-card-text">AVA</div>
+                </div>
+                <div class="unip-card" onclick="alert('Acesso à Biblioteca Virtual liberado.')">
+                    <div class="unip-card-icon"><i class="fa-solid fa-book"></i></div><div class="unip-card-text">Biblioteca Física</div>
+                </div>
+                <div class="unip-card" onclick="alert('Calendário acadêmico atualizado.')">
+                    <div class="unip-card-icon"><i class="fa-regular fa-calendar-days"></i></div><div class="unip-card-text">Calendário</div>
+                </div>
+                <div class="unip-card" onclick="alert('Feira de Empregabilidade - Evento ativo.')">
+                    <div class="unip-card-icon"><i class="fa-solid fa-circle-play"></i></div><div class="unip-card-text">1ª Feira de Empregabilidade</div><div class="unip-card-subtext">De 24 a 28/10/2022</div>
+                </div>
+                <div class="unip-card" onclick="alert('Nenhum estágio pendente de orientação.')">
+                    <div class="unip-card-icon"><i class="fa-solid fa-circle-exclamation"></i></div><div class="unip-card-text">Procedimentos e Orientações de Estágio</div>
+                </div>
+                <div class="unip-card" onclick="alert('Secretaria Virtual: Regular.')">
+                    <div class="unip-card-icon"><i class="fa-solid fa-headset"></i></div><div class="unip-card-text">Secretaria Virtual</div>
+                </div>
+                <div class="unip-card" onclick="alert('Nenhum aviso novo na secretaria.')">
+                    <div class="unip-card-icon"><i class="fa-solid fa-circle-exclamation"></i></div><div class="unip-card-text">Avisos da Secretaria</div>
+                </div>
+                <div class="unip-card" onclick="alert('Central de Atendimento online.')">
+                    <div class="unip-card-icon"><i class="fa-regular fa-comment"></i></div><div class="unip-card-text">Atendimento</div>
+                </div>
+                <div class="unip-card" onclick="alert('Situação acadêmica: Aprovado.')">
+                    <div class="unip-card-icon"><i class="fa-regular fa-star"></i></div><div class="unip-card-text">Central de Notas</div>
+                </div>
+                <div class="unip-card" onclick="abrirDocumentos()">
+                    <div class="unip-card-icon"><i class="fa-regular fa-file-lines"></i></div><div class="unip-card-text">Trabalhos Acadêmicos (Estágio, PCC)</div>
+                </div>
+                <div class="unip-card" onclick="alert('Carga horária de AC concluída.')">
+                    <div class="unip-card-icon"><i class="fa-solid fa-clipboard-list"></i></div><div class="unip-card-text">Atividades Complementares (AC)</div>
+                </div>
+                <div class="unip-card" onclick="alert('Trabalho de Conclusão de Curso validado.')">
+                    <div class="unip-card-icon"><i class="fa-solid fa-graduation-cap"></i></div><div class="unip-card-text">TC - Trabalho de Curso</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             TERCEIRA TELA (MEUS DADOS) 
+             ============================================== -->
+        <div id="tela-dados">
+            <div class="dados-section-title">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-regular fa-address-card"></i> Dados Cadastrais e Acadêmicos
+                </div>
+                <!-- BOTÃO ONLINE / APROVADO -->
+                <div style="background-color: #16a34a; color: white; font-size: 11px; font-weight: bold; padding: 4px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(22, 163, 74, 0.3);">
+                    <span class="status-dot"></span>
+                    Online | Status: Aprovado
+                </div>
+            </div>
+            
+            <div class="dados-row"><div class="dados-label">Nome Completo:</div><div class="dados-value">{{ aluno['nome'] }}</div></div>
+            <div class="dados-row"><div class="dados-label">RA / Matrícula:</div><div class="dados-value">{{ aluno['matricula'] }}</div></div>
+            <div class="dados-row"><div class="dados-label">CPF:</div><div class="dados-value">{{ aluno['cpf'] }}</div></div>
+            <div class="dados-row"><div class="dados-label">RG:</div><div class="dados-value">{{ aluno['rg'] }} - {{ aluno['orgao_rg'] }}</div></div>
+            <div class="dados-row"><div class="dados-label">Data de Nascimento:</div><div class="dados-value">{{ aluno['data_nascimento'] }}</div></div>
+            <div class="dados-row"><div class="dados-label">Curso:</div><div class="dados-value">{{ aluno['curso'] }}</div></div>
+            <div class="dados-row"><div class="dados-label">Grau Acadêmico:</div><div class="dados-value">{{ aluno['grau_academico'] or 'Não Informado' }}</div></div>
+            <div class="dados-row"><div class="dados-label">Instituição de Ensino:</div><div class="dados-value">{{ aluno['instituicao_ensino'] or 'Não Informado' }}</div></div>
+            <div class="dados-row"><div class="dados-label">Data de Início:</div><div class="dados-value">{{ aluno['data_inicio'] or '--/--/----' }}</div></div>
+            <div class="dados-row"><div class="dados-label">Data de Conclusão:</div><div class="dados-value">{{ aluno['data_conclusao'] or '--/--/----' }}</div></div>
+            <div class="dados-row"><div class="dados-label">Carga Horária Total:</div><div class="dados-value">{{ aluno['carga_horaria'] or 'Não Informado' }}</div></div>
+
+            <button class="btn-voltar" onclick="voltarParaGrid()">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para os Serviços
+            </button>
+        </div>
+
+    </div>
+
+    <!-- MODAL DE DOCUMENTOS DO ALUNO -->
+    <div id="modal-docs" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color: #0b2246; margin-bottom: 15px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">Documentos Acadêmicos</h3>
+            <p style="font-size: 13px; color: #555; margin-bottom: 20px;">Aluno: <b>{{ aluno['nome'] }}</b></p>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                {% if aluno['diploma_frente'] %}
+                    <a href="{{ url_for('static', filename='uploads/' + aluno['diploma_frente']) }}" target="_blank" style="padding: 10px 15px; background: #0b2246; color: white; border-radius: 5px; text-decoration: none; font-size: 13px; text-align: center; font-weight: bold;"><i class="fa-solid fa-file-pdf" style="margin-right: 8px;"></i> Visualizar Diploma (Frente)</a>
+                {% endif %}
+                {% if aluno['diploma_verso'] %}
+                    <a href="{{ url_for('static', filename='uploads/' + aluno['diploma_verso']) }}" target="_blank" style="padding: 10px 15px; background: #0b2246; color: white; border-radius: 5px; text-decoration: none; font-size: 13px; text-align: center; font-weight: bold;"><i class="fa-solid fa-file-pdf" style="margin-right: 8px;"></i> Visualizar Diploma (Verso)</a>
+                {% endif %}
+            </div>
+            <button onclick="fecharDocumentos()" style="margin-top: 20px; width: 100%; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Fechar Janela</button>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        document.getElementById('ano-corrente').textContent = new Date().getFullYear();
+
+        /* AUTOMAÇÃO: DETECTA SE É ACESSO VIA QR CODE PARA PULAR O LOGIN */
+        document.addEventListener("DOMContentLoaded", function() {
+            var rotaAtual = window.location.pathname;
+            if (rotaAtual.indexOf('validacao') !== -1 || rotaAtual.indexOf('visualizar_qrcode') !== -1) {
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('painel-interno').style.display = 'block';
+                document.getElementById('grid-servicos').style.display = 'none';
+                document.getElementById('tela-dados').style.display = 'block';
+            }
+        });
+
+        function validarLogin() {
+            var inputSenha = document.getElementById('senha_input').value;
+            var msgErro = document.getElementById('msg-erro');
+            var cpfBruto = document.getElementById('cpf-servidor').textContent;
+            
+            var senhaLimpa = inputSenha.replace(/\D/g, "");
+            var cpfLimpo = cpfBruto.replace(/\D/g, "");
+            
+            if (senhaLimpa === cpfLimpo && senhaLimpa.length > 0) {
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('painel-interno').style.display = 'block';
+            } else {
+                msgErro.style.display = 'block';
+                var container = document.querySelector('.login-container');
+                container.style.transform = "translateX(5px)";
+                setTimeout(() => container.style.transform = "translateX(-5px)", 100);
+                setTimeout(() => container.style.transform = "translateX(0)", 200);
+            }
+        }
+
+        /* Funções de Navegação da Tela Principal vs Tela de Dados */
+        function mostrarTelaDados() {
+            document.getElementById('grid-servicos').style.display = 'none';
+            document.getElementById('tela-dados').style.display = 'block';
+        }
+
+        function voltarParaGrid() {
+            document.getElementById('tela-dados').style.display = 'none';
+            document.getElementById('grid-servicos').style.display = 'block';
+        }
+
+        /* Modais */
+        function abrirDocumentos() { document.getElementById('modal-docs').style.display = 'flex'; }
+        function fecharDocumentos() { document.getElementById('modal-docs').style.display = 'none'; }
+    </script>
+</body>
+</html>

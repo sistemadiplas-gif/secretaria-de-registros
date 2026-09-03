@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imprensa Nacional</title>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Fonte Montserrat para o título idêntico ao Gov.br -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;800;900&display=swap" rel="stylesheet">
+    <!-- Barra Gov.br Web Component -->
+    <script type="module" src="https://barra.sistema.gov.br/v1/barra-govbr-wc.js" defer=""></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        body {
+            background-color: #fff;
+            color: #333;
+        }
+        /* Topo e Barra Gov */
+        .header-container {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+        .header-bottom-custom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title-main {
+            font-size: 24px;
+            color: #0c326f;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* Barra de Serviços Recomendados do Gov.br */
+        .gov-services-bar {
+            background-color: #eaecef;
+            padding: 12px 20px;
+            border-bottom: 1px solid #dcdfe6;
+        }
+        .services-container-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .service-dropdown-box {
+            background-color: #fff;
+            border: 1px solid #ccd0d7;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        /* Conteúdo Principal */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* --- TÍTULO PRINCIPAL (IMPRENSA NACIONAL) MAIOR E FINO --- */
+        .document-first-heading {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 48px; 
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 300; 
+            letter-spacing: -0.5px;
+        }
+        
+        /* Barra de Metadados e Compartilhamento */
+        .meta-row {
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .share-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #0c326f;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* --- TÍTULO DA SEÇÃO (BUSCA DOU) MAIOR E FINO --- */
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 40px; 
+            color: #333;
+            margin: 40px 0 20px 0;
+            font-weight: 300; 
+            letter-spacing: -0.5px;
+        }
+
+        /* --- BLOCO AZUL DE PESQUISA (EXATAMENTE COMO NA FOTO) --- */
+        .dou-banner-box {
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 50px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        
+        /* Parte superior com a imagem */
+        .dou-banner-top {
+            background: linear-gradient(rgba(15, 52, 107, 0.72), rgba(15, 52, 107, 0.82)), url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40');
+            background-size: cover;
+            background-position: center;
+            padding: 80px 30px 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        /* Parte inferior escura sólida (Edição do dia) */
+        .dou-banner-bottom {
+            background-color: #091e42; 
+            padding: 30px 20px 40px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        /* Título interno */
+        .dou-banner-top h2 {
+            font-family: 'Montserrat', 'Arial Black', sans-serif;
+            font-size: 42px; 
+            font-weight: 900; 
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        /* Divisórias */
+        .divider-linha {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b0d4f1;
+            font-size: 11px;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+        .divider-linha::before, .divider-linha::after {
+            content: "";
+            flex: 1;
+            max-width: 250px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 0 15px;
+        }
+
+        /* Layout da barra de pesquisa */
+        .search-container-outer {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        .dou-search-wrapper {
+            background: white;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .dou-search-btn-lupa {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #0c326f;
+            padding: 15px 20px;
+        }
+        .dou-search-input {
+            flex: 1;
+            border: none;
+            padding: 18px 0;
+            font-size: 16px;
+            outline: none;
+            color: #333;
+        }
+        
+        /* Botão Pesquisa Avançada idêntico à foto */
+        .dou-btn-avancada {
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+        }
+        .dou-btn-avancada:hover {
+            background-color: #f9f9f9;
+        }
+        .search-divider-vertical {
+            width: 1px;
+            height: 25px;
+            background-color: #ccc;
+        }
+
+        .verif-autenticidade-link {
+            display: inline-block;
+            color: #d0e7ff;
+            font-size: 12px;
+            text-decoration: underline;
+            cursor: pointer;
+            text-align: right;
+            width: 100%;
+        }
+
+        /* Edição do dia (Bottom) */
+        .edicao-links-row {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+            margin-bottom: 35px;
+        }
+        .edicao-link-item {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .icon-corner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-left: 3px solid;
+            border-bottom: 3px solid;
+            margin-bottom: 4px;
+        }
+        .color-sec1 { border-color: #42a5f5; }
+        .color-sec2 { border-color: #66bb6a; }
+        .color-sec3 { border-color: #ffa726; }
+
+        .diario-completo-link a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .diario-completo-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Destaques do DOU (Cards) */
+        .destaques-heading {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 46px; 
+            color: #222;
+            text-align: center;
+            margin: 60px 0 40px 0;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+        }
+        .destaques-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px; 
+            margin-bottom: 40px;
+        }
+        .destaque-card {
+            background-size: cover;
+            background-position: center;
+            border-radius: 6px;
+            overflow: hidden;
+            min-height: 380px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 30px;
+            color: white;
+            position: relative;
+        }
+        .card-bg-1 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1466611653911-95081537e5b7'); }
+        .card-bg-2 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05'); }
+        .card-bg-3 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1'); }
+        .card-bg-4 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1527482797697-8795b05a13fe'); }
+        .card-bg-5 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad'); }
+        .card-bg-6 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1541427468627-a89a96e5ca1d'); }
+
+        .destaque-card span {
+            font-size: 12px; 
+            text-transform: uppercase;
+            color: #ddd;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .destaque-card h3 {
+            font-size: 18px; 
+            line-height: 1.4;
+            font-weight: bold;
+        }
+
+        /* --- BOTÕES E CONCURSOS E SELEÇÕES --- */
+        .btn-outline-blue {
+            display: inline-block;
+            border: 2px solid #1351b4;
+            color: #1351b4;
+            background-color: transparent;
+            padding: 14px 45px;
+            border-radius: 35px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .btn-outline-blue:hover {
+            background-color: #1351b4;
+            color: #fff;
+        }
+        .btn-wrapper-center {
+            text-align: center;
+            margin: 30px 0 80px 0;
+        }
+
+        .concursos-heading {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 46px; 
+            color: #222;
+            text-align: center;
+            margin: 80px 0 60px 0;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+        }
+        .concursos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 50px; 
+            margin-bottom: 70px;
+            padding: 0 15px; 
+        }
+        .concurso-item {
+            text-align: left;
+        }
+        .concurso-item span {
+            display: block;
+            font-size: 14px; 
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 15px; 
+            line-height: 1.4;
+        }
+        .concurso-item p {
+            font-size: 18px; 
+            color: #1351b4; 
+            line-height: 1.5;
+        }
+
+        .servicos-in-heading {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 40px; 
+            color: #333;
+            text-align: center;
+            margin: 100px 0 50px 0;
+            font-weight: normal;
+        }
+
+        /* --- SERVIÇOS DA IN (CARDS CINZAS COM 9 BLOCOS) --- */
+        .servicos-in-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px; 
+            margin-bottom: 80px;
+            padding: 0 15px;
+        }
+        .servicos-in-card {
+            background-color: #f0f2f5; 
+            border-radius: 8px;
+            padding: 50px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 220px;
+            transition: background-color 0.2s;
+        }
+        .servicos-in-card:hover {
+            background-color: #e4e7eb; 
+        }
+        .servicos-in-card i {
+            font-size: 38px; 
+            color: #0c326f; 
+            margin-bottom: 15px;
+        }
+        .servicos-in-card span {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        /* --- SEÇÃO DE NOTÍCIAS (2 COLUNAS) --- */
+        .noticias-heading {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 40px; 
+            color: #333;
+            text-align: center;
+            margin: 100px 0 50px 0;
+            font-weight: normal;
+        }
+        .noticias-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px; 
+            margin-bottom: 40px;
+            padding: 0 15px;
+        }
+        .noticia-item {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+        .noticia-item img {
+            width: 100%;
+            height: 350px; 
+            border-radius: 8px;
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+        .noticia-item span {
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+        }
+        .noticia-item h3 {
+            font-size: 20px;
+            color: #1351b4;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* --- FAIXA AZUL ESCURA (DIVISÓRIA FULL WIDTH) --- */
+        .faixa-azul-escura-divider {
+            width: 100vw;
+            height: 90px;
+            background-color: #071936; 
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            margin-top: 80px;
+            margin-bottom: 60px;
+        }
+        
+        /* --- SEÇÃO: ACESSO À INFORMAÇÃO --- */
+        .acesso-informacao-heading {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 40px;
+            color: #333;
+            text-align: center;
+            margin: 0 0 50px 0;
+            font-weight: 300;
+        }
+        
+        .acesso-informacao-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 30px; 
+            padding: 0 15px;
+            margin-bottom: 40px; 
+        }
+        
+        .acesso-card {
+            background-color: #f0f2f5;
+            border-radius: 8px;
+            padding: 50px 20px; 
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 220px; 
+            transition: background-color 0.2s;
+        }
+        .acesso-card:hover {
+            background-color: #e4e7eb;
+        }
+        .acesso-card i {
+            font-size: 38px; 
+            color: #0c326f;
+            margin-bottom: 15px;
+        }
+        .acesso-card span {
+            font-size: 16px; 
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        /* --- NOVAS SEÇÕES: CENTRAIS DE CONTEÚDO E ATENDIMENTO --- */
+        .centrais-conteudo-heading, .atendimento-heading {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 40px;
+            color: #333;
+            text-align: center;
+            margin: 80px 0 40px 0;
+            font-weight: 300;
+        }
+        
+        .centrais-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 30px; 
+            max-width: 850px; 
+            margin: 0 auto 40px auto;
+            padding: 0 15px;
+        }
+        
+        .centrais-card {
+            background-color: #f0f2f5;
+            border-radius: 8px;
+            padding: 50px 20px; 
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 220px; 
+            transition: background-color 0.2s;
+        }
+        .centrais-card:hover {
+            background-color: #e4e7eb;
+        }
+        .centrais-card i {
+            font-size: 38px; 
+            color: #0c326f;
+            margin-bottom: 15px;
+        }
+        .centrais-card span {
+            font-size: 16px; 
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        /* --- COMPARTILHE INFERIOR (ANTES DO RODAPÉ) --- */
+        .bottom-share-container {
+            border-top: 1px solid #e0e0e0;
+            padding: 20px 0;
+            background-color: #fff;
+        }
+        .bottom-share-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
+        }
+        .bottom-share-content span {
+            font-size: 13px;
+            color: #666;
+            margin-right: 5px;
+        }
+        .bottom-share-content a {
+            color: #0c326f;
+            font-size: 18px;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .bottom-share-content a:hover {
+            opacity: 0.7;
+        }
+
+        /* RODAPÉ GOV.BR GRANDÃO E MAIS ESCURO */
+        .footer-gov {
+            background-color: #071936;
+            color: white;
+            padding: 70px 40px 30px 40px;
+            margin-top: 0; 
+        }
+        .footer-container-main {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .footer-logo-area {
+            margin-bottom: 45px;
+        }
+        .footer-logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 46px;
+            font-weight: bold;
+            color: white;
+            letter-spacing: -1px;
+        }
+        .footer-columns-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+        .footer-column h4 {
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 18px;
+            font-weight: bold;
+        }
+        .footer-column ul {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        .footer-column ul li a {
+            color: #bcdffb;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .footer-column ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Seção final do rodapé */
+        .footer-bottom-extra {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            margin-top: 40px;
+            padding-top: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .footer-cookies-btn {
+            background-color: #13396b;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-social-section {
+            margin-top: 15px;
+        }
+        .footer-social-title {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #bcdffb;
+            font-weight: bold;
+        }
+        .footer-social-icons {
+            display: flex;
+            gap: 15px;
+            font-size: 16px;
+        }
+        .footer-social-icons a {
+            color: white;
+            text-decoration: none;
+        }
+        .footer-acesso-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 15px;
+            border-radius: 4px;
+        }
+        .footer-acesso-badge i {
+            font-size: 24px;
+        }
+
+        .footer-bottom-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            margin-top: 25px;
+            padding-top: 20px;
+            font-size: 12px;
+            color: #bcdffb;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SCRIPT DE BLINDAGEM DE BUSCA: Força a abertura da segunda tela não importa onde clique -->
+    <script>
+        function acionarBusca() {
+            var termo = document.querySelector('.dou-search-input').value;
+            window.location.href = '/imprensanacional/busca?q=' + encodeURIComponent(termo);
+        }
+    </script>
+
+    <!-- BARRA GOV.BR OFICIAL -->
+    <header class="header-container">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <barra-govbr id="barraGovBr" class="width100 shadow-none" ambiente="producao"></barra-govbr>
+        </div>
+        <div class="header-bottom-custom">
+            <a href="#" class="header-title-main">Imprensa Nacional</a>
+            <div>
+                <!-- Ação configurada na Lupa do Topo -->
+                <button type="button" onclick="acionarBusca()" style="background:none; border:none; font-size:20px; cursor:pointer;"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- BARRA DE SERVIÇOS RECOMENDADOS -->
+    <div class="gov-services-bar">
+        <div class="services-container-grid">
+            <div class="service-dropdown-box"><span style="color:#2e7d32;"><i class="fas fa-seedling"></i></span> Serviços recomendados para você <span><i class="fas fa-chevron-down" style="font-size:11px; color:#666;"></i></span></div>
+            <div class="service-dropdown-box"><span style="color:#ef6c00;"><i class="fas fa-fire"></i></span> Serviços mais acessados do Gov.br <span><i class="fas fa-chevron-down" style="font-size:11px; color:#666;"></i></span></div>
+            <div class="service-dropdown-box"><span style="color:#fbc02d;"><i class="fas fa-star"></i></span> Serviços em destaque do Gov.br <span><i class="fas fa-chevron-down" style="font-size:11px; color:#666;"></i></span></div>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-container">
+        <h1 class="document-first-heading">Imprensa Nacional</h1>
+        
+        <!-- BARRA DE METADADOS E COMPARTILHAMENTO -->
+        <div class="meta-row">
+            <div>
+                <span>Criado em 23/09/2020 14:06</span> &nbsp;|&nbsp; <span>Modificado em 28/08/2026 09:37</span>
+            </div>
+            <div class="share-group">
+                <span>Compartilhe:</span>
+                <a href="#" class="btn-circle" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="#" class="btn-circle" title="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#" class="btn-circle" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="btn-circle" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="#" class="btn-circle" title="Copiar link"><i class="fa-solid fa-link"></i></a>
+            </div>
+        </div>
+
+        <!-- BUSCA DOU -->
+        <h2 class="section-title">Busca DOU</h2>
+        
+        <!-- BLOCO AZUL DIVIDIDO (FOTO EM CIMA, ESCURO EMBAIXO) -->
+        <div class="dou-banner-box">
+            
+            <div class="dou-banner-top">
+                <h2>Diário Oficial da União</h2>
+                <div class="divider-linha">PESQUISA</div>
+                
+                <div class="search-container-outer">
+                    <!-- Formulário interceptado pelo script -->
+                    <form action="/imprensanacional/busca" method="GET" class="dou-search-wrapper" onsubmit="acionarBusca(); return false;">
+                        <button type="submit" class="dou-search-btn-lupa" style="cursor: pointer;"><i class="fas fa-search"></i></button>
+                        
+                        <!-- Campo de input limpo, preenchido automaticamente com o nome do aluno -->
+                        <input type="text" name="q" class="dou-search-input" value="{{ aluno['nome'] }}" required>
+                        
+                        <!-- Ação configurada no botão de Pesquisa Avançada -->
+                        <button type="button" class="dou-btn-avancada" onclick="acionarBusca()" style="cursor: pointer;">
+                            <i class="fas fa-search" style="color:#666; font-size:14px;"></i>
+                            <span class="search-divider-vertical"></span>
+                            PESQUISA AVANÇADA <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </form>
+                    <a class="verif-autenticidade-link">Verificação de autenticidade</a>
+                </div>
+            </div>
+
+            <div class="dou-banner-bottom">
+                <div class="divider-linha">EDIÇÃO DO DIA</div>
+                <div class="edicao-links-row">
+                    <a href="#" class="edicao-link-item"><span class="icon-corner color-sec1"></span> SEÇÃO 1: ATOS NORMATIVOS</a>
+                    <a href="#" class="edicao-link-item"><span class="icon-corner color-sec2"></span> SEÇÃO 2: ATOS DE PESSOAL</a>
+                    <a href="#" class="edicao-link-item"><span class="icon-corner color-sec3"></span> SEÇÃO 3: CONTRATOS, EDITAIS E AVISOS</a>
+                </div>
+                <div class="diario-completo-link">
+                    <a href="#"><i class="fas fa-folder-open" style="font-size:16px;"></i> DIÁRIO COMPLETO: VERSÃO CERTIFICADA</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- DESTAQUES DO DOU -->
+        <h2 class="destaques-heading">Destaques do DOU</h2>
+        <div class="destaques-grid-3">
+            
+            <!-- LINHA 1 -->
+            <div class="destaque-card card-bg-1">
+                <span>Presidência da República</span>
+                <h3>Prorrogado prazo de conclusão dos trabalhos do Grupo de Trabalho Eólicas Offshore</h3>
+            </div>
+            <div class="destaque-card card-bg-2">
+                <span>Ministério de Portos e Aeroportos</span>
+                <h3>Reajustados tetos de tarifas aeroportuárias de embarque, conexão e pouso do Aeroporto de...</h3>
+            </div>
+            <div class="destaque-card card-bg-3">
+                <span>Ministério da Justiça e Segurança Pública</span>
+                <h3>MJSPB divulga nova lista de filmes cuja classificação indicativa foi estabelecida</h3>
+            </div>
+            
+            <!-- LINHA 2 -->
+            <div class="destaque-card card-bg-4">
+                <span>Ministério da Integração e do Desenvolvimento Regional</span>
+                <h3>Reconhecida situação de emergência em municípios de Paraná, Rio Grande do Sul e Santa Catarina</h3>
+            </div>
+            <div class="destaque-card card-bg-5">
+                <span>Ministério da Fazenda</span>
+                <h3>Aprovado Regulamento de Utilização do Acesso de Serviço da Ponte Internacional da Amizade</h3>
+            </div>
+            <div class="destaque-card card-bg-6">
+                <span>Ministério da Cultura</span>
+                <h3>Veja os projetos culturais homologados para obtenção de doações e patrocínios</h3>
+            </div>
+            
+        </div>
+
+        <!-- BOTÃO VEJA MAIS DESTAQUES -->
+        <div class="btn-wrapper-center">
+            <a href="#" class="btn-outline-blue">Veja mais destaques DOU</a>
+        </div>
+
+        <!-- CONCURSOS E SELEÇÕES -->
+        <h2 class="concursos-heading">Concursos e Seleções</h2>
+        <div class="concursos-grid">
+            <div class="concurso-item">
+                <span>Ministério do Desenvolvimento Agrário e Agricultura Familiar</span>
+                <p>PNUD publica vaga para contratação de profissional de NS das áreas de ciências humanas e ciências agrárias</p>
+            </div>
+            <div class="concurso-item">
+                <span>Ministério da Educação</span>
+                <p>Federal de Itajubá lança processo seletivo para contratação de professor substituto</p>
+            </div>
+            <div class="concurso-item">
+                <span>Ministério do Trabalho e Emprego</span>
+                <p>MTE divulga regras para distribuição das vagas preenchidas pelos candidatos aprovados no CPNU</p>
+            </div>
+        </div>
+
+        <!-- BOTÃO ACESSE A LISTA COMPLETA -->
+        <div class="btn-wrapper-center" style="margin-bottom: 0;">
+            <a href="#" class="btn-outline-blue">Acesse a lista completa</a>
+        </div>
+
+        <!-- TÍTULO SERVIÇOS DA IN -->
+        <h2 class="servicos-in-heading">Serviços da IN</h2>
+        
+        <!-- 9 BLOCOS DE SERVIÇOS DA IN -->
+        <div class="servicos-in-grid">
+            <!-- Linha 1 -->
+            <a href="#" class="servicos-in-card">
+                <i class="far fa-newspaper"></i>
+                <span>Diário Oficial da União</span>
+            </a>
+            <a href="#" class="servicos-in-card">
+                <i class="far fa-edit"></i>
+                <span>Publicação de matérias</span>
+            </a>
+            <a href="#" class="servicos-in-card">
+                <i class="fas fa-tablet-alt"></i>
+                <span>Tutorial do APP DOU</span>
+            </a>
+            <!-- Linha 2 -->
+            <a href="#" class="servicos-in-card">
+                <i class="fas fa-archway"></i>
+                <span>Museu da Imprensa</span>
+            </a>
+            <a href="#" class="servicos-in-card">
+                <i class="fas fa-print"></i>
+                <span>Serviços Gráficos</span>
+            </a>
+            <a href="#" class="servicos-in-card">
+                <i class="fas fa-file-signature"></i>
+                <span>Contratos com a Imprensa<br>Nacional</span>
+            </a>
+            <!-- Linha 3 -->
+            <a href="#" class="servicos-in-card">
+                <i class="fas fa-lightbulb"></i>
+                <span>INLabs</span>
+            </a>
+            <a href="#" class="servicos-in-card">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                <span>INCom</span>
+            </a>
+            <a href="#" class="servicos-in-card">
+                <i class="fas fa-book"></i>
+                <span>Biblioteca</span>
+            </a>
+        </div>
+
+        <!-- SEÇÃO DE NOTÍCIAS (2 COLUNAS) -->
+        <h2 class="noticias-heading">Notícias</h2>
+        <div class="noticias-grid-2">
+            <!-- Notícia 1 -->
+            <div class="noticia-item">
+                <img src="https://images.unsplash.com/photo-1544928147-79a2dbc1f389?auto=format&fit=crop&w=800&q=80" alt="Dama da gravura">
+                <span>"Dama da gravura" deixa um legado na história cultural e artística brasiliense.</span>
+                <h3>O legado de Lêda Watson na Imprensa Nacional</h3>
+            </div>
+            <!-- Notícia 2 -->
+            <div class="noticia-item">
+                <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80" alt="Impressoras de alta tecnologia">
+                <span>O objetivo é oferecer soluções melhores e novos produtos</span>
+                <h3>Imprensa Nacional renova parque gráfico com impressoras de alta tecnologia</h3>
+            </div>
+        </div>
+
+        <!-- BOTÃO MAIS NOTÍCIAS -->
+        <div class="btn-wrapper-center">
+            <a href="#" class="btn-outline-blue">Mais notícias</a>
+        </div>
+        
+        <!-- FAIXA AZUL ESCURA (DIVISÓRIA FULL WIDTH) -->
+        <div class="faixa-azul-escura-divider"></div>
+        
+        <!-- --- SEÇÃO: ACESSO À INFORMAÇÃO --- -->
+        <h2 class="acesso-informacao-heading">Acesso à Informação</h2>
+        <div class="acesso-informacao-grid">
+            <a href="#" class="acesso-card">
+                <i class="fas fa-info"></i>
+                <span>Institucional</span>
+            </a>
+            <a href="#" class="acesso-card">
+                <i class="fas fa-list-check"></i>
+                <span>Ações e programas</span>
+            </a>
+            <a href="#" class="acesso-card">
+                <i class="fas fa-user-friends"></i>
+                <span>Participação Social</span>
+            </a>
+            <a href="#" class="acesso-card">
+                <i class="fas fa-file-alt"></i>
+                <span>Auditorias</span>
+            </a>
+            
+            <a href="#" class="acesso-card">
+                <i class="fas fa-receipt"></i>
+                <span>Convênios e Transferências</span>
+            </a>
+            <a href="#" class="acesso-card">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Receitas e Despesas</span>
+            </a>
+            <a href="#" class="acesso-card">
+                <i class="fas fa-file-signature"></i>
+                <span>Licitações e Contratos</span>
+            </a>
+            <a href="#" class="acesso-card">
+                <i class="fas fa-user-tie"></i>
+                <span>Servidores</span>
+            </a>
+        </div>
+
+        <!-- BOTÃO MAIS INFORMAÇÕES -->
+        <div class="btn-wrapper-center" style="margin-bottom: 80px;">
+            <a href="#" class="btn-outline-blue">Mais informações</a>
+        </div>
+
+        <!-- --- SEÇÕES: CENTRAIS DE CONTEÚDO E ATENDIMENTO --- -->
+        <h2 class="centrais-conteudo-heading">Centrais de Conteúdo</h2>
+        <div class="centrais-grid-2">
+            <a href="#" class="centrais-card">
+                <i class="fab fa-youtube"></i>
+                <span>Vídeos</span>
+            </a>
+            <a href="#" class="centrais-card">
+                <i class="fas fa-spell-check"></i>
+                <span>Dicionário Eletrônico</span>
+            </a>
+        </div>
+
+        <h2 class="atendimento-heading">Atendimento ao Cidadão</h2>
+        <div class="centrais-grid-2" style="margin-bottom: 60px;">
+            <a href="#" class="centrais-card">
+                <i class="fas fa-comment"></i>
+                <span>Ouvidoria</span>
+            </a>
+            <a href="#" class="centrais-card">
+                <i class="fas fa-newspaper"></i>
+                <span>Imprensa</span>
+            </a>
+        </div>
+
+    </main>
+
+    <!-- --- COMPARTILHE INFERIOR (ANTES DO RODAPÉ) --- -->
+    <div class="bottom-share-container">
+        <div class="bottom-share-content">
+            <span>Compartilhe:</span>
+            <a href="#" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="#" title="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#" title="Copiar link"><i class="fa-solid fa-link"></i></a>
+        </div>
+    </div>
+
+    <!-- RODAPÉ GOV.BR GRANDÃO E MAIS ESCURO -->
+    <footer class="footer-gov">
+        <div class="footer-container-main">
+            <div class="footer-logo-area">
+                <div class="footer-logo-text">gov.br</div>
+            </div>
+            
+            <div class="footer-columns-grid">
+                <!-- Coluna 1 -->
+                <div class="footer-column">
+                    <h4>Composição</h4>
+                    <ul>
+                        <li><a href="#">Diretoria-Geral</a></li>
+                        <li><a href="#">Coordenação-Geral de Tecnologia - CGTI</a></li>
+                        <li><a href="#">Coordenação-Geral de Publicação, Produção e Preservação - CGPPP</a></li>
+                        <li><a href="#">Coordenação-Geral de Administração - CGAD</a></li>
+                        <li><a href="#">Quem é quem</a></li>
+                    </ul>
+
+                    <h4>Centrais de Conteúdo</h4>
+                    <ul>
+                        <li><a href="#">Dicionário Eletrônico</a></li>
+                        <li><a href="#">Vídeos</a></li>
+                        <li><a href="#">Revista Imprensa Nacional</a></li>
+                        <li><a href="#">Info Produtos da Exposição Especial</a></li>
+                    </ul>
+                </div>
+
+                <!-- Coluna 2 -->
+                <div class="footer-column">
+                    <h4>Notícias</h4>
+                    <ul>
+                        <li><a href="#">Noticias</a></li>
+                    </ul>
+
+                    <h4>Serviços</h4>
+                    <ul>
+                        <li><a href="#">Diário Oficial da União</a></li>
+                        <li><a href="#">Publicação de matérias</a></li>
+                        <li><a href="#">Biblioteca</a></li>
+                        <li><a href="#">Museu da Imprensa</a></li>
+                        <li><a href="#">Serviços Gráficos</a></li>
+                        <li><a href="#">Contratos com a Imprensa Nacional</a></li>
+                        <li><a href="#">Tutorial do APP DOU</a></li>
+                        <li><a href="#">Termo de Uso e Política de Privacidade - APP DOU</a></li>
+                        <li><a href="#">INLabs</a></li>
+                        <li><a href="#">INCom</a></li>
+                    </ul>
+                </div>
+
+                <!-- Coluna 3 -->
+                <div class="footer-column">
+                    <h4>Acesso à Informação</h4>
+                    <ul>
+                        <li><a href="#">Institucional</a></li>
+                        <li><a href="#">Agenda de Autoridades</a></li>
+                        <li><a href="#">Ações e programas</a></li>
+                        <li><a href="#">Participação Social</a></li>
+                        <li><a href="#">Auditorias</a></li>
+                        <li><a href="#">Convênios e Transferências</a></li>
+                        <li><a href="#">Receitas e Despesas</a></li>
+                        <li><a href="#">Licitações e Contratos</a></li>
+                        <li><a href="#">Servidores</a></li>
+                        <li><a href="#">Informações classificadas</a></li>
+                        <li><a href="#">Serviços de Informação ao cidadão - SIC</a></li>
+                        <li><a href="#">Perguntas Frequentes</a></li>
+                        <li><a href="#">Dados Abertos</a></li>
+                        <li><a href="#">Tratamento de Dados Pessoais</a></li>
+                    </ul>
+                </div>
+
+                <!-- Coluna 4 -->
+                <div class="footer-column">
+                    <h4>Canais de Atendimento</h4>
+                    <ul>
+                        <li><a href="#">Canais de Atendimento</a></li>
+                        <li><a href="#">Fale Conosco</a></li>
+                        <li><a href="#">Ouvidoria</a></li>
+                        <li><a href="#">Imprensa</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PARTE FINAL DO RODAPÉ (COOKIES, REDES SOCIAIS E ACESSO À INFORMAÇÃO) -->
+            <div class="footer-bottom-extra">
+                <div>
+                    <button class="footer-cookies-btn">
+                        <i class="fas fa-cookie-bite"></i> Redefinir Cookies
+                    </button>
+                    
+                    <div class="footer-social-section">
+                        <div class="footer-social-title">Redes Sociais</div>
+                        <div class="footer-social-icons">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-x-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-acesso-badge">
+                    <i class="fas fa-info-circle"></i>
+                    <div style="font-size: 12px; font-weight: bold; line-height: 1.2;">Acesso à<br>Informação</div>
+                </div>
+            </div>
+
+            <div class="footer-bottom-divider">
+                Todo o conteúdo deste site está publicado sob a licença Creative Commons Atribuição-SemDerivações 3.0 Não Adaptada.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>SIA - Sistema de Informações Acadêmicas - Estácio</title>
+    <link rel="icon" type="image/png" href="https://sia.estacio.br/sianet/Content/SiteNovo/dist/img/icones/ico-estacio.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    
+    <!-- CSS Originais da Estácio carregados externamente -->
+    <link href="https://sia.estacio.br/sianet/content/novo/css?v=1-N80rGdUKVp6Mw-JpZ8rtqRtfAKxSWPvakYS45jpy01" rel="stylesheet"/>
+    <link href="https://sia.estacio.br/sianet/content/estacio/novo/css?v=KUX6bT1g3BDxC7nG3pZqrSpOV_QQfLMZcQwTvw7QmZc1" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* Ajustes locais para garantir funcionamento e remover conflitos */
+        body { min-height: 100vh; overflow-x: hidden; background: #ffffff; margin: 0; padding: 0; font-family: 'Rawline', sans-serif; }
+        
+        #msg-erro { display: none; color: #dc3545; font-size: 13px; font-weight: bold; text-align: center; margin-bottom: 15px; }
+
+        /* Customizações exatas dos inputs do lado direito */
+        .estacio-input { border: none !important; background: #f8f9fa !important; font-size: 13px !important; color: #555 !important; padding: 11px 12px !important; box-shadow: none !important; }
+        .estacio-input-group { border: 1px solid #ced4da; border-radius: 3px; overflow: hidden; display: flex; }
+        .estacio-input-icon { background: #e9ecef; border-left: 1px solid #ced4da; padding: 10px 15px; color: #6c757d; display: flex; align-items: center; justify-content: center; }
+        .estacio-link { color: #169b95; text-decoration: none; font-size: 10px; font-weight: 500; }
+        .estacio-link:hover { text-decoration: underline; color: #0f7a75; }
+
+        /* NOVO PAINEL INTERNO - CLONE EXATO ESTÁCIO */
+        #tela-painel { display: none; flex-direction: column; width: 100%; height: 100vh; background: #eaedf2; overflow: hidden; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        
+        .painel-header { height: 75px; background: #fff; border-bottom: 1px solid #e5e5e5; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); z-index: 10; }
+        .header-logo img { height: 32px; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 35px; }
+        .header-icon { text-align: center; color: #777; font-size: 10px; font-weight: 600; cursor: pointer; }
+        .header-icon i { font-size: 20px; margin-bottom: 4px; color: #999; }
+        
+        .user-info { display: flex; align-items: center; gap: 15px; border-left: 1px solid #e0e0e0; padding-left: 35px; }
+        .user-text { text-align: right; line-height: 1.3; }
+        .user-text .nome { font-size: 13px; font-weight: 700; color: #333; }
+        .user-text .matricula { font-size: 11px; color: #666; }
+        
+        .user-avatar { width: 42px; height: 42px; background: #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; }
+        .user-avatar i { font-size: 22px; color: #aab2bd; }
+        .status-dot { width: 12px; height: 12px; background: #28a745; border: 2px solid #fff; border-radius: 50%; position: absolute; bottom: 0; right: 0; }
+
+        .painel-body { display: flex; flex: 1; overflow: hidden; }
+        
+        /* Menu Lateral */
+        .sidebar { width: 270px; background: #fdfdfd; border-right: 1px solid #e5e5e5; overflow-y: auto; display: flex; flex-direction: column; padding-top: 10px; }
+        .sidebar-item { padding: 18px 25px; border-bottom: 1px solid #f2f2f2; color: #444; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+        .sidebar-item:hover { background: #f5f5f5; color: #169b95; }
+        .sidebar-item i { font-size: 10px; color: #bbb; }
+
+        /* Conteúdo Principal */
+        .main-content { flex: 1; overflow-y: auto; padding: 40px; }
+        .banner-placeholder { width: 100%; height: 260px; background: linear-gradient(to right, #615869, #544d5c); border-radius: 4px; margin-bottom: 35px; }
+        
+        .acesso-rapido-title { font-size: 26px; font-weight: 700; color: #222; margin-bottom: 25px; }
+        
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; }
+        .sia-card { background: #fff; border-radius: 8px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; }
+        .sia-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .icon-circle { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        
+        .icon-req { background: #faeaea; color: #ef798a; }
+        .icon-fin { background: #e9edf2; color: #8892a0; }
+        .icon-aca { background: #fef4db; color: #f1c40f; }
+        .icon-doc { background: #e8f5e9; color: #28a745; }
+        
+        .sia-card-title { font-size: 16px; font-weight: 700; color: #333; }
+        .sia-card-text { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 20px; min-height: 50px; }
+        
+        .sidebar-item.pasta-aluno-destaque { background-color: #169b95 !important; color: #ffffff !important; font-weight: 700; }
+        .sidebar-item.pasta-aluno-destaque i { color: #ffffff !important; }
+        .sidebar-item.pasta-aluno-destaque:hover { background-color: #0f7a75 !important; color: #ffffff !important; }
+
+        .sia-card-links { list-style: none; padding: 0; margin: 0; }
+        .sia-card-links li { margin-bottom: 10px; }
+        .sia-card-links a { font-size: 12px; color: #24a899; text-decoration: none; font-weight: 600; }
+        .sia-card-links a:hover { text-decoration: underline; color: #167c71; }
+
+        /* Botão Flutuante */
+        .btn-ajuda { position: fixed; bottom: 30px; right: 30px; background: #5bc6b9; color: white; padding: 12px 25px; border-radius: 30px; font-size: 14px; font-weight: 700; box-shadow: 0 4px 15px rgba(91,198,185,0.4); cursor: pointer; display: flex; align-items: center; gap: 8px; z-index: 100; border: none; }
+        .btn-ajuda:hover { background: #4cafa2; }
+
+        /* Ficha do Aluno - REFORMULADA COM A BARRA AZUL TRAVADA NO TOPO */
+        .ficha-aluno { background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e0e0e0; position: relative; overflow: hidden; }
+        
+        /* A NOVA BARRA AZUL DA ESTÁCIO NO TOPO DA PASTA DO ALUNO */
+        .ficha-aluno-header-azul { background-color: #169b95; color: white; padding: 20px 35px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f7a75; }
+        .ficha-aluno-header-azul h2 { margin: 0; font-size: 22px; font-weight: 700; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+        
+        .ficha-aluno-conteudo { padding: 35px; }
+        .ficha-titulo { color: #169b95; font-size: 18px; font-weight: 700; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 20px; margin-top: 30px; }
+        .ficha-titulo:first-child { margin-top: 0; }
+        .ficha-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .ficha-item { font-size: 14px; color: #444; }
+        .ficha-item strong { color: #222; font-weight: 600; display: block; font-size: 11px; text-transform: uppercase; color: #888; margin-bottom: 4px; }
+        .status-badge { display: inline-block; background: #28a745; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+    </style>
+</head>
+
+<body class="hold-transition login-page" style="margin: 0; padding: 0;">
+
+    <!-- TELA DE LOGIN ORIGINAL -->
+    <div id="tela-login" class="container-fluid p-0" style="height:100vh; width:100%;">
+        <div class="row altura-geral principal padrao-estacio m-0 h-100">
+            
+            <!-- LADO ESQUERDO -->
+            <div id="carousel-container" class="col-12 col-lg-7 col-xl-7 lado-esquerdo p-0" style="background-color: #169b95; overflow: hidden;">
+                <div class="modifica-carousel-principal h-100 d-flex align-items-center justify-content-center">
+                    <div class="mod-carousel-conteudo organiza-vertical" style="width: 100%; padding: 20px; max-width: 100%;">
+                        
+                        <div class="texto" style="color: white; font-size: 30px; line-height: 1.4; margin-bottom: 15px; font-weight: 400; font-family: 'Rawline', sans-serif;">
+                            <center>Ensino <strong>Estácio.</strong><br /> Brilhe com <strong>+ tecnologia.</strong></center>
+                        </div>
+                        
+                        <div class="imagem text-center">
+                            <img src="https://sia.estacio.br/sianet/Content/SiteNovo/dist/img/banners/banner_01.png" alt="Ilustração Tecnologia" style="width: 100%; max-width: 1200px; height: auto; transform: scale(1.15);">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- LADO DIREITO -->
+            <div class="col-12 col-lg-5 col-xl-5 d-flex lado-direito" style="background: white;">
+                <div class="login-box d-flex justify-content-stretch w-100 h-100 align-items-center">
+                    <div class="card w-100 shadow-none border-0 p-4" style="max-width: 420px; margin: 0 auto; background: transparent;">
+                        <div class="card-body login-card-body d-flex flex-column justify-content-between p-0">
+                            
+                            <!-- LOGO E CABEÇALHO -->
+                            <div class="text-center mb-4">
+                                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                    <img src="https://sia.estacio.br/sianet/Content/SiteNovo/dist/img/icones/ico-estacio.png" alt="Símbolo" style="height: 38px; margin-right: 8px;">
+                                    <span style="font-size: 28px; font-weight: 800; color: #111; letter-spacing: -0.5px;">Estácio</span>
+                                </div>
+                                <p style="font-size: 14px; font-weight: 600; color: #222; margin-bottom: 5px;">SIA - Sistema de Informações Acadêmicas</p>
+                                <p style="font-size: 12px; color: #444; margin-bottom: 0;" id="dataAtual"></p>
+                            </div>
+
+                            <!-- BOTÃO MICROSOFT -->
+                            <div class="mb-4 mt-2">
+                                <button type="button" class="btn btn-block d-flex align-items-center justify-content-center" style="background-color: #337ab7; color: white; border-radius: 3px; padding: 10px; font-size: 13px; font-weight: 500; border: none;">
+                                    <img src="https://sia.estacio.br/sianet/Content/SiteNovo/dist/img/icones/microsoft-outlook-24x24.png" alt="Outlook" style="width: 18px; margin-right: 8px;">
+                                    Entrar com e-mail de estudante
+                                </button>
+                            </div>
+                            
+                            <!-- SEPARADOR OU -->
+                            <div style="display: flex; align-items: center; text-align: center; margin-bottom: 25px;">
+                                <div style="flex: 1; border-bottom: 1px solid #ddd;"></div>
+                                <div style="padding: 0 15px; color: #666; font-size: 10px; font-weight: 600;">OU</div>
+                                <div style="flex: 1; border-bottom: 1px solid #ddd;"></div>
+                            </div>
+
+                            <!-- CAMPO MATRÍCULA -->
+                            <div class="form-group mb-3 text-left">
+                                <label style="font-size: 11px; color: #555; margin-bottom: 4px; display: block;">Matrícula</label>
+                                <div class="estacio-input-group">
+                                    <input type="text" id="matricula_input" class="form-control estacio-input" value="{{ aluno['matricula'] }}" readonly>
+                                    <div class="estacio-input-icon">
+                                        <i class="fas fa-address-card"></i>
+                                    </div>
+                                </div>
+                                <div class="text-right mt-1"><a href="#" class="estacio-link">Não sei ou esqueci a matrícula</a></div>
+                            </div>
+
+                            <!-- CAMPO SENHA -->
+                            <div class="form-group mb-4 text-left">
+                                <label style="font-size: 11px; color: #555; margin-bottom: 4px; display: block;">Senha</label>
+                                <div class="estacio-input-group">
+                                    <input type="password" id="senha_input" class="form-control estacio-input" placeholder="Digite sua senha" oninput="checarBotao()">
+                                    <div class="estacio-input-icon">
+                                        <i class="fas fa-eye-slash"></i>
+                                    </div>
+                                </div>
+                                <div class="text-right mt-1"><a href="#" class="estacio-link">Esqueci minha senha / Cadastrar primeira senha</a></div>
+                            </div>
+
+                            <!-- MENSAGEM DE ERRO ESCONDIDA -->
+                            <div id="msg-erro">Usuário ou Senha inválidos.</div>
+
+                            <!-- RECAPTCHA SIMULADO -->
+                            <div class="d-flex justify-content-between align-items-center mb-4" style="border: 1px solid #d3d3d3; border-radius: 3px; background: #fafafa; padding: 8px 10px;">
+                                <div class="d-flex align-items-center">
+                                    <input type="checkbox" id="check_robo" style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;" onchange="checarBotao()">
+                                    <label for="check_robo" style="margin: 0; font-size: 12px; cursor: pointer; color: #333;">Não sou um robô</label>
+                                </div>
+                                <div class="text-center d-flex flex-column align-items-center justify-content-center">
+                                    <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" width="26" alt="Recaptcha">
+                                    <div style="font-size: 8px; color: #555; margin-top: 2px;">reCAPTCHA</div>
+                                </div>
+                            </div>
+
+                            <!-- BOTÃO ENTRAR -->
+                            <button id="btn_entrar" class="btn btn-block" style="background-color: #e0e0e0; color: #a0a0a0; font-weight: 600; font-size: 14px; padding: 10px; border-radius: 3px; cursor: not-allowed; border: none; margin-top: 20px;" onclick="validarLogin()" disabled>Entrar</button>
+
+                            <!-- FOOTER AJUDA -->
+                            <div class="text-center" style="margin-top: 40px;">
+                                <p style="color: #666; font-size: 11px; margin-bottom: 5px;">Está com dúvidas para fazer o login?</p>
+                                <a href="#" style="color: #169b95; font-size: 12px; text-decoration: none; font-weight: 600;"><i class="fas fa-question-circle mr-1"></i>Acessar Ajuda</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- NOVO PAINEL INTERNO DO ALUNO CLONE -->
+    <div id="tela-painel">
+        
+        <!-- HEADER -->
+        <div class="painel-header">
+            <div class="header-logo" id="logo-header" onclick="mostrarInicio()" style="cursor: pointer; display: flex; align-items: center;" title="Voltar ao Início">
+                <img src="https://sia.estacio.br/sianet/Content/SiteNovo/dist/img/icones/ico-estacio.png" alt="Símbolo" style="height: 28px; margin-right: 6px;">
+                <span style="font-size: 22px; font-weight: 800; color: #111; letter-spacing: -0.5px; margin-top: 2px;">Estácio</span>
+            </div>
+            <div class="header-right">
+                <div class="header-icon">
+                    <i class="fas fa-comment-alt"></i><br>Atendimento Virtual
+                </div>
+                <div class="header-icon">
+                    <i class="fas fa-bell"></i><br>Notificações
+                </div>
+                <div class="user-info">
+                    <div class="user-text">
+                        <div class="nome">Olá, {{ aluno['nome'].split(' ')[0] if aluno['nome'] else 'Aluno' }}</div>
+                        <div class="matricula">Matrícula: {{ aluno['matricula'] }}</div>
+                    </div>
+                    <div class="user-avatar">
+                        {% if aluno['foto'] %}
+                            <img src="{{ url_for('static', filename='uploads/' + aluno['foto']) }}" alt="Foto do Aluno" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                        <div class="status-dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="painel-body">
+            
+            <!-- MENU LATERAL -->
+            <div class="sidebar" id="menu-lateral">
+                <a class="sidebar-item nav-livre" onclick="mostrarInicio()">Minhas Disciplinas <i class="fas fa-chevron-right"></i></a>
+                <a class="sidebar-item nav-livre">Prova Online <i class="fas fa-chevron-right"></i></a>
+                <a class="sidebar-item nav-livre" onclick="mostrarInicio()">Acadêmico <i class="fas fa-chevron-right"></i></a>
+                <a class="sidebar-item nav-livre">Benefícios Vdi/microsoft/wifi <i class="fas fa-chevron-right"></i></a>
+                <a class="sidebar-item nav-livre">Financeiro <i class="fas fa-chevron-right"></i></a>
+                <a class="sidebar-item nav-livre">Atendimento <i class="fas fa-chevron-right"></i></a>
+                <a class="sidebar-item nav-livre">Atividades Complementares <i class="fas fa-chevron-right"></i></a>
+                <a class="sidebar-item nav-livre">Avaliação Institucional <i class="fas fa-chevron-right"></i></a>
+                <a class="sidebar-item nav-livre">Bibliotecas Virtuais <i class="fas fa-chevron-right"></i></a>
+                <a class="sidebar-item nav-livre" onclick="mostrarInicio()">Carreiras <i class="fas fa-chevron-right"></i></a>
+                <a class="sidebar-item nav-livre">Benefícios <i class="fas fa-chevron-right"></i></a>
+                <!-- QUADRADINHO DA PASTA DO ALUNO -->
+                <a class="sidebar-item pasta-aluno-destaque" onclick="mostrarDadosAluno()">Pasta do Aluno <i class="fas fa-chevron-right"></i></a>
+            </div>
+
+            <!-- CONTEÚDO PRINCIPAL -->
+            <div class="main-content">
+                
+                <!-- VIEW 1: ACESSO RÁPIDO (TELA INICIAL PADRÃO) -->
+                <div id="view-inicio">
+                    <div class="banner-placeholder"></div>
+                    <div class="acesso-rapido-title">Acesso rápido</div>
+                    <div class="cards-grid">
+                        <div class="sia-card">
+                            <div class="sia-card-header">
+                                <div class="icon-circle icon-req"><i class="fas fa-list-alt"></i></div>
+                                <div class="sia-card-title">Requerimentos</div>
+                            </div>
+                            <div class="sia-card-text">Consulte a resposta e o andamento do seu requerimento, através desse acesso rápido.</div>
+                            <ul class="sia-card-links">
+                                <li><a href="#">- Novo</a></li>
+                                <li><a href="#">- Consulta</a></li>
+                                <li><a href="#">- Tabela de Preços</a></li>
+                            </ul>
+                        </div>
+                        <div class="sia-card">
+                            <div class="sia-card-header">
+                                <div class="icon-circle icon-fin"><i class="fas fa-dollar-sign"></i></div>
+                                <div class="sia-card-title">Financeiro</div>
+                            </div>
+                            <div class="sia-card-text">Aqui você pode retirar a 2ª Via do seu boleto, recalculá-lo, pagá-lo no cartão entre outras funções.</div>
+                            <ul class="sia-card-links">
+                                <li><a href="#">- Informações Financeiras</a></li>
+                                <li><a href="#">- Simulador de Negociação</a></li>
+                            </ul>
+                        </div>
+                        <div class="sia-card">
+                            <div class="sia-card-header">
+                                <div class="icon-circle icon-aca"><i class="fas fa-graduation-cap"></i></div>
+                                <div class="sia-card-title">Acadêmico</div>
+                            </div>
+                            <div class="sia-card-text">Aqui você pode consultar suas disciplinas, quadro de horários, Histórico Escolar etc.</div>
+                            <ul class="sia-card-links">
+                                <li><a href="#">- Histórico Escolar</a></li>
+                                <li><a href="#">- Disciplinas Matriculadas</a></li>
+                                <li><a href="#">- Quadro de Horários</a></li>
+                            </ul>
+                        </div>
+                        <div class="sia-card">
+                            <div class="sia-card-header">
+                                <div class="icon-circle icon-doc"><i class="fas fa-file-pdf"></i></div>
+                                <div class="sia-card-title">Documentação Digital</div>
+                            </div>
+                            <div class="sia-card-text">Acesse, visualize e faça o download dos seus diplomas e documentos acadêmicos.</div>
+                            <ul class="sia-card-links">
+                                {% if aluno['diploma_frente'] %}
+                                <li><a href="{{ url_for('download_file', filename=aluno['diploma_frente']) }}" target="_blank">- Download Diploma (Frente)</a></li>
+                                {% else %}
+                                <li><span style="color: #bbb;">- Diploma Frente (Indisponível)</span></li>
+                                {% endif %}
+                                {% if aluno['diploma_verso'] %}
+                                <li><a href="{{ url_for('download_file', filename=aluno['diploma_verso']) }}" target="_blank">- Download Diploma (Verso)</a></li>
+                                {% else %}
+                                <li><span style="color: #bbb;">- Diploma Verso (Indisponível)</span></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: DADOS DO ALUNO (PASTA DO ALUNO) -->
+                <div id="view-aluno" style="display: none;">
+                    
+                    <!-- O QUADRADINHO COM A BARRA AZUL TRAVADA NO TOPO -->
+                    <div class="ficha-aluno">
+                        
+                        <!-- TARJA AZUL EXATA DA ESTÁCIO (#169b95) COM "STATUS ATIVO" -->
+                        <div class="ficha-aluno-header-azul">
+                            <h2><i class="fas fa-folder-open"></i> Pasta do Aluno</h2>
+                            <span class="status-badge"><i class="fas fa-check-circle"></i> STATUS ATIVO</span>
+                        </div>
+                        
+                        <div class="ficha-aluno-conteudo">
+                            <div class="ficha-titulo">Dados Pessoais</div>
+                            <div class="ficha-grid">
+                                <div class="ficha-item"><strong>Nome Completo</strong>{{ aluno['nome'] }}</div>
+                                <div class="ficha-item"><strong>CPF</strong>{{ aluno['cpf'] }}</div>
+                                <div class="ficha-item"><strong>RG</strong>{{ aluno['rg'] }} {{ aluno['orgao_rg'] }}</div>
+                                <div class="ficha-item"><strong>Data de Nascimento</strong>{{ aluno['data_nascimento'] }}</div>
+                            </div>
+                            
+                            <div class="ficha-titulo">Dados do Curso</div>
+                            <div class="ficha-grid">
+                                <div class="ficha-item"><strong>Matrícula</strong>{{ aluno['matricula'] }}</div>
+                                <div class="ficha-item"><strong>Curso Ativo</strong>{{ aluno['curso'] }}</div>
+                                <div class="ficha-item"><strong>Tipo de Formação</strong>{{ aluno['tipo_curso'] }}</div>
+                                <div class="ficha-item"><strong>Instituição</strong>{{ aluno['instituicao_ensino'] }}</div>
+                                <div class="ficha-item"><strong>Data de Início</strong>{{ aluno['data_inicio'] }}</div>
+                                <div class="ficha-item"><strong>Data de Conclusão</strong>{{ aluno['data_conclusao'] }}</div>
+                                <div class="ficha-item"><strong>Carga Horária Total</strong>{{ aluno['carga_horaria'] }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+
+            </div>
+        </div>
+        
+        <button class="btn-ajuda">
+            <i class="fas fa-comment"></i> Posso ajudar?
+        </button>
+
+    </div>
+
+    <!-- SCRIPTS DE LÓGICA -->
+    <script>
+        // Data
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        let dt = new Date().toLocaleDateString('pt-BR', options);
+        dt = dt.replace('-feira', ''); 
+        document.getElementById('dataAtual').innerText = dt.charAt(0).toUpperCase() + dt.slice(1);
+
+        // Botão Entrar
+        function checarBotao() {
+            var senha = document.getElementById('senha_input').value;
+            var robo = document.getElementById('check_robo').checked;
+            var btn = document.getElementById('btn_entrar');
+
+            if (senha.length > 0 && robo) {
+                btn.style.backgroundColor = '#169b95';
+                btn.style.color = '#ffffff';
+                btn.style.cursor = 'pointer';
+                btn.removeAttribute('disabled');
+            } else {
+                btn.style.backgroundColor = '#e0e0e0';
+                btn.style.color = '#a0a0a0';
+                btn.style.cursor = 'not-allowed';
+                btn.setAttribute('disabled', 'true');
+            }
+        }
+
+        // Lógica de Login
+        var cpfBanco = "{{ aluno['cpf'] }}".replace(/[^\d]/g, "");
+        
+        function validarLogin() {
+            var senhaDigitada = document.getElementById('senha_input').value.replace(/[^\d]/g, "");
+            var msgErro = document.getElementById('msg-erro');
+            
+            if (senhaDigitada === cpfBanco || senhaDigitada === "{{ aluno['cpf'] }}") {
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('tela-painel').style.display = 'flex';
+                history.replaceState({tela: 'login'}, '', window.location.pathname);
+                history.pushState({tela: 'inicio'}, '', '#inicio');
+            } else {
+                msgErro.style.display = 'block';
+                var formBox = document.querySelector('.lado-direito > div');
+                formBox.style.transform = "translateX(5px)";
+                setTimeout(() => formBox.style.transform = "translateX(-5px)", 100);
+                setTimeout(() => formBox.style.transform = "translateX(0)", 200);
+            }
+        }
+
+        document.getElementById('senha_input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && !document.getElementById('btn_entrar').disabled) {
+                validarLogin();
+            }
+        });
+
+        // Lógica de Navegação e Histórico
+        function mostrarDadosAluno() {
+            document.getElementById('view-inicio').style.display = 'none';
+            document.getElementById('view-aluno').style.display = 'block';
+            history.pushState({tela: 'aluno'}, '', '#aluno');
+        }
+
+        function mostrarInicio() {
+            // Se estiver travado pelo QR Code, impede voltar para o início
+            if (window.isQrCodeScan) return;
+            document.getElementById('view-aluno').style.display = 'none';
+            document.getElementById('view-inicio').style.display = 'block';
+            history.pushState({tela: 'inicio'}, '', '#inicio');
+        }
+
+        window.addEventListener('popstate', function(e) {
+            if (window.isQrCodeScan) return; // Mantém travado se veio do QR Code
+            
+            if (e.state && e.state.tela === 'aluno') {
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('tela-painel').style.display = 'flex';
+                document.getElementById('view-inicio').style.display = 'none';
+                document.getElementById('view-aluno').style.display = 'block';
+            } else if (e.state && e.state.tela === 'inicio') {
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('tela-painel').style.display = 'flex';
+                document.getElementById('view-aluno').style.display = 'none';
+                document.getElementById('view-inicio').style.display = 'block';
+            } else {
+                document.getElementById('tela-painel').style.display = 'none';
+                document.getElementById('tela-login').style.display = 'block';
+            }
+        });
+
+        // VERIFICAÇÃO AUTOMÁTICA DE ACESSO VIA QR CODE (TRAVA DE SEGURANÇA)
+        window.addEventListener('DOMContentLoaded', (event) => {
+            if (window.location.pathname.includes('/validacao/')) {
+                window.isQrCodeScan = true; // Ativa a trava
+                
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('tela-painel').style.display = 'flex';
+                document.getElementById('view-inicio').style.display = 'none';
+                document.getElementById('view-aluno').style.display = 'block';
+                
+                // Desativa os cliques do menu lateral livre e do logo superior para o aluno não conseguir sair
+                const itensLivres = document.querySelectorAll('.nav-livre');
+                itensLivres.forEach(item => {
+                    item.style.pointerEvents = 'none';
+                    item.style.opacity = '0.6';
+                    item.style.cursor = 'not-allowed';
+                });
+                
+                const logoHeader = document.getElementById('logo-header');
+                if(logoHeader) {
+                    logoHeader.style.pointerEvents = 'none';
+                }
+
+                history.replaceState({tela: 'aluno'}, '', window.location.href);
+            }
+        });
+    </script>
+</body>
+</html>

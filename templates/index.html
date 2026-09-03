@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="color: #0056b3; text-align: left;">Dashboard Gerencial</h1>
+
+<!-- Caixa de Aviso -->
+<div style="background-color: #2a2a35; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 5px solid #0056b3; text-align: left;">
+    <h3 style="margin-top: 0; color: #fff;">Aviso Importante</h3>
+    <p style="color: #ccc; font-size: 16px; margin-bottom: 0;">
+        Todos os dados detalhados, emissões de XML e geração de documentos de <strong>Graduação e Concursos</strong> estão concentrados exclusivamente na aba <strong>"Informações do aluno"</strong>.
+    </p>
+</div>
+
+<!-- Painéis de Métricas -->
+<div style="display: flex; gap: 20px; justify-content: space-between; margin-bottom: 30px;">
+    
+    <!-- Card: Total de Alunos -->
+    <div style="background-color: #2a2a35; padding: 30px; border-radius: 8px; width: 48%; border-top: 5px solid #28a745; text-align: center; box-sizing: border-box;">
+        <h3 style="margin-top: 0; color: #ccc; text-transform: uppercase; font-size: 14px;">Alunos Cadastrados</h3>
+        <p style="font-size: 56px; font-weight: bold; margin: 10px 0; color: #28a745;">{{ total }}</p>
+    </div>
+
+    <!-- Card: Equipe Autorizada Online -->
+    <div style="background-color: #2a2a35; padding: 30px; border-radius: 8px; width: 48%; border-top: 5px solid #ffc107; text-align: left; box-sizing: border-box;">
+        <h3 style="margin-top: 0; color: #ccc; text-transform: uppercase; font-size: 14px; text-align: center;">Equipe Autorizada Online</h3>
+        <ul style="list-style: none; padding: 0; margin-top: 20px; color: #fff; font-size: 16px;">
+            {% for usuario in ativos %}
+                <li style="margin-bottom: 15px; border-bottom: 1px solid #3a3a45; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="color: #ffc107; margin-right: 10px;">●</span> <strong>{{ usuario.nome }}</strong>
+                        <br>
+                        <small style="color: #888; margin-left: 22px;">{{ usuario.cargo }}</small>
+                        {% if usuario.usuario %}
+                            <small style="color: #17a2b8; margin-left: 5px;">(Login: {{ usuario.usuario }})</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="background-color: #28a745; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;">Permitido</span>
+                        
+                        <!-- Botão Excluir NATIVO: Aparece para todos, menos para o admn -->
+                        {% if usuario.usuario != 'admn' %}
+                            <form method="POST" action="/remover_equipe/{{ usuario.id }}" style="margin: 0;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" style="background-color: #dc3545; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; border: none; cursor: pointer; font-family: inherit; transition: 0.3s;" onmouseover="this.style.backgroundColor='#c82333'" onmouseout="this.style.backgroundColor='#dc3545'" title="Remover Acesso">
+                                    Excluir ❌
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- ==================================================== -->
+<!-- SEÇÃO DE SOLICITAÇÕES PENDENTES                      -->
+<!-- ==================================================== -->
+{% if pendentes %}
+<div style="background-color: #2a2a35; padding: 25px; border-radius: 8px; margin-bottom: 30px; border-top: 5px solid #dc3545; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+    <h3 style="margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px;">
+        ⏳ Solicitações de Acesso Pendentes
+    </h3>
+    <p style="color: #aaa; font-size: 14px; margin-bottom: 20px;">Novos administradores e colaboradores aguardando a sua aprovação.</p>
+    
+    <ul style="list-style: none; padding: 0; margin: 0; color: #fff; font-size: 15px;">
+        {% for pendente in pendentes %}
+        <li style="margin-bottom: 12px; padding-bottom: 15px; border-bottom: 1px solid #3a3a45; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <strong style="color: #fff; font-size: 16px;">{{ pendente.nome }}</strong> 
+                <span style="color: #888;">— {{ pendente.cargo }}</span>
+                <br>
+                <small style="color: #17a2b8; font-weight: 600; margin-left: 0;">Usuário desejado: {{ pendente.usuario }}</small>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <form method="POST" action="/aprovar_equipe/{{ pendente.id }}" style="margin: 0;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" style="background-color: #28a745; color: white; padding: 10px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; font-family: inherit; transition: 0.3s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'">
+                        ✅ Aprovar
+                    </button>
+                </form>
+                
+                <form method="POST" action="/remover_equipe/{{ pendente.id }}" style="margin: 0;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; font-family: inherit; transition: 0.3s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.backgroundColor='#c82333'" onmouseout="this.style.backgroundColor='#dc3545'">
+                        ❌ Recusar
+                    </button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- Barras de Consulta Rápida -->
+<h3 style="color: #0056b3; text-align: left; margin-bottom: 15px;">Links de Consulta Rápida</h3>
+<div style="display: flex; flex-direction: column; gap: 10px;">
+    <a href="/consulta_xml" target="_blank" style="background-color: #2a2a35; padding: 20px; border-radius: 8px; color: white; text-decoration: none; border-left: 5px solid #17a2b8; display: flex; justify-content: space-between; align-items: center; transition: 0.3s;" onmouseover="this.style.backgroundColor='#3a3a45'" onmouseout="this.style.backgroundColor='#2a2a35'">
+        <span style="font-size: 18px; font-weight: bold;">📄 Consulta XML</span>
+        <span style="color: #17a2b8; font-weight: bold;">Acessar ➔</span>
+    </a>
+</div>
+{% endblock %}

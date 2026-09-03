@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+    .select2-container .select2-selection--single { height: 38px !important; border: 1px solid #ccc !important; border-radius: 4px !important; padding-top: 5px !important; }
+    .select2-container--default .select2-selection--single .select2-selection__arrow { top: 6px !important; }
+    .select2-results__option { color: #333 !important; }
+</style>
+
+<h1 style="color: #0056b3;">Cadastro de Aluno / Candidato</h1>
+
+<form method="POST" action="/cadastro" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
+    <h3 style="color: #0056b3; border-bottom: 1px solid #ccc; width: 80%; text-align: left;">Foto do Aluno (195x225)</h3>
+    <div style="width: 195px; height: 225px; border: 2px dashed #0056b3; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #1e1e24; border-radius: 8px; padding: 10px;">
+        <span style="font-size: 12px; color: #aaa; margin-bottom: 5px;">195 x 225 px</span>
+        <input type="file" name="foto_file" accept="image/*" style="font-size: 11px; color: #fff; width: 100%;">
+    </div>
+
+    <h3 style="color: #0056b3; border-bottom: 1px solid #ccc; width: 80%; text-align: left; margin-top: 10px;">Documento de Identidade & Dados Pessoais</h3>
+    <input type="text" name="nome" placeholder="Nome Completo" required>
+    <input type="text" name="cpf" placeholder="CPF (apenas números)" required>
+    
+    <div style="width: 60%; max-width: 500px; display: flex; gap: 10px;">
+        <input type="text" name="rg" placeholder="Número do RG" style="flex: 2;" required>
+        <input type="text" name="orgao_rg" placeholder="Órgão Emissor (ex: SSP/GO)" style="flex: 1;" required>
+    </div>
+
+    <div style="width: 60%; max-width: 500px; text-align: left;">
+        <label style="font-size: 14px; color: #ccc;">Data de Expedição do RG</label>
+        <input type="date" name="data_expedicao" style="width: 100%; box-sizing: border-box;" required>
+    </div>
+
+    <div style="width: 60%; max-width: 500px; text-align: left;">
+        <label style="font-size: 14px; color: #ccc;">Data de Nascimento</label>
+        <input type="date" name="data_nascimento" style="width: 100%; box-sizing: border-box;" required>
+    </div>
+
+    <input type="text" name="naturalidade" placeholder="Naturalidade (Cidade/UF)" required>
+    <input type="text" name="filiacao" placeholder="Filiação (Nome dos Pais)" required>
+    <input type="text" name="endereco" placeholder="Endereço Atual Completo (Rua, Nº, Bairro, Cidade/UF)" required>
+
+    <h3 style="color: #0056b3; border-bottom: 1px solid #ccc; width: 80%; text-align: left; margin-top: 20px;">Formação / Concurso</h3>
+    
+    <select name="tipo_curso" id="tipo_curso" onchange="alternarCampos()" required>
+        <option value="" disabled selected>Selecione o Tipo de Categoria</option>
+        <option value="Bacharelado">Bacharelado</option>
+        <option value="Licenciatura">Licenciatura</option>
+        <option value="Tecnologia">Tecnologia</option>
+        <option value="Concurso Público">Concurso Público</option>
+        <option value="Concurso Privado">Concurso Privado</option>
+    </select>
+
+    <input type="text" name="curso" placeholder="Nome do Curso ou Concurso..." required>
+    
+    <!-- CAMPOS EXCLUSIVOS DE GRADUAÇÃO -->
+    <div id="secao_graduacao" style="width: 60%; max-width: 500px; display: none; flex-direction: column; gap: 15px;">
+        
+        <!-- CAIXA DE SELEÇÃO DA FACULDADE ATUALIZADA COM AS AUTOMAÇÕES -->
+        <div style="text-align: left; background-color: #2a2a35; padding: 15px; border-radius: 5px; border: 1px solid #4da6ff;">
+            <label style="color: #4da6ff; font-weight: bold; font-size: 15px;">Portal da Faculdade (Automação QR Code)</label>
+            <p style="font-size: 11px; color: #aaa; margin: 5px 0 10px 0;">Selecione a faculdade para definir qual tela o QR Code irá abrir.</p>
+            <select name="faculdade_slug" id="seletor_faculdade" style="width: 100%;" required>
+                <option value=""></option> <!-- Necessário para o placeholder do Select2 funcionar -->
+                <option value="unip">🟥 UNIP - Universidade Paulista (Abre: Meus Dados)</option>
+                <option value="sia_estacio_br">🟦 Estácio (SIA) (Abre: Pasta do Aluno)</option>
+                <option value="puc_go">🏛️ PUC - Goiás (PUC-GO) (Abre: Validação Padrão)</option>
+            </select>
+        </div>
+
+        <input type="text" name="grau_academico" placeholder="Grau Acadêmico (ex: Bacharel em Administração)">
+        <input type="text" name="instituicao_ensino" placeholder="Identificação da Instituição de Ensino">
+        <input type="text" name="registro_validacao" placeholder="Número de Registro de Validação do Diploma">
+        
+        <div style="background-color: #2a2a35; padding: 15px; border-radius: 5px; border: 1px solid #444; display: flex; flex-direction: column; gap: 10px;">
+            <label style="color: #4da6ff; font-weight: bold; font-size: 14px;">Arquivos do Diploma e Documentos</label>
+            
+            <div style="display: flex; flex-direction: column; gap: 3px;">
+                <label style="font-size: 12px; color: #ccc;">Diploma FRENTE:</label>
+                <input type="file" id="grad_frente_file" name="diploma_frente_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 5px;">
+                <label style="font-size: 12px; color: #ccc;">Diploma VERSO:</label>
+                <input type="file" id="grad_verso_file" name="diploma_verso_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 10px;">
+                <label style="font-size: 12px; color: #ccc;">Certificado de Conclusão: <span style="color:#28a745;">(Vários)</span></label>
+                <input type="file" name="certificado_file" accept=".pdf,image/*" multiple style="color: #fff; font-size: 12px;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 5px;">
+                <label style="font-size: 12px; color: #ccc;">Histórico Escolar: <span style="color:#28a745;">(Vários)</span></label>
+                <input type="file" name="historico_file" accept=".pdf,image/*" multiple style="color: #fff; font-size: 12px;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 5px;">
+                <label style="font-size: 12px; color: #ccc;">Outros (Trabalhos): <span style="color:#28a745;">(Vários)</span></label>
+                <input type="file" name="outros_file" accept=".pdf,image/*" multiple style="color: #fff; font-size: 12px;">
+            </div>
+        </div>
+
+        <div style="text-align: left; background-color: #2a2a35; padding: 10px; border-radius: 5px;">
+            <label style="color: #ccc; font-size: 14px;">Gerar QR Code no verso do documento?</label>
+            <select name="gerar_qrcode" style="width: 100%; margin-top: 5px;">
+                <option value="Sim">Sim</option>
+                <option value="Não" selected>Não</option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <div style="flex: 1; text-align: left;">
+                <label style="font-size: 14px; color: #ccc;">Data de Início</label>
+                <input type="date" name="data_inicio" style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div style="flex: 1; text-align: left;">
+                <label style="font-size: 14px; color: #ccc;">Data de Conclusão</label>
+                <input type="date" name="data_conclusao" style="width: 100%; box-sizing: border-box;">
+            </div>
+        </div>
+        <input type="text" name="carga_horaria" placeholder="Carga Horária (ex: 3600h)">
+    </div>
+
+    <!-- CAMPOS EXCLUSIVOS DE CONCURSO -->
+    <div id="secao_concurso" style="width: 60%; max-width: 500px; display: none; flex-direction: column; gap: 15px;">
+        
+        <div style="text-align: left;">
+            <label style="font-size: 14px; color: #ccc;">Esfera do Concurso</label>
+            <select name="esfera_concurso" id="esfera_concurso" onchange="alternarEsfera()" style="width: 100%; margin-top: 5px; padding: 10px;">
+                <option value="Federal" selected>Federal</option>
+                <option value="Estadual">Estadual</option>
+                <option value="Municipal">Municipal</option>
+            </select>
+        </div>
+        
+        <div id="div_local_esfera" style="display: none; width: 100%;">
+            <input type="text" name="local_esfera" id="local_esfera" placeholder="Nome do Estado ou Município" style="width: 100%; box-sizing: border-box;">
+        </div>
+
+        <input type="text" name="edital_concurso" placeholder="Número ou Nome do Edital (ex: Edital nº 01/2026)">
+        
+        <div style="text-align: left;">
+            <label style="font-size: 14px; color: #ccc;">Data da Homologação</label>
+            <input type="date" name="data_homologacao" style="width: 100%; box-sizing: border-box;">
+        </div>
+
+        <input type="text" name="dados_nomeacao" placeholder="Link do Diário Oficial (DOU)">
+        
+        <div style="display: flex; gap: 10px;">
+            <div style="flex: 1; text-align: left;">
+                <label style="font-size: 14px; color: #ccc;">Data da Posse</label>
+                <input type="date" name="data_posse" style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div style="flex: 1; text-align: left;">
+                <label style="font-size: 14px; color: #ccc;">Data de Início do Exercício</label>
+                <input type="date" name="data_exercicio" style="width: 100%; box-sizing: border-box;">
+            </div>
+        </div>
+
+        <div style="background-color: #2a2a35; padding: 15px; border-radius: 5px; border: 1px solid #444; display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            <label style="color: #4da6ff; font-weight: bold; font-size: 14px;">Upload de Documentos Manuais (Opcional)</label>
+            <p style="font-size: 11px; color: #aaa; margin: -5px 0 5px 0;">Se não enviar arquivos, o sistema gerará os Termos automaticamente.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 3px;">
+                <label style="font-size: 12px; color: #ccc;">Termo de Posse Assinado:</label>
+                <input type="file" id="conc_posse_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 5px;">
+                <label style="font-size: 12px; color: #ccc;">Termo de Exercício Assinado:</label>
+                <input type="file" id="conc_exercicio_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
+            </div>
+        </div>
+    </div>
+    
+    <input type="text" name="matricula" placeholder="Número da Matrícula ou Inscrição" required>
+
+    <h3 style="color: #0056b3; border-bottom: 1px solid #ccc; width: 80%; text-align: left; margin-top: 20px;">Registro Profissional (Conselhos)</h3>
+    <div style="width: 60%; max-width: 500px; text-align: left; background-color: #2a2a35; padding: 15px; border-radius: 5px; border: 1px solid #4da6ff;">
+        <label style="color: #4da6ff; font-weight: bold; font-size: 15px;">Layout da Consulta do Conselho</label>
+        <p style="font-size: 11px; color: #aaa; margin: 5px 0 10px 0;">Pesquise e selecione a tela do conselho.</p>
+        <select name="orgao" id="seletor_orgao" style="width: 100%;">
+            <option value="">Nenhum / Não se aplica</option>
+            <option value="oab">⚖️ OAB - Cadastro Nacional (CNA)</option>
+        </select>
+    </div>
+    
+    <input type="text" name="numero_registro" placeholder="Número de Registro no Órgão">
+    <input type="text" name="uf_registro" placeholder="Estado (UF) do Registro">
+
+    <button type="submit" style="padding: 15px 30px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px; width: 60%; max-width: 500px; font-weight: bold;">Salvar Cadastro</button>
+</form>
+
+<script>
+    function alternarEsfera() {
+        var esfera = document.getElementById('esfera_concurso').value;
+        var divLocal = document.getElementById('div_local_esfera');
+        var inputLocal = document.getElementById('local_esfera');
+
+        if (esfera === 'Estadual') {
+            divLocal.style.display = 'block';
+            inputLocal.placeholder = "Sigla do Estado (ex: GO, SP, MG)";
+            inputLocal.required = true;
+        } else if (esfera === 'Municipal') {
+            divLocal.style.display = 'block';
+            inputLocal.placeholder = "Nome do Município e UF (ex: Goiânia/GO)";
+            inputLocal.required = true;
+        } else {
+            divLocal.style.display = 'none';
+            inputLocal.value = "";
+            inputLocal.required = false;
+        }
+    }
+
+    function alternarCampos() {
+        var tipo = document.getElementById('tipo_curso').value;
+        var secaoGrad = document.getElementById('secao_graduacao');
+        var secaoConc = document.getElementById('secao_concurso');
+        
+        var gradFrente = document.getElementById('grad_frente_file');
+        var gradVerso = document.getElementById('grad_verso_file');
+        var concPosse = document.getElementById('conc_posse_file');
+        var concExercicio = document.getElementById('conc_exercicio_file');
+
+        if (tipo === 'Bacharelado' || tipo === 'Licenciatura' || tipo === 'Tecnologia') {
+            secaoGrad.style.display = 'flex'; secaoConc.style.display = 'none';
+            if (gradFrente) gradFrente.name = "diploma_frente_file";
+            if (gradVerso) gradVerso.name = "diploma_verso_file";
+            if (concPosse) concPosse.removeAttribute("name");
+            if (concExercicio) concExercicio.removeAttribute("name");
+        } else if (tipo === 'Concurso Público' || tipo === 'Concurso Privado') {
+            secaoGrad.style.display = 'none'; secaoConc.style.display = 'flex';
+            if (concPosse) concPosse.name = "diploma_frente_file";
+            if (concExercicio) concExercicio.name = "diploma_verso_file";
+            if (gradFrente) gradFrente.removeAttribute("name");
+            if (gradVerso) gradVerso.removeAttribute("name");
+        } else {
+            secaoGrad.style.display = 'none'; secaoConc.style.display = 'none';
+        }
+    }
+    
+    $(document).ready(function() {
+        $('#seletor_faculdade').select2({ placeholder: "Pesquise ou selecione a faculdade do aluno...", allowClear: true });
+        $('#seletor_orgao').select2({ placeholder: "Pesquise o conselho...", allowClear: true });
+        alternarCampos();
+        alternarEsfera();
+    });
+</script>
+{% endblock %}

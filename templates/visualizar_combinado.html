@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualizar Documentos - {{ aluno['nome'] }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #e9ecef; margin: 0; padding: 20px; }
+        .folha { background: white; max-width: 900px; margin: 0 auto; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        
+        .cabecalho { border-bottom: 2px solid #0056b3; padding-bottom: 20px; margin-bottom: 20px; display: flex; gap: 20px; align-items: center; }
+        .foto { width: 110px; height: 135px; object-fit: cover; border: 1px solid #ccc; }
+        .dados p { margin: 5px 0; color: #333; font-size: 14px; }
+        .dados strong { color: #000; }
+        
+        .doc-container { margin-top: 40px; border-top: 2px dashed #ccc; padding-top: 20px; text-align: center; }
+        iframe { width: 100%; height: 800px; border: 1px solid #ddd; background: #f9f9f9; }
+        
+        .btn { background-color: #0056b3; color: white; border: none; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="folha">
+        <!-- TELA EM BRANCO COM OS DADOS DO ALUNO NO TOPO -->
+        <div class="cabecalho">
+            {% if aluno['foto'] %}
+                <img src="{{ url_for('static', filename='uploads/' + aluno['foto']) }}" class="foto">
+            {% else %}
+                <div class="foto" style="background:#eee; display:flex; align-items:center; justify-content:center; color:#777; font-size: 12px;">Sem Foto</div>
+            {% endif %}
+            
+            <div class="dados">
+                <h2 style="color: #0056b3; margin-top: 0; text-transform: uppercase;">{{ aluno['nome'] }}</h2>
+                <p><strong>CPF:</strong> {{ aluno['cpf'] }} &nbsp;|&nbsp; <strong>RG:</strong> {{ aluno['rg'] }}</p>
+                <p><strong>Curso / Formação:</strong> {{ aluno['curso'] }}</p>
+                <p><strong>Matrícula:</strong> {{ aluno['matricula'] }}</p>
+                <p><strong>Instituição:</strong> {{ aluno['instituicao_ensino'] or 'Não informada' }}</p>
+                <p><strong>Categoria Solicitada:</strong> <span style="color: #28a745; font-weight: bold;">{{ titulo_doc }}</span></p>
+            </div>
+        </div>
+
+        <!-- SE HOUVER ARQUIVOS CADASTRADOS, ELES APARECEM AQUI EMBAIXO -->
+        {% if filenames %}
+            {% for f in filenames %}
+            <div class="doc-container">
+                <h3 style="color: #0056b3; text-align: left;">Página / Arquivo {{ loop.index }}</h3>
+                <iframe src="{{ url_for('static', filename='uploads/' + f) }}"></iframe>
+                <br>
+                <a href="{{ url_for('download_file', filename=f) }}" class="btn" target="_blank">⬇ Baixar Arquivo {{ loop.index }}</a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="doc-container">
+                <div style="padding: 40px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 5px; font-weight: bold;">
+                    ⚠️ Nenhum arquivo foi anexado no painel de cadastro para esta categoria.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>

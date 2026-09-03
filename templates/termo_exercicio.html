@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Termo de Exercício - {{ aluno['nome'] }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rawline:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #f2f2f2; font-family: 'Rawline', sans-serif; color: #333; padding: 40px; }
+        .document-container { max-width: 800px; background: #fff; margin: 0 auto; padding: 60px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 6px solid #2e8b57; }
+        .header-gov { text-align: center; margin-bottom: 40px; border-bottom: 1px solid #ddd; padding-bottom: 20px; }
+        .header-gov h2 { font-size: 18px; color: #2e8b57; text-transform: uppercase; margin-bottom: 5px; }
+        h1 { text-align: center; font-size: 22px; color: #1d2b64; margin-bottom: 30px; text-transform: uppercase; }
+        .content { font-size: 15px; line-height: 1.8; text-align: justify; margin-bottom: 40px; }
+        .signatures { display: flex; justify-content: space-between; margin-top: 60px; text-align: center; }
+        .signature-box { width: 45%; }
+        .signature-line { border-top: 1px solid #333; margin-top: 60px; padding-top: 10px; font-weight: 600; }
+        .btn-print { display: block; margin: 30px auto 0; background-color: #2e8b57; color: white; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-weight: bold; }
+        @media print { .btn-print { display: none; } body { padding: 0; background: #fff; } .document-container { box-shadow: none; border: none; padding: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="document-container">
+        <div class="header-gov">
+            <h2>
+                Serviço Público 
+                {% if aluno['esfera_concurso'] == 'Estadual' %}
+                    Estadual - {{ aluno['local_esfera'] }}
+                {% elif aluno['esfera_concurso'] == 'Municipal' %}
+                    Municipal - {{ aluno['local_esfera'] }}
+                {% else %}
+                    Federal
+                {% endif %}
+            </h2>
+            <p>Documentação de Investidura</p>
+        </div>
+        <h1>Termo de Exercício</h1>
+        <div class="content">
+            <p>
+                Na data de <strong>{{ aluno['data_exercicio'] }}</strong>, o(a) Senhor(a) <strong>{{ aluno['nome'] }}</strong>, 
+                portador(a) da Cédula de Identidade RG nº <strong>{{ aluno['rg'] }}</strong> e inscrito(a) 
+                no CPF sob o nº <strong>{{ aluno['cpf'] }}</strong>, empossado(a) no cargo efetivo de 
+                <strong>{{ aluno['curso'] }}</strong>, entra, nesta data, em efetivo exercício das atribuições inerentes ao seu cargo, 
+                conforme estabelece o Regime Jurídico vigente.
+            </p>
+            <p>Para constar, lavrou-se o presente termo que vai assinado pela chefia imediata e pelo(a) servidor(a).</p>
+        </div>
+        <div class="signatures">
+            <div class="signature-box"><div class="signature-line">Chefia Imediata / Lotação</div></div>
+            <div class="signature-box"><div class="signature-line">{{ aluno['nome'] }}</div><p>Servidor(a) em Exercício</p></div>
+        </div>
+        <button class="btn-print" onclick="window.print()">Imprimir / PDF</button>
+    </div>
+</body>
+</html>

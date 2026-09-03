@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro Nacional - OAB Nacional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        body { background-color: #f4f5f7; display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* HEADER AZUL OFICIAL DA OAB */
+        .header { background-color: #0c2340; color: white; display: flex; justify-content: space-between; align-items: center; padding: 18px 45px; }
+        .logos { display: flex; align-items: center; gap: 24px; }
+        
+        .logo-cna { display: flex; align-items: center; gap: 14px; border-right: 1px solid #203a5f; padding-right: 24px; }
+        .logo-cna-icon { width: 38px; height: 38px; border: 2px solid white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; }
+        .logo-cna-text { display: flex; flex-direction: column; line-height: 1.1; }
+        .logo-cna-text strong { font-size: 26px; font-weight: 700; letter-spacing: 0.5px; }
+        .logo-cna-text span { font-size: 7px; color: #a1b5c9; letter-spacing: 0.5px; text-transform: uppercase; }
+
+        .logo-oab { font-size: 32px; font-weight: 900; letter-spacing: -1px; display: flex; align-items: baseline; gap: 6px; }
+        .logo-oab span { font-size: 11px; font-weight: 500; color: #a1b5c9; letter-spacing: 0.5px; }
+        
+        .header-menu { display: flex; gap: 30px; font-size: 14px; font-weight: 500; color: #d0dbe5; }
+        .header-menu a { color: inherit; text-decoration: none; cursor: pointer; }
+        .header-menu a:hover { color: white; }
+
+        /* CONTAINER PRINCIPAL */
+        .main-container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 60px 20px 40px 20px; }
+        
+        .title-section { text-align: center; margin-bottom: 35px; width: 100%; max-width: 600px; }
+        .title-section h1 { font-size: 28px; color: #111; font-weight: 700; margin-bottom: 8px; }
+        .title-section p { font-size: 13px; color: #555; line-height: 1.4; }
+
+        /* FORMULÁRIO DE PESQUISA */
+        .search-form { width: 100%; max-width: 580px; display: flex; flex-direction: column; gap: 14px; }
+        
+        .form-input { width: 100%; padding: 15px 16px; border: 1px solid #ced4da; border-radius: 4px; background-color: #e9ecef; font-size: 14px; color: #495057; outline: none; }
+        .form-select { width: 100%; padding: 15px 16px; border: 1px solid #ced4da; border-radius: 4px; background-color: #e9ecef; font-size: 14px; color: #495057; outline: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23495057%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 10px auto; }
+        
+        .btn-pesquisar { width: 100%; padding: 15px; border: none; border-radius: 4px; background-color: #cbd3da; color: #6c757d; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s; text-align: center; }
+        .btn-pesquisar:hover { background-color: #0c2340; color: white; }
+
+        /* SESSÃO DE APPS */
+        .apps-section { margin-top: 45px; text-align: center; }
+        .apps-section p { font-size: 11px; color: #6c757d; margin-bottom: 8px; }
+        .apps-badges { display: flex; gap: 10px; justify-content: center; }
+        
+        .app-btn { background-color: #000; color: white; border-radius: 6px; padding: 6px 14px; display: flex; align-items: center; gap: 8px; text-decoration: none; border: 1px solid #222; }
+        .app-btn-icon { font-size: 20px; line-height: 1; }
+        .app-btn-text { text-align: left; display: flex; flex-direction: column; }
+        .app-btn-text small { font-size: 7px; color: #cccccc; text-transform: uppercase; font-weight: 400; }
+        .app-btn-text span { font-size: 13px; font-weight: bold; line-height: 1.1; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+
+        /* RESULTADO DA CONSULTA */
+        #resultado-consulta { display: none; width: 100%; max-width: 750px; margin-top: 30px; background: white; border: 1px solid #dee2e6; border-radius: 6px; padding: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .resultado-header { font-size: 16px; font-weight: bold; color: #0c2340; border-bottom: 1px solid #e9ecef; padding-bottom: 12px; margin-bottom: 20px; }
+        .resultado-card { display: flex; gap: 25px; align-items: flex-start; }
+        .resultado-foto { width: 110px; height: 145px; border: 1px solid #ced4da; object-fit: cover; border-radius: 3px; }
+        .resultado-dados { flex: 1; }
+        .resultado-nome { font-size: 18px; font-weight: bold; color: #212529; margin-bottom: 15px; text-transform: uppercase; }
+        
+        .dados-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .dado-item label { display: block; font-size: 10px; color: #6c757d; text-transform: uppercase; margin-bottom: 2px; }
+        .dado-item span { font-size: 14px; color: #212529; font-weight: 500; }
+        .badge-regular { background-color: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; display: inline-block; }
+
+        /* FOOTER */
+        .footer { background-color: #e9ecef; border-top: 1px solid #dee2e6; padding: 15px 45px; display: flex; justify-content: space-between; font-size: 10px; color: #6c757d; }
+        .footer-left strong { color: #495057; display: block; margin-bottom: 2px; font-size: 11px; }
+        .footer-link { color: #0056b3; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER IDÊNTICO AO PORTAL OFICIAL -->
+    <header class="header">
+        <div class="logos">
+            <div class="logo-cna">
+                <div class="logo-cna-icon">👤</div>
+                <div class="logo-cna-text">
+                    <strong>CNA</strong>
+                    <span>Cadastro Nacional dos Advogados</span>
+                </div>
+            </div>
+            <div class="logo-oab">OAB <span>NACIONAL</span></div>
+        </div>
+        <div class="header-menu">
+            <a>Cadastro Nacional</a>
+            <a>Sobre o CNA</a>
+            <a>Provimentos</a>
+            <a>Perguntas Frequentes</a>
+        </div>
+    </header>
+
+    <!-- ÁREA CENTRAL -->
+    <main class="main-container">
+        
+        <div class="title-section" id="titulo-pesquisa">
+            <h1>Cadastro Nacional dos Advogados</h1>
+            <p>Preencha corretamente os campos abaixo e clique em pesquisar para realizar a consulta.</p>
+        </div>
+
+        <div class="search-form" id="box-pesquisa">
+            <input type="text" class="form-input" value="{{ aluno['nome'] }}" readonly>
+            <input type="text" class="form-input" value="{{ aluno['numero_registro'] }}" readonly>
+            <select class="form-select">
+                <option>Seccional do {{ aluno['uf_registro'] }}</option>
+            </select>
+            <select class="form-select">
+                <option>Todos tipos de inscrições</option>
+            </select>
+            <button class="btn-pesquisar" onclick="mostrarResultado()">Pesquisar</button>
+        </div>
+
+        <div id="resultado-consulta">
+            <div class="resultado-header">Resultado da Pesquisa</div>
+            <div class="resultado-card">
+                {% if aluno['foto'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + aluno['foto']) }}" class="resultado-foto">
+                {% else %}
+                    <div class="resultado-foto" style="background:#eee; display:flex; align-items:center; justify-content:center; color:#999; font-size:11px;">Sem Foto</div>
+                {% endif %}
+                
+                <div class="resultado-dados">
+                    <div class="resultado-nome">{{ aluno['nome'] }}</div>
+                    
+                    <div class="dados-grid">
+                        <div class="dado-item">
+                            <label>Inscrição</label>
+                            <span>{{ aluno['numero_registro'] }}</span>
+                        </div>
+                        <div class="dado-item">
+                            <label>Tipo de Inscrição</label>
+                            <span>Advogado</span>
+                        </div>
+                        <div class="dado-item">
+                            <label>Seccional</label>
+                            <span>OAB / {{ aluno['uf_registro'] }}</span>
+                        </div>
+                        <div class="dado-item">
+                            <label>Situação</label>
+                            <span class="badge-regular">Regular</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="apps-section" id="box-apps">
+            <p>Baixe o App CNA</p>
+            <div class="apps-badges">
+                <div class="app-btn">
+                    <div class="app-btn-icon"></div>
+                    <div class="app-btn-text">
+                        <small>Baixar na</small>
+                        <span>App Store</span>
+                    </div>
+                </div>
+                <div class="app-btn">
+                    <div class="app-btn-icon" style="color: #00ffcc;">▶️</div>
+                    <div class="app-btn-text">
+                        <small>DISPONÍVEL NO</small>
+                        <span>Google Play</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-left">
+            <strong>Conselho Federal da Ordem dos Advogados do Brasil</strong>
+            SAUS Quadra 5 Lote 1 Bloco M - CEP 70070-939 - Brasília DF - Brasil
+        </div>
+        <div>
+            <strong>Telefones</strong><br>
+            (61) 2193-9600 | (61) 99944-5541
+        </div>
+        <div>
+            <br><a href="#" class="footer-link">www.oab.org.br</a>
+        </div>
+    </footer>
+
+    <script>
+        function mostrarResultado() {
+            document.getElementById('titulo-pesquisa').style.display = 'none';
+            document.getElementById('box-pesquisa').style.display = 'none';
+            document.getElementById('box-apps').style.display = 'none';
+            document.getElementById('resultado-consulta').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

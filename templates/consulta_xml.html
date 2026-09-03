@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificação de conformidade - Ministério da Educação</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rawline:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-blue: #1351b4;
+            --gov-dark-blue: #1d2b64;
+            --gov-green: #2e8b57;
+            --gov-light-green: #e6f3e6;
+            --text-dark: #333;
+            --text-gray: #555;
+            --border-color: #ddd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Rawline', sans-serif;
+        }
+        body {
+            background-color: #f2f2f2;
+            color: var(--text-dark);
+        }
+        
+        /* Cabeçalho */
+        .top-header {
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 60px; 
+            border-bottom: 1px solid var(--border-color);
+        }
+        .logo-gov {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            margin-left: 110px; 
+        }
+        .logo-gov img {
+            height: 42px; 
+        }
+        .logo-gov span {
+            font-size: 16px;
+            font-weight: 400; 
+            color: #666; 
+            margin-left: 5px;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 12px;
+            color: var(--gov-blue);
+            font-weight: 400; 
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gov-blue);
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        .btn-entrar {
+            background-color: var(--gov-blue); 
+            padding: 8px 20px;
+            color: #fff; 
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            border-radius: 20px; 
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-entrar:hover {
+            background-color: var(--gov-dark-blue);
+        }
+
+        /* Banner azul */
+        .blue-banner {
+            background-color: var(--gov-blue);
+            color: #fff;
+            padding: 60px 60px 300px 170px; 
+            text-align: left;
+        }
+        .blue-banner h1 {
+            font-size: 34px;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 20px;
+        }
+
+        /* Card Central */
+        .card-container {
+            max-width: 780px; 
+            margin: -230px auto 50px auto; 
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 55px 70px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-container::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0,0,0,0.03) 0%, rgba(255,255,255,0) 60%);
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .card-content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* TELA 1: Upload */
+        #upload-box h2 {
+            font-size: 30px;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        #upload-box p.desc {
+            font-size: 15px;
+            color: #222;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        .icon-diploma-wrapper {
+            margin: 35px 0;
+            display: flex;
+            justify-content: center;
+        }
+        .instruction {
+            font-weight: 700;
+            color: var(--gov-blue);
+            margin-bottom: 25px;
+            font-size: 19px; 
+        }
+        .btn-escolher {
+            background-color: var(--gov-dark-blue);
+            color: #fff;
+            border: none;
+            padding: 14px 38px;
+            border-radius: 40px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.3s;
+        }
+        .btn-escolher:hover {
+            opacity: 0.9;
+        }
+        .btn-verificar {
+            background-color: #e2e2e2;
+            color: #a0a0a0;
+            border: none;
+            padding: 14px 75px;
+            border-radius: 40px;
+            font-size: 17px;
+            font-weight: 700;
+            margin-top: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            cursor: not-allowed;
+            transition: 0.3s;
+        }
+        .btn-verificar.active {
+            background-color: var(--gov-green);
+            color: #fff;
+            cursor: pointer;
+        }
+        .version-text {
+            font-size: 13px;
+            color: #888;
+            margin-top: 50px;
+            font-weight: 500;
+        }
+
+        /* ---------------------------------------------------- */
+        /* ANIMAÇÃO DE LOADING (VERIFICANDO O DOCUMENTO)        */
+        /* ---------------------------------------------------- */
+        #loading-box {
+            text-align: center;
+            padding: 20px 0 40px 0;
+        }
+        #loading-box h2 {
+            font-size: 26px;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        .loading-sub {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .scanner-wrapper {
+            position: relative;
+            width: 150px;
+            height: 110px;
+            margin: 0 auto 15px auto;
+        }
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: -15px;
+            width: calc(100% + 30px);
+            height: 3px;
+            background-color: var(--gov-blue);
+            box-shadow: 0 0 10px var(--gov-blue);
+            animation: scan 2s ease-in-out infinite;
+            z-index: 10;
+        }
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+        .verificando-text {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 40px;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .loading-steps-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        .step-item {
+            font-size: 13px;
+            color: #777;
+            opacity: 0.2; 
+            transition: opacity 0.5s ease;
+        }
+
+        /* ---------------------------------------------------- */
+        /* TELA 2: RESULTADO DA VALIDAÇÃO (FINAL)               */
+        /* ---------------------------------------------------- */
+        .result-header {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 40px;
+            text-align: center;
+            letter-spacing: -0.3px;
+        }
+        .result-header span {
+            color: var(--gov-green); 
+            font-weight: 600;
+        }
+        .info-block {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .info-text {
+            text-align: left;
+            line-height: 1.5;
+        }
+        .info-text p.nome-aluno {
+            font-weight: 800;
+            color: #1a1a1a;
+            font-size: 16px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .info-text p.instituicao-curso {
+            font-weight: 400;
+            color: #444;
+            font-size: 16px;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+        .info-text p.data-text {
+            font-weight: 400;
+            color: #555;
+            font-size: 16px;
+            margin-top: 4px;
+        }
+        .result-desc {
+            font-size: 15px;
+            color: #555;
+            text-align: center;
+            margin-bottom: 45px;
+            font-weight: 400;
+        }
+        .relatorio-title {
+            text-align: center;
+            font-weight: 800;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #1a1a1a;
+        }
+        .relatorio-sub {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        /* Botão Visualizar Documento */
+        .btn-visualizar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto 30px auto;
+            background: #eef2f9;
+            color: var(--gov-dark-blue);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-visualizar:hover {
+            background: #dfe7f5;
+        }
+
+        /* Sistema de Accordions */
+        .accordion {
+            border-top: 1px solid var(--border-color);
+            margin-bottom: 40px;
+            text-align: left;
+        }
+        .acc-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .acc-header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            cursor: pointer;
+            background: #fff;
+            transition: background 0.2s;
+            font-weight: 500;
+            font-size: 15px;
+            color: #555;
+        }
+        .acc-header:hover {
+            background: #fdfdfd;
+        }
+        .check-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 16px;
+            height: 16px;
+            background-color: var(--gov-green);
+            color: white;
+            border-radius: 50%;
+            font-size: 10px;
+            margin-right: 15px;
+        }
+        .acc-chevron {
+            margin-left: auto;
+            font-weight: bold;
+            color: var(--gov-green);
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+        .acc-header.active .acc-chevron {
+            transform: rotate(180deg);
+        }
+        .acc-body {
+            display: none;
+            padding: 20px 20px 20px 52px;
+            background-color: #fcfcfc;
+            font-size: 14px;
+            color: #555;
+            border-top: 1px solid #eee;
+        }
+        .acc-body p {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .acc-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Botões Finais */
+        .bottom-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+        .btn-outline {
+            background: #fff;
+            border: 2px solid var(--border-color);
+            color: var(--gov-blue);
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .btn-solid {
+            background: var(--gov-blue);
+            border: 2px solid var(--gov-blue);
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .btn-solid:hover {
+            opacity: 0.9;
+        }
+        .avaliar-servico {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        .avaliar-servico:hover {
+            color: var(--gov-blue);
+            text-decoration: underline;
+        }
+
+        /* MODAL DOS DIPLOMAS */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; 
+            padding: 30px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 900px;
+            position: relative;
+            text-align: center;
+        }
+        .close-modal {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-modal:hover {
+            color: #000;
+        }
+        .modal-content img, .modal-content embed, .modal-content iframe {
+            max-width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* ---------------------------------------------------- */
+        /* RODAPÉ AJUSTADO E AMPLIADO                           */
+        /* ---------------------------------------------------- */
+        footer {
+            background-color: #ffffff; /* Ajuste: Fundo branco desde a linha superior */
+            padding: 80px 0 0 0; 
+            border-top: 1px solid #e0e0e0;
+        }
+        .footer-gray-section {
+            padding: 0 40px 60px 40px; 
+        }
+        .footer-white-section {
+            background-color: #ffffff; 
+            padding: 0 40px 20px 40px;
+            border-top: 1px solid #ddd; 
+        }
+        .footer-logo {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .footer-logo img {
+            height: 55px; 
+        }
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 30px; 
+            max-width: 1300px; 
+            margin: 0 auto;
+            font-size: 14px; 
+        }
+        .footer-col h4 {
+            color: var(--gov-blue);
+            font-size: 13px;
+            margin-bottom: 20px; 
+            text-transform: uppercase;
+        }
+        .footer-col ul {
+            list-style: none;
+        }
+        .footer-col ul li {
+            margin-bottom: 15px; 
+        }
+        .footer-col ul li a {
+            color: #555;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-col ul li a:hover {
+            color: var(--gov-blue);
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            max-width: 1300px; 
+            margin: 0 auto; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 30px;
+            padding-bottom: 10px;
+        }
+        .redes-sociais {
+            max-width: 600px;
+        }
+        .redes-sociais h4 {
+            font-size: 13px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .redes-sociais a {
+            color: var(--gov-blue);
+            text-decoration: none;
+            font-size: 13px;
+            margin-right: 20px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 10px; 
+        }
+        .redes-sociais a:hover {
+            text-decoration: underline;
+        }
+        .cc-license {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+            padding-bottom: 20px; 
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-header">
+        <div class="logo-gov" onclick="window.open('https://www.gov.br', '_blank')">
+            <img src="https://www.gov.br/++theme++padrao_govbr/img/govbr-logo-large.png" alt="gov.br">
+            <span>Ministério da Educação</span>
+        </div>
+        <div class="nav-links">
+            <a href="https://www.gov.br" target="_blank">Órgãos do Governo</a>
+            <a href="https://www.gov.br" target="_blank">Acesso à Informação</a>
+            <a href="https://www.gov.br" target="_blank">Legislação</a>
+            <a href="https://www.gov.br" target="_blank">Acessibilidade</a>
+            
+            <button class="btn-entrar" onclick="window.open('https://www.gov.br', '_blank')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Entrar </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="blue-banner">
+            <h1>Verificação de conformidade da Estrutura XML do Diploma Digital</h1>
+        </div>
+
+        <div class="card-container">
+            <div class="card-content-wrapper">
+                
+                {% if not aluno %}
+                <div id="upload-box">
+                    <h2>Verificar a estrutura XML do Diploma</h2>
+                    
+                    <p class="desc">Essa ferramenta permite verificar se a structure do arquivo XML do diploma digital está em conformidade com o padrão estabelecido pelo MEC por meio da IN SESU nº1/2020 e suas alterações.</p>
+                    <p class="desc">O conteúdo do arquivo não é validado, para isso é necessário acessar o link do diploma digital disponibilizado pelas IES e acessível pelo Cadastro e-MEC na aba ACERVO ACADÊMICO.</p>
+                    
+                    {% if erro %}
+                        <div style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; text-align: center;">
+                            ⚠️ {{ erro }}
+                        </div>
+                    {% endif %}
+
+                    <div class="icon-diploma-wrapper">
+                        <svg width="130" height="85" viewBox="0 0 130 85" fill="none" stroke="#1d2b64" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M 40 6 L 12 6 C 8.69 6 6 8.69 6 12 L 6 73 C 6 76.31 8.69 79 12 79 L 58 79" />
+                            <path d="M 54 6 L 118 6 C 121.31 6 124 8.69 124 12 L 124 73 C 124 76.31 121.31 79 118 79 L 72 79" />
+                            <path d="M 26 18 L 104 18 L 112 26 L 112 59 L 104 67 L 72 67" />
+                            <path d="M 58 67 L 26 67 L 18 59 L 18 26 L 26 18" />
+                            <line x1="50" y1="32" x2="80" y2="32" />
+                        </svg>
+                    </div>
+
+                    <p class="instruction">Faça upload do arquivo .xml e depois clique em verificar.</p>
+                    
+                    <form method="POST" action="/consulta_xml" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="file" id="arquivo_xml" name="arquivo_xml" accept=".xml, .pdf, image/jpeg, image/jpg, image/png" style="display: none;" onchange="ativarBotaoVerificar()">
+                        
+                        <button type="button" class="btn-escolher" onclick="document.getElementById('arquivo_xml').click()">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="16 16 12 12 8 16"></polyline>
+                                <line x1="12" y1="12" x2="12" y2="21"></line>
+                                <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                <polyline points="16 16 16 16"></polyline>
+                            </svg>
+                            Escolher arquivo
+                        </button>
+                        
+                        <button type="submit" class="btn-verificar" id="btn-verificar" disabled>
+                            Verificar
+                        </button>
+                    </form>
+
+                    <p class="version-text">Versões suportadas: schemas XSD 1.05 e demais anteriores.</p>
+                </div>
+                {% endif %}
+
+                {% if aluno %}
+                
+                <div id="loading-box">
+                    <h2>Análise do documento</h2>
+                    <p class="loading-sub">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        O processo de validação pode demorar alguns instantes
+                    </p>
+                    
+                    <div class="scanner-wrapper">
+                        <div class="scanner-line"></div>
+                        <svg width="150" height="110" viewBox="0 0 150 110" fill="none" stroke="#b0c4de" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M 45 15 L 15 15 C 10 15 8 17 8 22 L 8 75 C 8 80 10 82 15 82 L 75 82" />
+                            <path d="M 60 15 L 125 15 C 130 15 132 17 132 22 L 132 75 C 132 80 130 82 125 82 L 112 82" />
+                            <path d="M 30 28 L 110 28 L 118 36 L 118 64" />
+                            <path d="M 75 70 L 30 70 L 22 62 L 22 36 L 30 28" />
+                            <line x1="50" y1="45" x2="85" y2="45" />
+                        </svg>
+                    </div>
+                    
+                    <div class="verificando-text">Verificando...</div>
+                    
+                    <div class="loading-steps-grid">
+                        <div class="step-item" id="step1">Conformidade da Estrutura</div>
+                        <div class="step-item" id="step2">Tipos de Assinaturas Digitais</div>
+                        <div class="step-item" id="step3">Conformidade das Assinaturas</div>
+                        <div class="step-item" id="step4">Integridade do Arquivo</div>
+                    </div>
+                </div>
+
+                <div id="resultado-validacao" style="display: none;">
+                    
+                    <h2 class="result-header">Diploma Digital <span>em conformidade</span></h2>
+                    
+                    <div class="info-block">
+                        <svg width="150" height="110" viewBox="0 0 150 110" fill="none" stroke="#1d2b64" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M 45 15 L 15 15 C 10 15 8 17 8 22 L 8 75 C 8 80 10 82 15 82 L 75 82" />
+                            <path d="M 60 15 L 125 15 C 130 15 132 17 132 22 L 132 75 C 132 80 130 82 125 82 L 112 82" />
+                            <path d="M 30 28 L 110 28 L 118 36 L 118 64" />
+                            <path d="M 75 70 L 30 70 L 22 62 L 22 36 L 30 28" />
+                            <line x1="50" y1="45" x2="85" y2="45" />
+
+                            <path d="M 92 75 L 92 100 L 100 93 L 108 100 L 108 75" fill="#2e8b57" stroke="#1d2b64" stroke-width="3" stroke-linejoin="miter"/>
+                            <circle cx="100" cy="72" r="17" fill="#fff" stroke="#1d2b64" stroke-width="3"/>
+                            <circle cx="100" cy="72" r="17" stroke="#2e8b57" stroke-width="6"/>
+                            <circle cx="100" cy="72" r="6" fill="#2e8b57" stroke="none"/>
+                        </svg>
+
+                        <div class="info-text">
+                            <p class="nome-aluno">{{ aluno['nome'] }}</p>
+                            <p class="instituicao-curso">{{ aluno['instituicao_ensino'] }}</p>
+                            <p class="instituicao-curso">{{ aluno['curso'] }}</p>
+                            <p class="data-text">Conclusão em {{ aluno['data_conclusao'] }}</p>
+                        </div>
+                    </div>
+
+                    <p class="result-desc">
+                        O documento apresenta conformidade com os requisitos técnicos verificados.
+                    </p>
+
+                    <h3 class="relatorio-title">Relatório da verificação</h3>
+                    <p class="relatorio-sub">Versão do XSD: 1.05</p>
+
+                    <button class="btn-visualizar" onclick="abrirModal()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        Visualizar Documento
+                    </button>
+
+                    <div class="accordion">
+                        <div class="acc-item">
+                            <div class="acc-header" onclick="toggleAcc(this)">
+                                <span class="check-icon">✓</span> Validação da Estrutura do Diploma Digital
+                                <span class="acc-chevron">▼</span>
+                            </div>
+                            <div class="acc-body">
+                                <p><span class="check-icon">✓</span> Estrutura do XML em conformidade</p>
+                            </div>
+                        </div>
+                        
+                        <div class="acc-item">
+                            <div class="acc-header" onclick="toggleAcc(this)">
+                                <span class="check-icon">✓</span> Validação dos Tipos de Assinaturas Digitais
+                                <span class="acc-chevron">▼</span>
+                            </div>
+                            <div class="acc-body">
+                                <p><span class="check-icon">✓</span> Assinatura em Diploma</p>
+                                <p><span class="check-icon">✓</span> Assinatura em DadosDiploma</p>
+                                <p><span class="check-icon">✓</span> Assinatura em DadosRegistro</p>
+                            </div>
+                        </div>
+
+                        <div class="acc-item">
+                            <div class="acc-header" onclick="toggleAcc(this)">
+                                <span class="check-icon">✓</span> Validação de Conformidade das Assinaturas Digitais
+                                <span class="acc-chevron">▼</span>
+                            </div>
+                            <div class="acc-body">
+                                <p><span class="check-icon">✓</span> Assinaturas validadas com sucesso</p>
+                            </div>
+                        </div>
+
+                        <div class="acc-item">
+                            <div class="acc-header" onclick="toggleAcc(this)">
+                                <span class="check-icon">✓</span> Validação da Integridade do Arquivo do Diploma Digital
+                                <span class="acc-chevron">▼</span>
+                            </div>
+                            <div class="acc-body">
+                                <p><span class="check-icon">✓</span> O documento está íntegro</p>
+                            </div>
+                        </div>
+
+                        <div class="acc-item">
+                            <div class="acc-header" onclick="toggleAcc(this)">
+                                <span class="check-icon">✓</span> Código de Validação
+                                <span class="acc-chevron">▼</span>
+                            </div>
+                            <div class="acc-body">
+                                <p><span class="check-icon">✓</span> Válido</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bottom-actions">
+                        <button class="btn-outline" onclick="window.location.href='/consulta_xml'">Nova verificação</button>
+                        
+                        <button class="btn-solid" onclick="window.open('https://www.gov.br', '_blank')">Salvar relatório</button>
+                    </div>
+                    
+                    <div class="avaliar-servico" onclick="window.open('https://www.gov.br/pt-br/participacao-social', '_blank')">
+                        Avaliar Serviço ☆
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-gray-section">
+            <div class="footer-logo">
+                <img src="https://www.gov.br/++theme++padrao_govbr/img/govbr-logo-large.png" alt="gov.br">
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Composição</h4>
+                    <ul>
+                        <li><a href="https://www.gov.br" target="_blank">Competências</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Gabinete do Ministro</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Secretarias</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Estrutura Organizacional</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Canais de Atendimento</h4>
+                    <ul>
+                        <li><a href="https://www.gov.br" target="_blank">Ouvidoria</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Área de imprensa</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Fale Conosco</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Acesso à Informação</h4>
+                    <ul>
+                        <li><a href="https://www.gov.br" target="_blank">Institucional</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Ações e Programas</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Instância Permanente</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Participação Social</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Centrais de Conteúdo</h4>
+                    <ul>
+                        <li><a href="https://www.gov.br" target="_blank">Vídeos</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Áudios</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Fotos</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Aplicativos</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Campanhas</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Sistemas</h4>
+                    <ul>
+                        <li><a href="https://www.gov.br" target="_blank">Sisu</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Prouni</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Fies</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">E-mec</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Verificação de Conformidade Da...</h4>
+                    <ul>
+                        <li><a href="https://www.gov.br" target="_blank">Instituições</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Legislação</a></li>
+                        <li><a href="https://www.gov.br" target="_blank">Perguntas Frequentes</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-white-section">
+            <div class="footer-bottom">
+                <div class="redes-sociais">
+                    <h4>REDES SOCIAIS</h4>
+                    <a href="https://www.gov.br" target="_blank">TWITTER</a>
+                    <a href="https://www.gov.br" target="_blank">YOUTUBE</a>
+                    <a href="https://www.gov.br" target="_blank">FACEBOOK</a>
+                    <a href="https://www.gov.br" target="_blank">FLICKR</a>
+                    <a href="https://www.gov.br" target="_blank">INSTAGRAM</a>
+                    <a href="https://www.gov.br" target="_blank">SOUNDCLOUD</a>
+                </div>
+                
+                <!-- Ajuste: Container com flexbox para alinhar o texto com a bandeira ampliada -->
+                <div style="display: flex; align-items: center;">
+                    <span style="font-size: 19px; color: #555; font-weight: bold; margin-right: 10px;">MINISTÉRIO DA EDUCAÇÃO</span>
+                    <span style="font-size: 38px; line-height: 1;">🇧🇷</span>
+                </div>
+                
+            </div>
+            <div class="cc-license">
+                Todo o conteúdo deste site está publicado sob a licença <a href="https://www.gov.br" target="_blank" style="color:var(--gov-blue); font-weight:bold; text-decoration:none;">Creative Commons Atribuição-SemDerivações 3.0 Não Adaptada.</a>
+            </div>
+        </div>
+    </footer>
+
+    {% if aluno %}
+    <div id="modalDocumento" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="fecharModal()">&times;</span>
+            <h3 style="color: var(--gov-blue); margin-bottom: 20px;">Visualização do Documento Validado</h3>
+            
+            {% if aluno['diploma_frente'] %}
+                <p style="text-align: left; font-weight: bold; color: var(--text-dark); margin-bottom: 10px;">Frente:</p>
+                {% set frente_ext = aluno['diploma_frente']|lower %}
+                {% if frente_ext.endswith('.pdf') %}
+                    <embed src="{{ url_for('static', filename='uploads/' + aluno['diploma_frente']) }}" type="application/pdf" width="100%" height="500px" style="border: 1px solid #ccc; border-radius: 5px;">
+                {% elif frente_ext.endswith('.xml') %}
+                    <iframe src="{{ url_for('static', filename='uploads/' + aluno['diploma_frente']) }}" width="100%" height="400px" style="border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9;"></iframe>
+                {% else %}
+                    <img src="{{ url_for('static', filename='uploads/' + aluno['diploma_frente']) }}" alt="Diploma Frente">
+                {% endif %}
+            {% endif %}
+            
+            {% if aluno['diploma_verso'] %}
+                <p style="text-align: left; font-weight: bold; color: var(--text-dark); margin-top: 15px; margin-bottom: 10px;">Verso:</p>
+                {% set verso_ext = aluno['diploma_verso']|lower %}
+                {% if verso_ext.endswith('.pdf') %}
+                    <embed src="{{ url_for('static', filename='uploads/' + aluno['diploma_verso']) }}" type="application/pdf" width="100%" height="500px" style="border: 1px solid #ccc; border-radius: 5px;">
+                {% elif verso_ext.endswith('.xml') %}
+                    <iframe src="{{ url_for('static', filename='uploads/' + aluno['diploma_verso']) }}" width="100%" height="400px" style="border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9;"></iframe>
+                {% else %}
+                    <img src="{{ url_for('static', filename='uploads/' + aluno['diploma_verso']) }}" alt="Diploma Verso">
+                {% endif %}
+            {% endif %}
+            
+            {% if not aluno['diploma_frente'] and not aluno['diploma_verso'] %}
+                <p style="color: red; font-weight: bold;">Nenhum documento digitalizado consta no arquivo deste aluno.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <script>
+        function ativarBotaoVerificar() {
+            var input = document.getElementById('arquivo_xml');
+            var btn = document.getElementById('btn-verificar');
+            
+            if(input.files.length > 0) {
+                btn.disabled = false;
+                btn.classList.add('active'); 
+            }
+        }
+
+        // Script da Animação do Scanner e Acendimento das Etapas
+        {% if aluno %}
+        document.addEventListener("DOMContentLoaded", function() {
+            var step1 = document.getElementById("step1");
+            var step2 = document.getElementById("step2");
+            var step3 = document.getElementById("step3");
+            var step4 = document.getElementById("step4");
+            var loadingBox = document.getElementById("loading-box");
+            var resultBox = document.getElementById("resultado-validacao");
+
+            if (loadingBox && resultBox) {
+                // Acende as etapas gradualmente
+                setTimeout(function(){ if(step1) step1.style.opacity = "1"; }, 800);
+                setTimeout(function(){ if(step2) step2.style.opacity = "1"; }, 1600);
+                setTimeout(function(){ if(step3) step3.style.opacity = "1"; }, 2400);
+                setTimeout(function(){ if(step4) step4.style.opacity = "1"; }, 3200);
+
+                // Oculta o loading e exibe o resultado final
+                setTimeout(function(){
+                    loadingBox.style.display = "none";
+                    resultBox.style.display = "block";
+                }, 4500); // Exato delay de 4,5 segundos
+            }
+        });
+        {% endif %}
+
+        function toggleAcc(element) {
+            var allHeaders = document.querySelectorAll('.acc-header');
+            var allBodies = document.querySelectorAll('.acc-body');
+            var isActive = element.classList.contains('active');
+            
+            allHeaders.forEach(function(el) { el.classList.remove('active'); });
+            allBodies.forEach(function(el) { el.style.display = 'none'; });
+            
+            if(!isActive) {
+                element.classList.add('active');
+                element.nextElementSibling.style.display = 'block';
+            }
+        }
+
+        var modal = document.getElementById("modalDocumento");
+        function abrirModal() {
+            if(modal) modal.style.display = "block";
+        }
+        function fecharModal() {
+            if(modal) modal.style.display = "none";
+        }
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

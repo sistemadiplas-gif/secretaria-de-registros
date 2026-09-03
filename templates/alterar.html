@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="color: #0056b3; text-align: left;">Buscar Aluno</h1>
+
+<form method="POST" action="/alterar" style="display: flex; gap: 10px; margin-bottom: 30px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="text" name="termo" placeholder="Digite o Nome ou CPF exato..." style="flex: 1;" required>
+    <button type="submit" style="padding: 10px 20px; background-color: #0056b3; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Pesquisar</button>
+</form>
+
+{% if alunos %}
+    <table style="width: 100%; border-collapse: collapse; background-color: #2a2a35; border-radius: 8px; overflow: hidden;">
+        <tr style="background-color: #0056b3; color: white; text-align: left;">
+            <th style="padding: 15px;">Nome</th>
+            <th style="padding: 15px;">CPF</th>
+            <th style="padding: 15px;">Curso</th>
+            <th style="padding: 15px;">Ação</th>
+        </tr>
+        {% for aluno in alunos %}
+        <tr style="border-bottom: 1px solid #3a3a45;">
+            <td style="padding: 15px; color: #ccc;">{{ aluno['nome'] }}</td>
+            <td style="padding: 15px; color: #ccc;">{{ aluno['cpf'] }}</td>
+            <td style="padding: 15px; color: #ccc;">{{ aluno['curso'] }}</td>
+            <td style="padding: 15px;">
+                <a href="/editar/{{ aluno['id'] }}" style="background-color: #ffc107; color: black; padding: 8px 15px; text-decoration: none; border-radius: 5px; font-weight: bold;">Editar Dados</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+{% endblock %}

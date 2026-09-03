@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Restrito | Administração MEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #12141d;
+            --card-bg: #1e212b;
+            --primary-blue: #1351b4;
+            --primary-hover: #0c3882;
+            --text-main: #f8f9fa;
+            --text-muted: #8b92a5;
+            --border-color: #2d313f;
+            --error-bg: #3f1919;
+            --error-text: #ff6b6b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh;
+            background-image: radial-gradient(circle at top right, rgba(19, 81, 180, 0.1), transparent 40%);
+        }
+        
+        .login-wrapper {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 440px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Faixa superior estilo Gov.br */
+        .login-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00a859 33%, #ffd700 33%, #ffd700 66%, #1351b4 66%);
+        }
+
+        .login-content { padding: 45px 40px; }
+
+        .brand-header { text-align: center; margin-bottom: 35px; }
+        .brand-header i { font-size: 42px; color: var(--primary-blue); margin-bottom: 15px; }
+        .brand-header h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 5px; }
+        .brand-header p { font-size: 14px; color: var(--text-muted); font-weight: 400; }
+
+        /* A lógica do Python agora renderiza a div inteira, sem quebrar o CSS */
+        .alert-box {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            border-left: 4px solid var(--error-text);
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group i { 
+            position: absolute; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            left: 16px; 
+            color: #5c6275; 
+            font-size: 15px;
+            transition: color 0.3s;
+        }
+        
+        .input-group input { 
+            width: 100%; 
+            background-color: rgba(0, 0, 0, 0.2); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-main); 
+            padding: 16px 16px 16px 45px; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            outline: none; 
+            transition: all 0.3s; 
+        }
+        
+        .input-group input:focus { 
+            border-color: var(--primary-blue); 
+            box-shadow: 0 0 0 4px rgba(19, 81, 180, 0.15); 
+        }
+        .input-group input:focus + i, .input-group input:not(:placeholder-shown) + i {
+            color: var(--primary-blue);
+        }
+
+        .btn-submit { 
+            width: 100%; 
+            background-color: var(--primary-blue); 
+            color: #fff; 
+            border: none; 
+            padding: 16px; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-submit:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+
+        .footer-links { 
+            margin-top: 30px; 
+            padding-top: 20px; 
+            border-top: 1px solid var(--border-color); 
+            text-align: center; 
+        }
+        .footer-links a { 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            font-size: 13.5px; 
+            font-weight: 500; 
+            transition: color 0.2s; 
+        }
+        .footer-links a:hover { color: var(--text-main); }
+        .footer-links i { margin-right: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="login-content">
+            
+            <div class="brand-header">
+                <i class="fas fa-shield-halved"></i>
+                <h2>MEC Administração</h2>
+                <p>Central de Registros e Certificações</p>
+            </div>
+
+            <!-- Bloco de erro condicional embutido direto no HTML -->
+            {% if erro %}
+            <div class="alert-box">
+                <i class="fas fa-circle-exclamation"></i>
+                <span>{{ erro }}</span>
+            </div>
+            {% endif %}
+
+            <form method="POST" action="/login">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="input-group">
+                    <input type="text" name="usuario" placeholder="Usuário (Ex: admn)" required autocomplete="off">
+                    <i class="fas fa-user"></i>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" name="senha" placeholder="Senha de Acesso" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Acessar Painel <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="footer-links">
+                <a href="/solicitar_acesso"><i class="fas fa-id-card"></i> Equipe interna: Solicitar acesso</a>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
