@@ -99,6 +99,35 @@
         .ficha-item { font-size: 14px; color: #444; }
         .ficha-item strong { color: #222; font-weight: 600; display: block; font-size: 11px; text-transform: uppercase; color: #888; margin-bottom: 4px; }
         .status-badge { display: inline-block; background: #28a745; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+
+        /* ======== INTELIGÊNCIA RESPONSIVA GLOBAL MÓBILE ======== */
+        @media (max-width: 768px) {
+            /* Login empilhável */
+            .row.altura-geral { flex-direction: column !important; }
+            #carousel-container { display: none !important; /* Oculta banner verde gigante no login via celular */ }
+            .lado-direito { height: 100vh !important; }
+            .login-box .card { padding: 20px !important; }
+            
+            /* Painel Interno Móbile */
+            .painel-header { padding: 0 15px !important; }
+            .header-right { gap: 10px !important; }
+            .header-icon { display: none !important; /* Esconde sininhos e balões no topo para ganhar espaço */ }
+            .user-info { border-left: none !important; padding-left: 0 !important; }
+            .user-text .matricula { display: none !important; }
+            
+            .sidebar { display: none !important; /* Esconde menu lateral no celular */ }
+            .main-content { padding: 15px !important; }
+            
+            .banner-placeholder { height: 120px !important; margin-bottom: 20px !important; }
+            .acesso-rapido-title { font-size: 22px !important; }
+            
+            .ficha-aluno-header-azul { padding: 15px 20px !important; flex-direction: column !important; text-align: center; gap: 10px; }
+            .ficha-aluno-header-azul h2 { font-size: 18px !important; }
+            .ficha-aluno-conteudo { padding: 20px !important; }
+            .ficha-grid { grid-template-columns: 1fr !important; gap: 15px !important; }
+            
+            .btn-ajuda { bottom: 15px !important; right: 15px !important; padding: 10px 20px !important; font-size: 12px !important; }
+        }
     </style>
 </head>
 
