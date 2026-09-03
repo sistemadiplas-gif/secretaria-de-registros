@@ -23,9 +23,9 @@
         <div style="margin-bottom: 30px;">
             <label style="color: #ccc; font-size: 20px; font-weight: bold;">Link do Diário Oficial da União:</label>
             <div style="display: flex; gap: 15px; margin-top: 12px;">
-                <input type="text" id="link_dou" value="{{ url_base }}imprensanacional/consulta/{{ aluno['matricula'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
+                <input type="text" id="link_dou" value="{{ url_base['dou'] }}imprensanacional/consulta/{{ aluno['matricula'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
                 <button onclick="copiarLink('link_dou')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
-                <a href="{{ url_base }}imprensanacional/consulta/{{ aluno['matricula'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir DOU</a>
+                <a href="{{ url_base['dou'] }}imprensanacional/consulta/{{ aluno['matricula'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir DOU</a>
             </div>
         </div>
     </div>
@@ -72,7 +72,6 @@
         <div style="margin-bottom: 30px;">
             <label style="color: #ccc; font-size: 20px; font-weight: bold;">Consulta XML:</label>
             <div style="display: flex; gap: 15px; margin-top: 12px;">
-                <!-- AJUSTE AQUI: O input (pra copiar) e o botão (pra abrir) agora usam o domínio oficial do XML para o aluno -->
                 <input type="text" id="link_xml" value="https://verificadordiplomadigitalmecgovbr.com/consulta/xml/{{ aluno['matricula'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
                 <button onclick="copiarLink('link_xml')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
                 <a href="https://verificadordiplomadigitalmecgovbr.com/consulta/xml/{{ aluno['matricula'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
@@ -82,9 +81,9 @@
         <div style="margin-bottom: 30px;">
             <label style="color: #ccc; font-size: 20px; font-weight: bold;">Portal do Aluno:</label>
             <div style="display: flex; gap: 15px; margin-top: 12px;">
-                <input type="text" id="link_portal" value="{{ url_base }}portal_aluno/{{ aluno['matricula'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
+                <input type="text" id="link_portal" value="{{ url_base['portal'] }}portal_aluno/{{ aluno['matricula'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
                 <button onclick="copiarLink('link_portal')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
-                <a href="{{ url_base }}portal_aluno/{{ aluno['matricula'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
+                <a href="{{ url_base['portal'] }}portal_aluno/{{ aluno['matricula'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
             </div>
         </div>
 
@@ -93,8 +92,7 @@
             <label style="color: #ccc; font-size: 20px; font-weight: bold;">Selo de Autenticidade (Padrão Oficial):</label>
             <div style="margin-top: 12px;">
                 
-                {% set slug_seguro = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_go' %}
-                {% set link_da_pasta = url_base ~ 'validacao/' ~ slug_seguro ~ '/' ~ aluno['cpf'] %}
+                {% set link_da_pasta = url_base['validacao'] ~ aluno['cpf'] %}
                 
                 <!-- CAIXA DO SELO COM ID EXATO PARA CAPTURA -->
                 <div id="selo-autenticidade" style="width: 480px; background: #ffffff; border: 2px solid #000; padding: 20px; position: relative; font-family: Arial, sans-serif; box-sizing: border-box; text-align: center; color: #000; margin-bottom: 15px;">
@@ -140,9 +138,9 @@
         <div>
             <label style="color: #ccc; font-size: 20px; font-weight: bold;">Registro Institucional ({{ aluno['orgao'] | upper }}):</label>
             <div style="display: flex; gap: 15px; margin-top: 12px;">
-                <input type="text" id="link_registro" value="{{ url_base }}conselho_oab/{{ aluno['id'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
+                <input type="text" id="link_registro" value="{{ url_base['cna'] }}conselho_oab/{{ aluno['id'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
                 <button onclick="copiarLink('link_registro')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
-                <a href="{{ url_base }}conselho_oab/{{ aluno['id'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
+                <a href="{{ url_base['cna'] }}conselho_oab/{{ aluno['id'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
             </div>
         </div>
         {% else %}
