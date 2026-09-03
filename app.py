@@ -195,31 +195,65 @@ def salvar_multiplos_arquivos(file_storage_list, antigos=''):
 
 
 # ==========================================
-# SISTEMA DE CONTROLE DE ACESSO E SEGURANÇA
+# ROTEADOR DE DOMÍNIOS E SEGURANÇA (FIREWALL)
 # ==========================================
 @app.before_request
-def checar_autenticacao():
+def travar_dominios_e_autenticacao():
   session.modified = True
 
-  rotas_livres = [
-      'login',
-      'solicitar_acesso',
-      'portal_do_aluno_publico',
-      'validacao_qr_code',
-      'consulta_xml',
-      'consulta_xml_direta',
-      'imprensanacional_consulta',
-      'imprensanacional_busca',
-      'download_file',
-      'visualizar_documento',
-      'conselho_oab',
-      'visualizar_qrcode',
-      'gerar_posse',
-      'gerar_exercicio',
-      'static',
-  ]
-  if request.endpoint not in rotas_livres and not session.get('logado'):
-    return redirect(url_for('login'))
+  # Permite carregar arquivos estáticos (CSS, imagens) em qualquer domínio
+  if request.endpoint == 'static':
+    return
+
+  # Pega o domínio que o usuário acessou
+  host = request.host.lower()
+
+  # ---------------------------------------------------------
+  # 1. VALIDADOR DE XML (Trava total no XML)
+  # ---------------------------------------------------------
+  if 'verificadordiplomadigitalmecgovbr' in host:
+    rotas_xml = ['consulta_xml', 'consulta_xml_direta']
+    if request.endpoint not in rotas_xml:
+      return redirect(url_for('consulta_xml'))
+
+  # ---------------------------------------------------------
+  # 2. DIÁRIO OFICIAL / IMPRENSA NACIONAL (Trava total no DOU)
+  # ---------------------------------------------------------
+  elif 'gov.br-mec' in host:
+    rotas_dou = ['imprensanacional_busca', 'imprensanacional_consulta']
+    if request.endpoint not in rotas_dou:
+      return redirect(url_for('imprensanacional_busca'))
+
+  # ---------------------------------------------------------
+  # 3. CNA OAB (Trava total no Conselho)
+  # ---------------------------------------------------------
+  elif 'cna-oab-org-br' in host:
+    if request.endpoint != 'conselho_oab':
+      return "Acesso restrito. Utilize o link com o ID direto da consulta CNA.", 403
+
+  # ---------------------------------------------------------
+  # 4. PORTAIS DAS FACULDADES (Trava nos QR Codes e Portais)
+  # ---------------------------------------------------------
+  elif 'sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'unip-braluno' in host:
+    rotas_portais = [
+        'portal_do_aluno_publico', 'validacao_qr_code', 
+        'visualizar_qrcode', 'visualizar_documento', 'download_file'
+    ]
+    if request.endpoint not in rotas_portais:
+      return "Acesso restrito ao portal do aluno. Utilize o link oficial do seu QR Code ou Matrícula.", 403
+
+  # ---------------------------------------------------------
+  # 5. PAINEL DE CONTROLE PRINCIPAL E AUTENTICAÇÃO
+  # (secretariaderegistrosgovbr.com)
+  # ---------------------------------------------------------
+  else:
+    rotas_livres = [
+        'login', 'solicitar_acesso', 'portal_do_aluno_publico', 'validacao_qr_code', 
+        'consulta_xml', 'consulta_xml_direta', 'imprensanacional_consulta', 'imprensanacional_busca', 
+        'download_file', 'visualizar_documento', 'conselho_oab', 'visualizar_qrcode', 'gerar_posse', 'gerar_exercicio'
+    ]
+    if request.endpoint not in rotas_livres and not session.get('logado'):
+      return redirect(url_for('login'))
 
 
 def somente_admn(f):
@@ -324,11 +358,6 @@ def remover_equipe(id):
 # ==========================================
 @app.route('/')
 def index():
-  # Se o usuário acessar pelo domínio do validador de XML, entrega a consulta direto na raiz!
-  host = request.host.lower()
-  if 'verificadordiplomadigitalmecgovbr' in host:
-    return consulta_xml()
-
   conn = get_db_connection()
   total_alunos = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()[0]
   equipe_ativa = conn.execute(
