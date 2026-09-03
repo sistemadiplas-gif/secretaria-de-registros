@@ -85,18 +85,19 @@
             overflow-y: auto;
         }
 
+        /* AJUSTE: Cabeçalho Azul UNIP */
         .unip-header {
-            background-color: #111111;
-            padding: 5px 30px;
+            background-color: #0f4191; /* Azul escuro oficial em vez de preto */
+            padding: 10px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .unip-header-left { display: flex; align-items: center; }
-        .unip-header-title { font-size: 22px; color: #9ca3af; font-weight: normal; border-left: 1px solid #4b5563; padding-left: 15px; margin-left: 10px; }
+        .unip-header-title { font-size: 22px; color: #ffffff; font-weight: normal; border-left: 1px solid #4c7ba8; padding-left: 15px; margin-left: 15px; }
         .unip-header-right { display: flex; align-items: center; gap: 15px; text-align: right; font-size: 12px; }
-        .unip-user-info { display: flex; flex-direction: column; line-height: 1.5; }
+        .unip-user-info { display: flex; flex-direction: column; line-height: 1.5; color: #ffffff; }
         .btn-sair-header { background-color: #dc2626; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 5px; }
 
         .unip-subnav {
@@ -272,7 +273,7 @@
             /* Ajustes Painel Interno */
             .unip-header { flex-direction: column; gap: 12px; padding: 15px; text-align: center; }
             .unip-header-left, .unip-header-right { flex-direction: column; align-items: center; width: 100%; }
-            .unip-header-title { border-left: none; padding-left: 0; margin-left: 0; margin-top: 10px; border-top: 1px solid #4b5563; padding-top: 10px; width: 100%; }
+            .unip-header-title { border-left: none; padding-left: 0; margin-left: 0; margin-top: 10px; border-top: 1px solid #4c7ba8; padding-top: 10px; width: 100%; }
             .btn-sair-header { margin-top: 10px; justify-content: center; }
             
             .unip-subnav { justify-content: center; flex-wrap: wrap; text-align: center; gap: 15px; }
@@ -334,26 +335,17 @@
     <!-- PAINEL INTERNO COMPLETO -->
     <div id="painel-interno">
         
-        <!-- CABEÇALHO -->
+        <!-- CABEÇALHO ATUALIZADO (Azul e Logo Amarela - CAMINHO LOCAL) -->
         <div class="unip-header">
             <div class="unip-header-left">
-                <!-- Logo Fixa UNIP -->
-                <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; line-height: 1; transform: scale(0.85); transform-origin: left center;">
-                    <div style="font-family: 'Arial Black', Impact, sans-serif; font-size: 42px; font-weight: 900; font-style: italic; color: #fde047; -webkit-text-stroke: 1.5px #000; text-shadow: 2px 2px 0px rgba(0,0,0,0.3); letter-spacing: 1px; margin-left: 15px; margin-bottom: -3px;">
-                        UNIP
-                    </div>
-                    <div style="background-color: #dc2626; padding: 3px 12px; transform: skewX(-15deg);">
-                        <div style="transform: skewX(15deg); color: #ffffff; font-family: Arial, sans-serif; font-size: 11px; font-weight: bold; font-style: italic; letter-spacing: 0.5px;">
-                            UNIVERSIDADE PAULISTA
-                        </div>
-                    </div>
-                </div>
+                <!-- AQUI ENTRA A LOGO AMARELA -->
+                <img src="/static/logo_unip_amarela.png" alt="UNIP" style="height: 35px;">
                 <div class="unip-header-title">Área do(a) aluno(a)</div>
             </div>
             <div class="unip-header-right">
                 <div class="unip-user-info">
-                    <span style="color: #9ca3af;">{{ aluno['nome'] }} | <i class="fa-regular fa-envelope"></i></span>
-                    <span style="color: #3b82f6;">aluno.ra{{ aluno['matricula'] }}@aluno.unip.br</span>
+                    <span style="color: #ffffff;">{{ aluno['nome'] }} | <i class="fa-regular fa-envelope"></i></span>
+                    <span style="color: #fde047;">aluno.ra{{ aluno['matricula'] }}@aluno.unip.br</span>
                 </div>
                 <a href="#" onclick="window.location.reload()" class="btn-sair-header"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
             </div>
