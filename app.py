@@ -61,7 +61,7 @@ ADMIN_SENHA = os.environ.get('ADMIN_SENHA', '992136520Fe.')
 DOMINIOS_MAPA = {
     'painel': 'https://secretariaderegistrosgovbr.com',
     'consulta_xml': 'https://verificadordiplomadigitalmecgovbr.com',
-    'dou': 'https://gov.br-mec.com',
+    'dou': 'https://govbr-mec.com',
     'cna': 'https://cna-oab-org-br.com',
     'estacio': 'https://sia-estaciobr.com',
     'puc': 'https://sol-puc-goias-edubr.com',
@@ -219,7 +219,7 @@ def travar_dominios_e_autenticacao():
   # ---------------------------------------------------------
   # 2. DIÁRIO OFICIAL / IMPRENSA NACIONAL (Trava total no DOU)
   # ---------------------------------------------------------
-  elif 'gov.br-mec' in host:
+  elif 'govbr-mec' in host:
     rotas_dou = ['imprensanacional_busca', 'imprensanacional_consulta']
     if request.endpoint not in rotas_dou:
       return redirect(url_for('imprensanacional_busca'))
