@@ -17,7 +17,7 @@ from flask import (
     session,
     url_for,
 )
-from flask_wtf.CSRFProtect import CSRFProtect
+from flask_wtf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
