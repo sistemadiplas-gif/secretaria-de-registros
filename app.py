@@ -577,6 +577,23 @@ def excluir():
 @app.route('/deletar/<int:id>', methods=['POST'])
 def deletar(id):
   conn = get_db_connection()
+  
+  # Busca os dados antes de apagar para saber os nomes dos arquivos
+  aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  if aluno:
+    colunas_arquivos = ['foto', 'diploma_frente', 'diploma_verso', 'certificado', 'historico', 'outros_docs']
+    for coluna in colunas_arquivos:
+      if aluno[coluna]:
+        arquivos = str(aluno[coluna]).split('|')
+        for arq in arquivos:
+          if arq.strip():
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(arq.strip()))
+            try:
+              if os.path.exists(filepath):
+                os.remove(filepath)
+            except Exception:
+              pass
+              
   conn.execute('DELETE FROM alunos WHERE id = ?', (id,))
   conn.commit()
   conn.close()
@@ -589,6 +606,18 @@ def deletar_todos():
   senha_confirmacao = request.form.get('senha_confirmacao', '')
   if senha_confirmacao != ADMIN_SENHA:
     abort(403)
+    
+  # Apaga todos os arquivos físicos da pasta uploads
+  pasta_uploads = app.config['UPLOAD_FOLDER']
+  if os.path.exists(pasta_uploads):
+    for filename in os.listdir(pasta_uploads):
+      filepath = os.path.join(pasta_uploads, filename)
+      try:
+        if os.path.isfile(filepath):
+          os.remove(filepath)
+      except Exception:
+        pass
+        
   conn = get_db_connection()
   conn.execute('DELETE FROM alunos')
   conn.commit()
