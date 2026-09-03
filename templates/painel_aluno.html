@@ -72,9 +72,10 @@
         <div style="margin-bottom: 30px;">
             <label style="color: #ccc; font-size: 20px; font-weight: bold;">Consulta XML:</label>
             <div style="display: flex; gap: 15px; margin-top: 12px;">
-                <input type="text" id="link_xml" value="{{ url_base }}consulta_xml" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
+                <!-- AJUSTE AQUI: O input (pra copiar) e o botão (pra abrir) agora usam o domínio oficial do XML para o aluno -->
+                <input type="text" id="link_xml" value="https://verificadordiplomadigitalmecgovbr.com/consulta/xml/{{ aluno['matricula'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
                 <button onclick="copiarLink('link_xml')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
-                <a href="{{ url_base }}consulta_xml" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
+                <a href="https://verificadordiplomadigitalmecgovbr.com/consulta/xml/{{ aluno['matricula'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
             </div>
         </div>
 
