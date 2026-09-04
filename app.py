@@ -20,7 +20,7 @@ from flask_wtf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
-import requests  # <-- Adicionado para fazer a requisição de validação do Turnstile
+import requests
 
 # --- NOVAS BIBLIOTECAS PARA O POSTGRESQL ---
 import psycopg2
@@ -35,7 +35,6 @@ app.secret_key = os.environ.get(
     'SECRET_KEY', 'kR9#m2Pq!v8Z$xL5@nW3*yT7^c4F1bN0'
 )
 
-# Proteção CSRF: exige um token válido em todos os formulários POST do sistema.
 csrf = CSRFProtect(app)
 
 EM_PRODUCAO = 'RENDER' in os.environ
@@ -44,7 +43,6 @@ app.config['SESSION_COOKIE_SECURE'] = EM_PRODUCAO
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
-# TEMPO DE SESSÃO AUMENTADO PARA 1 HORA PARA EVITAR QUEDA NO CADASTRO
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.wsgi_app = ProxyFix(
@@ -73,7 +71,6 @@ DOMINIOS_MAPA = {
     'unip': 'https://unip-braluno.com',
 }
 
-
 def obter_url_base_faculdade(slug):
   if slug == 'unip':
     return DOMINIOS_MAPA['unip']
@@ -83,7 +80,6 @@ def obter_url_base_faculdade(slug):
     return DOMINIOS_MAPA['puc']
   else:
     return DOMINIOS_MAPA['puc']
-
 
 @app.after_request
 def aplicar_headers_seguranca(response):
@@ -99,21 +95,22 @@ def aplicar_headers_seguranca(response):
     )
   return response
 
-
 # ==========================================
 # BANCO DE DADOS DEFINITIVO: POSTGRESQL NUVEM
 # ==========================================
-# Substitui o SQLite pelo seu banco real do Render com o link corrigido
-DB_URL = "postgresql://sistema_diplomas_db_user:1HJblo4vj1bqm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
+DB_URL = "postgresql://sistema_diplomas_db_user:lHJblo4vjlbqm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
 
 class PostgresWrapper:
     def _init_(self):
-        self.conn = psycopg2.connect(DB_URL)
-        self.conn.autocommit = False
+        try:
+            self.conn = psycopg2.connect(DB_URL)
+            self.conn.autocommit = False
+        except Exception as e:
+            print("ERRO FATAL NA CONEXÃO COM O BANCO DE DADOS:", e)
+            raise e
 
     def execute(self, query, params=()):
         cur = self.conn.cursor(cursor_factory=DictCursor)
-        # Tradutor mágico: converte a sintaxe do SQLite (?) para PostgreSQL (%s) sem você ter que mudar suas rotas
         pg_query = query.replace('?', '%s')
         cur.execute(pg_query, params)
         return cur
@@ -127,11 +124,9 @@ class PostgresWrapper:
 def get_db_connection():
     return PostgresWrapper()
 
-
 def init_db():
   conn = get_db_connection()
   
-  # Cria as tabelas diretamente no formato PostgreSQL (SERIAL no lugar de AUTOINCREMENT)
   conn.execute('''
         CREATE TABLE IF NOT EXISTS alunos (
             id SERIAL PRIMARY KEY,
@@ -157,9 +152,7 @@ def init_db():
   conn.commit()
   conn.close()
 
-
 init_db()
-
 
 # ==========================================
 # FUNÇÕES DE UPLOAD
@@ -171,7 +164,6 @@ def salvar_arquivo(file_storage):
     file_storage.save(filepath)
     return filename
   return ''
-
 
 def salvar_multiplos_arquivos(file_storage_list, antigos=''):
   nomes_salvos = []
@@ -185,7 +177,6 @@ def salvar_multiplos_arquivos(file_storage_list, antigos=''):
     return '|'.join(nomes_salvos)
   return antigos
 
-
 # ==========================================
 # ROTEADOR DE DOMÍNIOS E SEGURANÇA (FIREWALL)
 # ==========================================
@@ -193,39 +184,25 @@ def salvar_multiplos_arquivos(file_storage_list, antigos=''):
 def travar_dominios_e_autenticacao():
   session.modified = True
 
-  # Permite carregar arquivos estáticos (CSS, imagens) em qualquer domínio
   if request.endpoint == 'static':
     return
 
-  # Pega o domínio que o usuário acessou
   host = request.host.lower()
 
-  # ---------------------------------------------------------
-  # 1. VALIDADOR DE XML (Trava total no XML)
-  # ---------------------------------------------------------
   if 'verificadordiplomadigitalmecgovbr' in host:
     rotas_xml = ['consulta_xml', 'consulta_xml_direta']
     if request.endpoint not in rotas_xml:
       return redirect(url_for('consulta_xml'))
 
-  # ---------------------------------------------------------
-  # 2. DIÁRIO OFICIAL / IMPRENSA NACIONAL (Trava total no DOU)
-  # ---------------------------------------------------------
   elif 'govbr-mec' in host:
     rotas_dou = ['imprensanacional_busca', 'imprensanacional_consulta']
     if request.endpoint not in rotas_dou:
       return redirect(url_for('imprensanacional_busca'))
 
-  # ---------------------------------------------------------
-  # 3. CNA OAB (Trava total no Conselho)
-  # ---------------------------------------------------------
   elif 'cna-oab-org-br' in host:
     if request.endpoint != 'conselho_oab':
       return "Acesso restrito. Utilize o link com o ID direto da consulta CNA.", 403
 
-  # ---------------------------------------------------------
-  # 4. PORTAIS DAS FACULDADES (Trava nos QR Codes e Portais)
-  # ---------------------------------------------------------
   elif 'sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'unip-braluno' in host:
     rotas_portais = [
         'portal_do_aluno_publico', 'validacao_qr_code', 
@@ -234,10 +211,6 @@ def travar_dominios_e_autenticacao():
     if request.endpoint not in rotas_portais:
       return "Acesso restrito ao portal do aluno. Utilize o link oficial do seu QR Code ou Matrícula.", 403
 
-  # ---------------------------------------------------------
-  # 5. PAINEL DE CONTROLE PRINCIPAL E AUTENTICAÇÃO
-  # (secretariaderegistrosgovbr.com)
-  # ---------------------------------------------------------
   else:
     rotas_livres = [
         'login', 'solicitar_acesso', 'portal_do_aluno_publico', 'validacao_qr_code', 
@@ -247,21 +220,17 @@ def travar_dominios_e_autenticacao():
     if request.endpoint not in rotas_livres and not session.get('logado'):
       return redirect(url_for('login'))
 
-
 def somente_admn(f):
   @wraps(f)
   def wrapper(*args, **kwargs):
     if session.get('cargo') != 'admn':
       abort(403)
     return f(*args, **kwargs)
-
   return wrapper
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
   if request.method == 'POST':
-    # --- VALIDAÇÃO DO CLOUDFLARE TURNSTILE ---
     turnstile_token = request.form.get('cf-turnstile-response')
     user_ip = request.remote_addr
 
@@ -277,7 +246,6 @@ def login():
       return render_template(
           'login.html', erro='Confirmação de segurança (Turnstile) falhou. Tente novamente.'
       )
-    # ------------------------------------------
 
     usuario_digitado = request.form.get('usuario', '').strip()
     senha_digitada = request.form.get('senha', '').strip()
@@ -306,12 +274,10 @@ def login():
     )
   return render_template('login.html')
 
-
 @app.route('/logout')
 def logout():
   session.clear()
   return redirect(url_for('login'))
-
 
 @app.route('/solicitar_acesso', methods=['GET', 'POST'])
 def solicitar_acesso():
@@ -340,7 +306,6 @@ def solicitar_acesso():
     conn.close()
   return render_template('solicitar_acesso.html', sucesso=sucesso, erro=erro)
 
-
 @app.route('/aprovar_equipe/<int:id>', methods=['POST'])
 @somente_admn
 def aprovar_equipe(id):
@@ -352,7 +317,6 @@ def aprovar_equipe(id):
   conn.close()
   return redirect(url_for('index'))
 
-
 @app.route('/remover_equipe/<int:id>', methods=['POST'])
 @somente_admn
 def remover_equipe(id):
@@ -361,7 +325,6 @@ def remover_equipe(id):
   conn.commit()
   conn.close()
   return redirect(url_for('index'))
-
 
 # ==========================================
 # ROTAS DO SISTEMA INTERNO
@@ -381,7 +344,6 @@ def index():
       'index.html', total=total_alunos, ativos=equipe_ativa, pendentes=equipe_pendente
   )
 
-
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
   if request.method == 'POST':
@@ -394,19 +356,11 @@ def cadastro():
     outros_files = request.files.getlist('outros_file')
 
     foto = salvar_arquivo(foto_file) or dados.get('foto_antiga', '')
-    diploma_frente = salvar_arquivo(frente_file) or dados.get(
-        'frente_antiga', ''
-    )
+    diploma_frente = salvar_arquivo(frente_file) or dados.get('frente_antiga', '')
     diploma_verso = salvar_arquivo(verso_file) or dados.get('verso_antiga', '')
-    certificado = salvar_multiplos_arquivos(
-        cert_files, dados.get('cert_antigo', '')
-    )
-    historico = salvar_multiplos_arquivos(
-        hist_files, dados.get('hist_antigo', '')
-    )
-    outros_docs = salvar_multiplos_arquivos(
-        outros_files, dados.get('outros_antigo', '')
-    )
+    certificado = salvar_multiplos_arquivos(cert_files, dados.get('cert_antigo', ''))
+    historico = salvar_multiplos_arquivos(hist_files, dados.get('hist_antigo', ''))
+    outros_docs = salvar_multiplos_arquivos(outros_files, dados.get('outros_antigo', ''))
 
     conn = get_db_connection()
     conn.execute(
@@ -421,42 +375,18 @@ def cadastro():
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''',
         (
-            dados['nome'],
-            dados['cpf'],
-            dados['rg'],
-            dados['orgao_rg'],
-            dados['data_expedicao'],
-            dados['data_nascimento'],
-            dados['naturalidade'],
-            dados['filiacao'],
-            dados['endereco'],
-            foto,
-            dados['tipo_curso'],
-            dados['curso'],
-            dados.get('grau_academico', ''),
-            dados.get('instituicao_ensino', ''),
-            dados.get('data_inicio', ''),
-            dados.get('data_conclusao', ''),
-            dados.get('carga_horaria', ''),
-            dados['matricula'],
-            dados.get('registro_validacao', ''),
-            dados.get('gerar_qrcode', 'Não'),
-            diploma_frente,
-            diploma_verso,
-            certificado,
-            historico,
-            outros_docs,
-            dados.get('edital_concurso', ''),
-            dados.get('data_homologacao', ''),
-            dados.get('dados_nomeacao', ''),
-            dados.get('data_posse', ''),
-            dados.get('data_exercicio', ''),
-            dados.get('esfera_concurso', 'Federal'),
-            dados.get('local_esfera', ''),
-            dados.get('orgao', ''),
-            dados.get('numero_registro', ''),
-            dados.get('uf_registro', ''),
-            dados.get('faculdade_slug', ''),
+            dados['nome'], dados['cpf'], dados['rg'], dados['orgao_rg'], dados['data_expedicao'],
+            dados['data_nascimento'], dados['naturalidade'], dados['filiacao'], dados['endereco'], foto,
+            dados['tipo_curso'], dados['curso'], dados.get('grau_academico', ''),
+            dados.get('instituicao_ensino', ''), dados.get('data_inicio', ''),
+            dados.get('data_conclusao', ''), dados.get('carga_horaria', ''), dados['matricula'],
+            dados.get('registro_validacao', ''), dados.get('gerar_qrcode', 'Não'),
+            diploma_frente, diploma_verso, certificado, historico, outros_docs,
+            dados.get('edital_concurso', ''), dados.get('data_homologacao', ''),
+            dados.get('dados_nomeacao', ''), dados.get('data_posse', ''), dados.get('data_exercicio', ''),
+            dados.get('esfera_concurso', 'Federal'), dados.get('local_esfera', ''),
+            dados.get('orgao', ''), dados.get('numero_registro', ''),
+            dados.get('uf_registro', ''), dados.get('faculdade_slug', ''),
         ),
     )
     conn.commit()
@@ -464,7 +394,6 @@ def cadastro():
 
     return redirect(url_for('cadastro'))
   return render_template('cadastro.html')
-
 
 @app.route('/alterar', methods=['GET', 'POST'])
 def alterar():
@@ -479,7 +408,6 @@ def alterar():
     conn.close()
   return render_template('alterar.html', alunos=alunos)
 
-
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
 def editar(id):
   conn = get_db_connection()
@@ -493,19 +421,11 @@ def editar(id):
     outros_files = request.files.getlist('outros_file')
 
     foto = salvar_arquivo(foto_file) or dados.get('foto_antiga', '')
-    diploma_frente = salvar_arquivo(frente_file) or dados.get(
-        'frente_antiga', ''
-    )
+    diploma_frente = salvar_arquivo(frente_file) or dados.get('frente_antiga', '')
     diploma_verso = salvar_arquivo(verso_file) or dados.get('verso_antiga', '')
-    certificado = salvar_multiplos_arquivos(
-        cert_files, dados.get('cert_antigo', '')
-    )
-    historico = salvar_multiplos_arquivos(
-        hist_files, dados.get('hist_antigo', '')
-    )
-    outros_docs = salvar_multiplos_arquivos(
-        outros_files, dados.get('outros_antigo', '')
-    )
+    certificado = salvar_multiplos_arquivos(cert_files, dados.get('cert_antigo', ''))
+    historico = salvar_multiplos_arquivos(hist_files, dados.get('hist_antigo', ''))
+    outros_docs = salvar_multiplos_arquivos(outros_files, dados.get('outros_antigo', ''))
 
     conn.execute(
         '''
@@ -522,42 +442,18 @@ def editar(id):
             WHERE id = ?
         ''',
         (
-            dados['nome'],
-            dados['cpf'],
-            dados['rg'],
-            dados['orgao_rg'],
-            dados['data_expedicao'],
-            dados['data_nascimento'],
-            dados['naturalidade'],
-            dados['filiacao'],
-            dados['endereco'],
-            foto,
-            dados['tipo_curso'],
-            dados['curso'],
-            dados.get('grau_academico', ''),
-            dados.get('instituicao_ensino', ''),
-            dados.get('data_inicio', ''),
-            dados.get('data_conclusao', ''),
-            dados.get('carga_horaria', ''),
-            dados['matricula'],
-            dados.get('registro_validacao', ''),
-            dados.get('gerar_qrcode', 'Não'),
-            diploma_frente,
-            diploma_verso,
-            certificado,
-            historico,
-            outros_docs,
-            dados.get('edital_concurso', ''),
-            dados.get('data_homologacao', ''),
-            dados.get('dados_nomeacao', ''),
-            dados.get('data_posse', ''),
-            dados.get('data_exercicio', ''),
-            dados.get('esfera_concurso', 'Federal'),
-            dados.get('local_esfera', ''),
-            dados.get('orgao', ''),
-            dados.get('numero_registro', ''),
-            dados.get('uf_registro', ''),
-            dados.get('faculdade_slug', ''),
+            dados['nome'], dados['cpf'], dados['rg'], dados['orgao_rg'], dados['data_expedicao'],
+            dados['data_nascimento'], dados['naturalidade'], dados['filiacao'], dados['endereco'], foto,
+            dados['tipo_curso'], dados['curso'], dados.get('grau_academico', ''),
+            dados.get('instituicao_ensino', ''), dados.get('data_inicio', ''),
+            dados.get('data_conclusao', ''), dados.get('carga_horaria', ''), dados['matricula'],
+            dados.get('registro_validacao', ''), dados.get('gerar_qrcode', 'Não'),
+            diploma_frente, diploma_verso, certificado, historico, outros_docs,
+            dados.get('edital_concurso', ''), dados.get('data_homologacao', ''),
+            dados.get('dados_nomeacao', ''), dados.get('data_posse', ''), dados.get('data_exercicio', ''),
+            dados.get('esfera_concurso', 'Federal'), dados.get('local_esfera', ''),
+            dados.get('orgao', ''), dados.get('numero_registro', ''),
+            dados.get('uf_registro', ''), dados.get('faculdade_slug', ''),
             id,
         ),
     )
@@ -568,7 +464,6 @@ def editar(id):
   aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
   conn.close()
   return render_template('editar.html', aluno=aluno)
-
 
 @app.route('/excluir', methods=['GET', 'POST'])
 def excluir():
@@ -583,12 +478,10 @@ def excluir():
     conn.close()
   return render_template('excluir.html', alunos=alunos)
 
-
 @app.route('/deletar/<int:id>', methods=['POST'])
 def deletar(id):
   conn = get_db_connection()
   
-  # Busca os dados antes de apagar para saber os nomes dos arquivos
   aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
   if aluno:
     colunas_arquivos = ['foto', 'diploma_frente', 'diploma_verso', 'certificado', 'historico', 'outros_docs']
@@ -609,7 +502,6 @@ def deletar(id):
   conn.close()
   return redirect(url_for('excluir'))
 
-
 @app.route('/deletar_todos', methods=['POST'])
 @somente_admn
 def deletar_todos():
@@ -617,7 +509,6 @@ def deletar_todos():
   if senha_confirmacao != ADMIN_SENHA:
     abort(403)
     
-  # Apaga todos os arquivos físicos da pasta uploads
   pasta_uploads = app.config['UPLOAD_FOLDER']
   if os.path.exists(pasta_uploads):
     for filename in os.listdir(pasta_uploads):
@@ -633,7 +524,6 @@ def deletar_todos():
   conn.commit()
   conn.close()
   return redirect(url_for('excluir'))
-
 
 @app.route('/informacoes/<tipo>', methods=['GET', 'POST'])
 def informacoes(tipo):
@@ -660,7 +550,6 @@ def informacoes(tipo):
       'informacoes.html', alunos=alunos, tipo=tipo, titulo=titulo
   )
 
-
 @app.route('/painel_aluno/<int:id>')
 def painel_aluno(id):
   conn = get_db_connection()
@@ -669,7 +558,6 @@ def painel_aluno(id):
   if not aluno:
     return 'Aluno não encontrado.', 404
 
-  # Injeta URLs base personalizadas e separadas por domínio no painel do aluno
   slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_go'
   dominio_faculdade = obter_url_base_faculdade(slug)
 
@@ -684,11 +572,9 @@ def painel_aluno(id):
 
   return render_template('painel_aluno.html', aluno=aluno, url_base=url_base_custom)
 
-
 # ==========================================
 # ROTAS PÚBLICAS (PORTAIS, QR CODE E CONSULTAS)
 # ==========================================
-
 
 @app.route('/portal_aluno/<matricula>', methods=['GET', 'POST'])
 def portal_do_aluno_publico(matricula):
@@ -742,7 +628,6 @@ def portal_do_aluno_publico(matricula):
           404,
       )
 
-
 @app.route('/validacao/<faculdade_slug>/<cpf>')
 def validacao_qr_code(faculdade_slug, cpf):
   conn = get_db_connection()
@@ -776,7 +661,6 @@ def validacao_qr_code(faculdade_slug, cpf):
     except:
       return 'Arquivo de portal não encontrado na pasta templates/portais.', 404
 
-
 @app.route('/visualizar_qrcode/<cpf>')
 def visualizar_qrcode(cpf):
   conn = get_db_connection()
@@ -788,7 +672,6 @@ def visualizar_qrcode(cpf):
   slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_go'
   dominio_alvo = obter_url_base_faculdade(slug)
   return redirect(f'{dominio_alvo}/validacao/{slug}/{cpf}', code=301)
-
 
 @app.route('/consulta_xml', methods=['GET', 'POST'])
 def consulta_xml():
@@ -831,7 +714,6 @@ def consulta_xml():
       erro = 'Nenhum arquivo selecionado.'
   return render_template('consulta_xml.html', aluno=aluno, erro=erro)
 
-
 @app.route('/consulta/xml/<matricula>')
 def consulta_xml_direta(matricula):
   conn = get_db_connection()
@@ -842,7 +724,6 @@ def consulta_xml_direta(matricula):
   if not aluno:
     return 'Matrícula não encontrada.', 404
   return render_template('consulta_xml.html', aluno=aluno, erro=None)
-
 
 @app.route('/imprensanacional/consulta/<matricula>')
 def imprensanacional_consulta(matricula):
@@ -859,7 +740,6 @@ def imprensanacional_consulta(matricula):
       url_base=DOMINIOS_MAPA['dou'] + '/',
   )
 
-
 @app.route('/imprensanacional/busca')
 def imprensanacional_busca():
   termo = request.args.get('q', '')
@@ -868,13 +748,11 @@ def imprensanacional_busca():
       f' {termo}</h2></div>'
   )
 
-
 @app.route('/download/<filename>')
 def download_file(filename):
   return send_from_directory(
       app.config['UPLOAD_FOLDER'], secure_filename(filename), as_attachment=True
   )
-
 
 @app.route('/visualizar_documento/<int:aluno_id>/<tipo_doc>')
 def visualizar_documento(aluno_id, tipo_doc):
@@ -903,7 +781,6 @@ def visualizar_documento(aluno_id, tipo_doc):
       titulo_doc=titulo_doc,
   )
 
-
 @app.route('/conselho_oab/<int:id>')
 def conselho_oab(id):
   conn = get_db_connection()
@@ -912,7 +789,6 @@ def conselho_oab(id):
   if not aluno:
     return 'Aluno não encontrado.', 404
   return render_template('conselhos/conselho_oab.html', aluno=aluno)
-
 
 @app.route('/gerar_posse/<int:id>')
 def gerar_posse(id):
@@ -928,7 +804,6 @@ def gerar_posse(id):
       p_ano=random.randint(2023, 2026),
   )
 
-
 @app.route('/gerar_exercicio/<int:id>')
 def gerar_exercicio(id):
   conn = get_db_connection()
@@ -937,7 +812,6 @@ def gerar_exercicio(id):
   if not aluno:
     return 'Candidato não encontrado.', 404
   return render_template('termo_exercicio.html', aluno=aluno)
-
 
 if __name__ == '__main__':
   app.run(debug=True)
