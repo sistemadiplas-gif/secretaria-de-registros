@@ -164,7 +164,7 @@
             </div>
             {% endif %}
 
-            <form method="POST" action="/login">
+            <form method="POST" action="/login" autocomplete="off">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 
                 <div class="input-group">
@@ -173,7 +173,7 @@
                 </div>
                 
                 <div class="input-group">
-                    <input type="password" name="senha" placeholder="Senha de Acesso" required>
+                    <input type="password" name="senha" placeholder="Senha de Acesso" required autocomplete="new-password">
                     <i class="fas fa-lock"></i>
                 </div>
 
