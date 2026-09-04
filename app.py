@@ -21,6 +21,7 @@ from flask_wtf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
+import requests  # <-- Adicionado para fazer a requisição de validação do Turnstile
 
 app = Flask(__name__)
 
@@ -40,7 +41,8 @@ app.config['SESSION_COOKIE_SECURE'] = EM_PRODUCAO
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=15)
+# TEMPO DE SESSÃO AUMENTADO PARA 1 HORA PARA EVITAR QUEDA NO CADASTRO
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.wsgi_app = ProxyFix(
     app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
@@ -269,6 +271,24 @@ def somente_admn(f):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
   if request.method == 'POST':
+    # --- VALIDAÇÃO DO CLOUDFLARE TURNSTILE ---
+    turnstile_token = request.form.get('cf-turnstile-response')
+    user_ip = request.remote_addr
+
+    verify_response = requests.post('https://challenges.cloudflare.com/turnstile/v0/siteverify', data={
+        'secret': '0x4AAAAAAa9xhYF1C8HiB95Stt3aokG08',
+        'response': turnstile_token,
+        'remoteip': user_ip
+    })
+    
+    result = verify_response.json()
+
+    if not result.get('success'):
+      return render_template(
+          'login.html', erro='Confirmação de segurança (Turnstile) falhou. Tente novamente.'
+      )
+    # ------------------------------------------
+
     usuario_digitado = request.form.get('usuario', '').strip()
     senha_digitada = request.form.get('senha', '').strip()
 
