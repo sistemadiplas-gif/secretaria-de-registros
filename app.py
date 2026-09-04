@@ -43,7 +43,8 @@ app.config['SESSION_COOKIE_SECURE'] = EM_PRODUCAO
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)
+# TEMPO DE INATIVIDADE AJUSTADO PARA EXATOS 50 MINUTOS
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=50)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.wsgi_app = ProxyFix(
     app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
@@ -808,5 +809,5 @@ def gerar_exercicio(id):
     return 'Candidato não encontrado.', 404
   return render_template('termo_exercicio.html', aluno=aluno)
 
-if __name__ == '__mai__':
+if __name__ == '__main__':
   app.run(debug=True)
