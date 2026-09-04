@@ -98,12 +98,12 @@ def aplicar_headers_seguranca(response):
 # ==========================================
 # BANCO DE DADOS DEFINITIVO: POSTGRESQL NUVEM
 # ==========================================
-# Puxa automaticamente do Render ou usa fallback seguro
-DB_URL = os.environ.get('DATABASE_URL') or "postgresql://sistema_diplomas_db_user:1HJblo4vj1bqm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
+DB_URL = os.environ.get('DATABASE_URL') or "postgresql://sistema_diplomas_db_user:lHJblo4vjlbqm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
 
 class PostgresWrapper:
-    def _init_(self, connection):
-        self.conn = connection
+    def _init_(self):
+        self.conn = psycopg2.connect(DB_URL)
+        self.conn.autocommit = False
 
     def execute(self, query, params=()):
         cur = self.conn.cursor(cursor_factory=DictCursor)
@@ -118,9 +118,7 @@ class PostgresWrapper:
         self.conn.close()
 
 def get_db_connection():
-    conn = psycopg2.connect(DB_URL)
-    conn.autocommit = False
-    return PostgresWrapper(conn)
+    return PostgresWrapper()
 
 def init_db():
   conn = get_db_connection()
