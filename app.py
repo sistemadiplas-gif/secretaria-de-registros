@@ -113,13 +113,13 @@ if DB_URL.startswith('postgres://'):
   DB_URL = DB_URL.replace('postgres://', 'postgresql://', 1)
 
 class PostgresConnWrapper:
-    def _init_(self):
+    def __init__(self):
         try:
             self.conn = psycopg2.connect(DB_URL, sslmode='require')
             self.conn.autocommit = False
         except Exception as e:
             print(
-                f"[ERRO CONEXAO POSTGRES] {type(e)._name_}: {e}",
+                f"[ERRO CONEXAO POSTGRES] {type(e).__name__}: {e}",
                 flush=True,
             )
             raise
