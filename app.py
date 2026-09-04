@@ -2,7 +2,6 @@ from datetime import timedelta
 from functools import wraps
 import os
 import random
-import sqlite3
 import urllib.parse
 import urllib.request
 from flask import (
@@ -22,6 +21,10 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 import requests  # <-- Adicionado para fazer a requisição de validação do Turnstile
+
+# --- NOVAS BIBLIOTECAS PARA O POSTGRESQL ---
+import psycopg2
+from psycopg2.extras import DictCursor
 
 app = Flask(__name__)
 
@@ -98,19 +101,40 @@ def aplicar_headers_seguranca(response):
 
 
 # ==========================================
-# BANCO DE DADOS
+# BANCO DE DADOS DEFINITIVO: POSTGRESQL NUVEM
 # ==========================================
+# Substitui o SQLite pelo seu banco real do Render
+DB_URL = "postgresql://sistema_diplomas_db_user:1HJblo4vjlbgm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
+
+class PostgresWrapper:
+    def _init_(self):
+        self.conn = psycopg2.connect(DB_URL)
+        self.conn.autocommit = False
+
+    def execute(self, query, params=()):
+        cur = self.conn.cursor(cursor_factory=DictCursor)
+        # Tradutor mágico: converte a sintaxe do SQLite (?) para PostgreSQL (%s) sem você ter que mudar suas rotas
+        pg_query = query.replace('?', '%s')
+        cur.execute(pg_query, params)
+        return cur
+
+    def commit(self):
+        self.conn.commit()
+
+    def close(self):
+        self.conn.close()
+
 def get_db_connection():
-  conn = sqlite3.connect('database.db')
-  conn.row_factory = sqlite3.Row
-  return conn
+    return PostgresWrapper()
 
 
 def init_db():
   conn = get_db_connection()
+  
+  # Cria as tabelas diretamente no formato PostgreSQL (SERIAL no lugar de AUTOINCREMENT)
   conn.execute('''
         CREATE TABLE IF NOT EXISTS alunos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             nome TEXT, cpf TEXT, rg TEXT, orgao_rg TEXT, data_expedicao TEXT,
             data_nascimento TEXT, naturalidade TEXT, filiacao TEXT, endereco TEXT, foto TEXT,
             tipo_curso TEXT, curso TEXT, grau_academico TEXT, instituicao_ensino TEXT, 
@@ -123,46 +147,12 @@ def init_db():
         )
     ''')
 
-  colunas_novas = [
-      ('grau_academico', 'TEXT'),
-      ('instituicao_ensino', 'TEXT'),
-      ('registro_validacao', 'TEXT'),
-      ('gerar_qrcode', 'TEXT'),
-      ('diploma_frente', 'TEXT'),
-      ('diploma_verso', 'TEXT'),
-      ('certificado', 'TEXT'),
-      ('historico', 'TEXT'),
-      ('outros_docs', 'TEXT'),
-      ('edital_concurso', 'TEXT'),
-      ('data_homologacao', 'TEXT'),
-      ('dados_nomeacao', 'TEXT'),
-      ('data_posse', 'TEXT'),
-      ('data_exercicio', 'TEXT'),
-      ('esfera_concurso', 'TEXT'),
-      ('local_esfera', 'TEXT'),
-      ('faculdade_slug', 'TEXT'),
-  ]
-  for col, tipo in colunas_novas:
-    try:
-      conn.execute(f'ALTER TABLE alunos ADD COLUMN {col} {tipo}')
-      conn.commit()
-    except sqlite3.OperationalError:
-      pass
-
   conn.execute('''
         CREATE TABLE IF NOT EXISTS equipe (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             nome TEXT, cargo TEXT, usuario TEXT, senha TEXT, status_acesso TEXT
         )
     ''')
-
-  colunas_equipe = [('usuario', 'TEXT'), ('senha', 'TEXT')]
-  for col, tipo in colunas_equipe:
-    try:
-      conn.execute(f'ALTER TABLE equipe ADD COLUMN {col} {tipo}')
-      conn.commit()
-    except sqlite3.OperationalError:
-      pass
 
   conn.commit()
   conn.close()
