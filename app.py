@@ -107,8 +107,6 @@ if not DB_URL:
       "para a Internal Database URL do seu banco PostgreSQL."
   )
 
-# Render fornece a URL comecando com 'postgres://', mas o psycopg2 mais novo
-# espera 'postgresql://'. Esta linha corrige isso automaticamente.
 if DB_URL.startswith('postgres://'):
   DB_URL = DB_URL.replace('postgres://', 'postgresql://', 1)
 
@@ -246,22 +244,6 @@ def somente_admn(f):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
   if request.method == 'POST':
-    turnstile_token = request.form.get('cf-turnstile-response')
-    user_ip = request.remote_addr
-
-    verify_response = requests.post('https://challenges.cloudflare.com/turnstile/v0/siteverify', data={
-        'secret': '0x4AAAAAAa9xhYF1C8HiB95Stt3aokG08',
-        'response': turnstile_token,
-        'remoteip': user_ip
-    })
-    
-    result = verify_response.json()
-
-    if not result.get('success'):
-      return render_template(
-          'login.html', erro='Confirmação de segurança (Turnstile) falhou. Tente novamente.'
-      )
-
     usuario_digitado = request.form.get('usuario', '').strip()
     senha_digitada = request.form.get('senha', '').strip()
 
@@ -826,5 +808,5 @@ def gerar_exercicio(id):
     return 'Candidato não encontrado.', 404
   return render_template('termo_exercicio.html', aluno=aluno)
 
-if __name__ == '__main__':
+if __name__ == '__mai__':
   app.run(debug=True)
