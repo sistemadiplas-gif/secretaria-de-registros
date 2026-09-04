@@ -103,8 +103,8 @@ def aplicar_headers_seguranca(response):
 # ==========================================
 # BANCO DE DADOS DEFINITIVO: POSTGRESQL NUVEM
 # ==========================================
-# Substitui o SQLite pelo seu banco real do Render
-DB_URL = "postgresql://sistema_diplomas_db_user:1HJblo4vjlbgm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
+# Substitui o SQLite pelo seu banco real do Render com o link corrigido
+DB_URL = "postgresql://sistema_diplomas_db_user:1HJblo4vj1bqm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
 
 class PostgresWrapper:
     def _init_(self):
