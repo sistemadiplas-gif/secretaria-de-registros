@@ -98,12 +98,31 @@ def aplicar_headers_seguranca(response):
 # ==========================================
 # BANCO DE DADOS DEFINITIVO: POSTGRESQL NUVEM
 # ==========================================
-DB_URL = os.environ.get('DATABASE_URL') or "postgresql://sistema_diplomas_db_user:lHJblo4vjlbqm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
+DB_URL = os.environ.get('DATABASE_URL')
+
+if not DB_URL:
+  raise RuntimeError(
+      "ERRO: A variavel de ambiente DATABASE_URL nao esta configurada no Render. "
+      "Va em Environment do seu Web Service e adicione DATABASE_URL apontando "
+      "para a Internal Database URL do seu banco PostgreSQL."
+  )
+
+# Render fornece a URL comecando com 'postgres://', mas o psycopg2 mais novo
+# espera 'postgresql://'. Esta linha corrige isso automaticamente.
+if DB_URL.startswith('postgres://'):
+  DB_URL = DB_URL.replace('postgres://', 'postgresql://', 1)
 
 class PostgresConnWrapper:
     def _init_(self):
-        self.conn = psycopg2.connect(DB_URL)
-        self.conn.autocommit = False
+        try:
+            self.conn = psycopg2.connect(DB_URL, sslmode='require')
+            self.conn.autocommit = False
+        except Exception as e:
+            print(
+                f"[ERRO CONEXAO POSTGRES] {type(e)._name_}: {e}",
+                flush=True,
+            )
+            raise
 
     def execute(self, query, params=()):
         cur = self.conn.cursor(cursor_factory=DictCursor)
