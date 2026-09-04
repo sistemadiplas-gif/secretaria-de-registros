@@ -98,7 +98,8 @@ def aplicar_headers_seguranca(response):
 # ==========================================
 # BANCO DE DADOS DEFINITIVO: POSTGRESQL NUVEM
 # ==========================================
-DB_URL = "postgresql://sistema_diplomas_db_user:lHJblo4vjlbqm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
+# Puxa automaticamente do Render ou usa fallback seguro
+DB_URL = os.environ.get('DATABASE_URL') or "postgresql://sistema_diplomas_db_user:1HJblo4vj1bqm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
 
 class PostgresWrapper:
     def _init_(self, connection):
