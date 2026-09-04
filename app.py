@@ -22,14 +22,14 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 import requests
 
-# --- NOVAS BIBLIOTECAS PARA O POSTGRESQL ---
+# --- BIBLIOTECAS DO POSTGRESQL ---
 import psycopg2
 from psycopg2.extras import DictCursor
 
 app = Flask(__name__)
 
 # ==========================================
-# CONFIGURAÇÕES DE SEGURANÇA SÊNIOR (NÍVEL CORPORATIVO)
+# CONFIGURAÇÕES DE SEGURANÇA SÊNIOR
 # ==========================================
 app.secret_key = os.environ.get(
     'SECRET_KEY', 'kR9#m2Pq!v8Z$xL5@nW3*yT7^c4F1bN0'
@@ -59,7 +59,7 @@ ADMIN_USUARIO = os.environ.get('ADMIN_USUARIO', 'admn')
 ADMIN_SENHA = os.environ.get('ADMIN_SENHA', '992136520Fe.')
 
 # ==========================================
-# MAPEAMENTO OFICIAL DE DOMÍNIOS SEPARADOS
+# MAPEAMENTO DE DOMÍNIOS
 # ==========================================
 DOMINIOS_MAPA = {
     'painel': 'https://secretariaderegistrosgovbr.com',
@@ -101,13 +101,8 @@ def aplicar_headers_seguranca(response):
 DB_URL = "postgresql://sistema_diplomas_db_user:lHJblo4vjlbqm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
 
 class PostgresWrapper:
-    def _init_(self):
-        try:
-            self.conn = psycopg2.connect(DB_URL)
-            self.conn.autocommit = False
-        except Exception as e:
-            print("ERRO FATAL NA CONEXÃO COM O BANCO DE DADOS:", e)
-            raise e
+    def _init_(self, connection):
+        self.conn = connection
 
     def execute(self, query, params=()):
         cur = self.conn.cursor(cursor_factory=DictCursor)
@@ -122,7 +117,9 @@ class PostgresWrapper:
         self.conn.close()
 
 def get_db_connection():
-    return PostgresWrapper()
+    conn = psycopg2.connect(DB_URL)
+    conn.autocommit = False
+    return PostgresWrapper(conn)
 
 def init_db():
   conn = get_db_connection()
@@ -178,7 +175,7 @@ def salvar_multiplos_arquivos(file_storage_list, antigos=''):
   return antigos
 
 # ==========================================
-# ROTEADOR DE DOMÍNIOS E SEGURANÇA (FIREWALL)
+# ROTEADOR DE DOMÍNIOS E SEGURANÇA
 # ==========================================
 @app.before_request
 def travar_dominios_e_autenticacao():
@@ -481,7 +478,6 @@ def excluir():
 @app.route('/deletar/<int:id>', methods=['POST'])
 def deletar(id):
   conn = get_db_connection()
-  
   aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
   if aluno:
     colunas_arquivos = ['foto', 'diploma_frente', 'diploma_verso', 'certificado', 'historico', 'outros_docs']
@@ -573,9 +569,8 @@ def painel_aluno(id):
   return render_template('painel_aluno.html', aluno=aluno, url_base=url_base_custom)
 
 # ==========================================
-# ROTAS PÚBLICAS (PORTAIS, QR CODE E CONSULTAS)
+# ROTAS PÚBLICAS
 # ==========================================
-
 @app.route('/portal_aluno/<matricula>', methods=['GET', 'POST'])
 def portal_do_aluno_publico(matricula):
   conn = get_db_connection()
