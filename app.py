@@ -101,8 +101,9 @@ def aplicar_headers_seguranca(response):
 DB_URL = os.environ.get('DATABASE_URL') or "postgresql://sistema_diplomas_db_user:lHJblo4vjlbqm4ctvoSnQ6TiVzrwBZzO@dpg-dacvlfgae00c73fqu2j0-a/sistema_diplomas_db"
 
 class PostgresConnWrapper:
-    def _init_(self, conn):
-        self.conn = conn
+    def _init_(self):
+        self.conn = psycopg2.connect(DB_URL)
+        self.conn.autocommit = False
 
     def execute(self, query, params=()):
         cur = self.conn.cursor(cursor_factory=DictCursor)
@@ -117,9 +118,7 @@ class PostgresConnWrapper:
         self.conn.close()
 
 def get_db_connection():
-    conn = psycopg2.connect(DB_URL)
-    conn.autocommit = False
-    return PostgresConnWrapper(conn)
+    return PostgresConnWrapper()
 
 def init_db():
   conn = get_db_connection()
