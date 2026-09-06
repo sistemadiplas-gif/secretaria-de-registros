@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #12141d;
-            --card-bg: #1e212b;
+            --bg-color: #0b0d13;
+            --card-bg: #161922;
             --primary-blue: #1351b4;
             --primary-hover: #0c3882;
             --text-main: #f8f9fa;
             --text-muted: #8b92a5;
-            --border-color: #2d313f;
+            --border-color: #262b3a;
             --error-bg: #3f1919;
             --error-text: #ff6b6b;
         }
@@ -28,16 +28,46 @@
             align-items: center; 
             justify-content: center; 
             min-height: 100vh;
-            background-image: radial-gradient(circle at top right, rgba(19, 81, 180, 0.1), transparent 40%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* MEGA MARCA D'ÁGUA DE FUNDO ESTILIZADA */
+        body::before {
+            content: '\f19d'; /* Ícone de capelo/graduação do FontAwesome */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            font-size: 35vw;
+            color: rgba(19, 81, 180, 0.03);
+            z-index: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* Gradiente de fundo decorativo */
+        .bg-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(19, 81, 180, 0.08) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
+            z-index: 0;
+            pointer-events: none;
         }
         
         .login-wrapper {
             background-color: var(--card-bg);
             width: 100%;
             max-width: 440px;
-            border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-radius: 14px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
             position: relative;
+            z-index: 1;
             overflow: hidden;
             border: 1px solid var(--border-color);
         }
@@ -53,7 +83,7 @@
         .login-content { padding: 45px 40px; }
 
         .brand-header { text-align: center; margin-bottom: 35px; }
-        .brand-header i { font-size: 42px; color: var(--primary-blue); margin-bottom: 15px; }
+        .brand-header i { font-size: 44px; color: var(--primary-blue); margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(19, 81, 180, 0.4)); }
         .brand-header h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 5px; }
         .brand-header p { font-size: 14px; color: var(--text-muted); font-weight: 400; }
 
@@ -84,7 +114,7 @@
         
         .input-group input { 
             width: 100%; 
-            background-color: rgba(0, 0, 0, 0.2); 
+            background-color: rgba(0, 0, 0, 0.3); 
             border: 1px solid var(--border-color); 
             color: var(--text-main); 
             padding: 16px 16px 16px 45px; 
@@ -118,8 +148,9 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
+            box-shadow: 0 4px 12px rgba(19, 81, 180, 0.3);
         }
-        .btn-submit:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+        .btn-submit:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(19, 81, 180, 0.4); }
 
         .footer-links { 
             margin-top: 30px; 
@@ -140,13 +171,15 @@
 </head>
 <body>
 
+    <div class="bg-glow"></div>
+
     <div class="login-wrapper">
         <div class="login-content">
             
             <div class="brand-header">
-                <i class="fas fa-shield-halved"></i>
+                <i class="fas fa-landmark"></i>
                 <h2>MEC Administração</h2>
-                <p>Central de Registros e Certificações</p>
+                <p>Painel Central de Registros e Chancelas</p>
             </div>
 
             {% if erro %}
