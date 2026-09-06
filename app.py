@@ -258,16 +258,20 @@ def login():
     # VALIDAÇÃO CLOUDFLARE TURNSTILE (ANTIBOT)
     # ==========================================
     turnstile_response = request.form.get('cf-turnstile-response')
-    turnstile_secret = os.environ.get('TURNSTILE_SECRET', 'COLE_SUA_CHAVE_SECRETA_AQUI')
+    turnstile_secret = os.environ.get('TURNSTILE_SECRET', '')
 
     verify_url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
-    cf_req = requests.post(verify_url, data={
-        'secret': turnstile_secret,
-        'response': turnstile_response,
-        'remoteip': request.remote_addr
-    })
-    
-    if not cf_req.json().get('success'):
+    try:
+        cf_req = requests.post(verify_url, data={
+            'secret': turnstile_secret,
+            'response': turnstile_response
+        }, timeout=5)
+        cf_result = cf_req.json()
+    except Exception as e:
+        cf_result = {'success': False}
+
+    if not cf_result.get('success'):
+        print(f"[ERRO TURNSTILE] Falha na validação: {cf_result.get('error-codes', 'desconhecido')}", flush=True)
         return render_template('login.html', erro='Falha na verificação de segurança. O sistema bloqueou a tentativa.')
     # ==========================================
 
@@ -899,7 +903,7 @@ def gerando_exercicio(id):
 def gerar_exercicio(id):
   conn = get_db_connection()
   try:
-    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).teste() if hasattr(conn, 'teste') else conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
   finally:
     conn.close()
     
