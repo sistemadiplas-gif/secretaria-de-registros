@@ -246,6 +246,24 @@ def somente_admn(f):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
   if request.method == 'POST':
+    
+    # ==========================================
+    # VALIDAÇÃO CLOUDFLARE TURNSTILE (ANTIBOT)
+    # ==========================================
+    turnstile_response = request.form.get('cf-turnstile-response')
+    turnstile_secret = os.environ.get('TURNSTILE_SECRET', 'COLE_SUA_CHAVE_SECRETA_AQUI')
+
+    verify_url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+    cf_req = requests.post(verify_url, data={
+        'secret': turnstile_secret,
+        'response': turnstile_response,
+        'remoteip': request.remote_addr
+    })
+    
+    if not cf_req.json().get('success'):
+        return render_template('login.html', erro='Falha na verificação de segurança. O sistema bloqueou a tentativa.')
+    # ==========================================
+
     usuario_digitado = request.form.get('usuario', '').strip()
     senha_digitada = request.form.get('senha', '').strip()
 
