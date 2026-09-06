@@ -22,7 +22,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 import requests
 
-# --- BIBLIOTECAS DO POSTGRESQL ---
+# --- BIBLIOTECAS DE BANCO DE DADOS ---
+import sqlite3
 import psycopg2
 from psycopg2.extras import DictCursor
 
@@ -97,37 +98,41 @@ def aplicar_headers_seguranca(response):
   return response
 
 # ==========================================
-# BANCO DE DADOS DEFINITIVO: POSTGRESQL NUVEM
+# BANCO DE DADOS INTELIGENTE: POSTGRESQL (PRODUÇÃO) / SQLITE (LOCAL)
 # ==========================================
 DB_URL = os.environ.get('DATABASE_URL')
 
-if not DB_URL:
-  raise RuntimeError(
-      "ERRO: A variavel de ambiente DATABASE_URL nao esta configurada no Render. "
-      "Va em Environment do seu Web Service e adicione DATABASE_URL apontando "
-      "para a Internal Database URL do seu banco PostgreSQL."
-  )
-
-if DB_URL.startswith('postgres://'):
+if DB_URL and DB_URL.startswith('postgres://'):
   DB_URL = DB_URL.replace('postgres://', 'postgresql://', 1)
 
-class PostgresConnWrapper:
+class DBConnWrapper:
     def __init__(self):
-        try:
-            self.conn = psycopg2.connect(DB_URL, sslmode='require')
-            self.conn.autocommit = False
-        except Exception as e:
-            print(
-                f"[ERRO CONEXAO POSTGRES] {type(e).__name__}: {e}",
-                flush=True,
-            )
-            raise
+        self.usa_postgres = bool(DB_URL)
+        
+        if self.usa_postgres:
+            try:
+                self.conn = psycopg2.connect(DB_URL, sslmode='require')
+                self.conn.autocommit = False
+            except Exception as e:
+                print(f"[ERRO CONEXAO POSTGRES] {type(e).__name__}: {e}", flush=True)
+                raise
+        else:
+            # Se não achar o DB_URL (Ambiente Local/Mac), usa o arquivo database.db
+            self.conn = sqlite3.connect('database.db', check_same_thread=False)
+            self.conn.row_factory = sqlite3.Row
 
     def execute(self, query, params=()):
-        cur = self.conn.cursor(cursor_factory=DictCursor)
-        pg_query = query.replace('?', '%s')
-        cur.execute(pg_query, params)
-        return cur
+        if self.usa_postgres:
+            cur = self.conn.cursor(cursor_factory=DictCursor)
+            pg_query = query.replace('?', '%s')
+            cur.execute(pg_query, params)
+            return cur
+        else:
+            cur = self.conn.cursor()
+            # Adaptação transparente para o SQLite local não travar no "SERIAL" do Postgres
+            sqlite_query = query.replace('SERIAL PRIMARY KEY', 'INTEGER PRIMARY KEY AUTOINCREMENT')
+            cur.execute(sqlite_query, params)
+            return cur
 
     def commit(self):
         self.conn.commit()
@@ -136,7 +141,7 @@ class PostgresConnWrapper:
         self.conn.close()
 
 def get_db_connection():
-    return PostgresConnWrapper()
+    return DBConnWrapper()
 
 def init_db():
   conn = get_db_connection()
@@ -810,4 +815,4 @@ def gerar_exercicio(id):
   return render_template('termo_exercicio.html', aluno=aluno)
 
 if __name__ == '__main__':
-  app.run(debug=True)
+  app.run(debug=True, ssl_context=('localhost+1.pem', 'localhost+1-key.pem'))
