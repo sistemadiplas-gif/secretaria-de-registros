@@ -34,7 +34,7 @@
 
         /* MEGA MARCA D'ÁGUA DE FUNDO ESTILIZADA */
         body::before {
-            content: '\f19d'; /* Ícone de capelo/graduação do FontAwesome */
+            content: '\f19d';
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
             position: absolute;
@@ -48,7 +48,6 @@
             user-select: none;
         }
 
-        /* Gradiente de fundo decorativo */
         .bg-glow {
             position: absolute;
             width: 600px;
@@ -59,7 +58,94 @@
             z-index: 0;
             pointer-events: none;
         }
-        
+
+        /* ==========================================
+           TELA DE BOAS-VINDAS (SPLASH SCREEN)
+           ========================================== */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+            padding: 0 20px;
+        }
+
+        .splash-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .splash-icon {
+            font-size: 50px;
+            color: var(--primary-blue);
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+
+        .splash-welcome-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInText 0.8s ease forwards 0.3s;
+        }
+
+        .splash-domain {
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--primary-blue);
+            background: rgba(19, 81, 180, 0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(19, 81, 180, 0.2);
+            opacity: 0;
+            animation: fadeInText 0.8s ease forwards 0.6s;
+        }
+
+        .splash-loader {
+            width: 180px;
+            height: 3px;
+            background-color: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .splash-loader::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; height: 100%; width: 100%;
+            background: linear-gradient(90deg, #00a859, #ffd700, var(--primary-blue));
+            animation: loadBar 1.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+        }
+
+        @keyframes loadBar {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(0%); }
+        }
+
+        @keyframes fadeInText {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(0.95); opacity: 0.7; filter: drop-shadow(0 0 5px rgba(19, 81, 180, 0.2)); }
+            100% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 20px rgba(19, 81, 180, 0.6)); }
+        }
+
+        /* ==========================================
+           CAIXA DE LOGIN COM ANIMAÇÃO DE ENTRADA
+           ========================================== */
         .login-wrapper {
             background-color: var(--card-bg);
             width: 100%;
@@ -70,6 +156,14 @@
             z-index: 1;
             overflow: hidden;
             border: 1px solid var(--border-color);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .login-wrapper.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .login-wrapper::before {
@@ -171,9 +265,20 @@
 </head>
 <body>
 
+    <!-- TELA DE BOAS-VINDAS ANIMADA -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <i class="fas fa-landmark splash-icon"></i>
+            <div class="splash-welcome-text">Seja bem-vindo</div>
+            <div class="splash-domain">secretariaderegistrosgovbr.com</div>
+            <div class="splash-loader"></div>
+        </div>
+    </div>
+
     <div class="bg-glow"></div>
 
-    <div class="login-wrapper">
+    <!-- CAIXA DE LOGIN -->
+    <div class="login-wrapper" id="loginBox">
         <div class="login-content">
             
             <div class="brand-header">
@@ -213,6 +318,21 @@
 
         </div>
     </div>
+
+    <!-- SCRIPT DE TRANSIÇÃO -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                const box = document.getElementById('loginBox');
+                
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+                
+                box.classList.add('show');
+            }, 1800); // Tempo de exibição da mensagem de boas-vindas (1.8 segundos)
+        });
+    </script>
 
 </body>
 </html>
