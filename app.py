@@ -43,10 +43,9 @@ EM_PRODUCAO = 'RENDER' in os.environ
 app.config['SESSION_COOKIE_SECURE'] = EM_PRODUCAO
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-
-# TEMPO DE INATIVIDADE AJUSTADO PARA EXATOS 50 MINUTOS
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=50)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
 app.wsgi_app = ProxyFix(
     app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
 )
@@ -108,7 +107,6 @@ if DB_URL and DB_URL.startswith('postgres://'):
 class DBConnWrapper:
     def __init__(self):
         self.usa_postgres = bool(DB_URL)
-        
         if self.usa_postgres:
             try:
                 self.conn = psycopg2.connect(DB_URL, sslmode='require')
@@ -117,7 +115,6 @@ class DBConnWrapper:
                 print(f"[ERRO CONEXAO POSTGRES] {type(e).__name__}: {e}", flush=True)
                 raise
         else:
-            # Se não achar o DB_URL (Ambiente Local/Mac), usa o arquivo database.db
             self.conn = sqlite3.connect('database.db', check_same_thread=False)
             self.conn.row_factory = sqlite3.Row
 
@@ -129,7 +126,6 @@ class DBConnWrapper:
             return cur
         else:
             cur = self.conn.cursor()
-            # Adaptação transparente para o SQLite local não travar no "SERIAL" do Postgres
             sqlite_query = query.replace('SERIAL PRIMARY KEY', 'INTEGER PRIMARY KEY AUTOINCREMENT')
             cur.execute(sqlite_query, params)
             return cur
@@ -138,38 +134,39 @@ class DBConnWrapper:
         self.conn.commit()
 
     def close(self):
-        self.conn.close()
+        if self.conn:
+            self.conn.close()
 
 def get_db_connection():
     return DBConnWrapper()
 
 def init_db():
   conn = get_db_connection()
-  
-  conn.execute('''
-        CREATE TABLE IF NOT EXISTS alunos (
-            id SERIAL PRIMARY KEY,
-            nome TEXT, cpf TEXT, rg TEXT, orgao_rg TEXT, data_expedicao TEXT,
-            data_nascimento TEXT, naturalidade TEXT, filiacao TEXT, endereco TEXT, foto TEXT,
-            tipo_curso TEXT, curso TEXT, grau_academico TEXT, instituicao_ensino TEXT, 
-            data_inicio TEXT, data_conclusao TEXT, carga_horaria TEXT, matricula TEXT, 
-            registro_validacao TEXT, gerar_qrcode TEXT,
-            diploma_frente TEXT, diploma_verso TEXT,
-            certificado TEXT, historico TEXT, outros_docs TEXT,
-            edital_concurso TEXT, data_homologacao TEXT, dados_nomeacao TEXT, data_posse TEXT, data_exercicio TEXT,
-            esfera_concurso TEXT, local_esfera TEXT, orgao TEXT, numero_registro TEXT, uf_registro TEXT, faculdade_slug TEXT
-        )
-    ''')
+  try:
+      conn.execute('''
+            CREATE TABLE IF NOT EXISTS alunos (
+                id SERIAL PRIMARY KEY,
+                nome TEXT, cpf TEXT, rg TEXT, orgao_rg TEXT, data_expedicao TEXT,
+                data_nascimento TEXT, naturalidade TEXT, filiacao TEXT, endereco TEXT, foto TEXT,
+                tipo_curso TEXT, curso TEXT, grau_academico TEXT, instituicao_ensino TEXT, 
+                data_inicio TEXT, data_conclusao TEXT, carga_horaria TEXT, matricula TEXT, 
+                registro_validacao TEXT, gerar_qrcode TEXT,
+                diploma_frente TEXT, diploma_verso TEXT,
+                certificado TEXT, historico TEXT, outros_docs TEXT,
+                edital_concurso TEXT, data_homologacao TEXT, dados_nomeacao TEXT, data_posse TEXT, data_exercicio TEXT,
+                esfera_concurso TEXT, local_esfera TEXT, orgao TEXT, numero_registro TEXT, uf_registro TEXT, faculdade_slug TEXT
+            )
+        ''')
 
-  conn.execute('''
-        CREATE TABLE IF NOT EXISTS equipe (
-            id SERIAL PRIMARY KEY,
-            nome TEXT, cargo TEXT, usuario TEXT, senha TEXT, status_acesso TEXT
-        )
-    ''')
-
-  conn.commit()
-  conn.close()
+      conn.execute('''
+            CREATE TABLE IF NOT EXISTS equipe (
+                id SERIAL PRIMARY KEY,
+                nome TEXT, cargo TEXT, usuario TEXT, senha TEXT, status_acesso TEXT
+            )
+        ''')
+      conn.commit()
+  finally:
+      conn.close()
 
 init_db()
 
@@ -185,16 +182,15 @@ def salvar_arquivo(file_storage):
   return ''
 
 def salvar_multiplos_arquivos(file_storage_list, antigos=''):
-  nomes_salvos = []
+  nomes_salvos = [f for f in antigos.split('|') if f.strip()] if antigos else []
   for f in file_storage_list:
     if f and f.filename != '':
       filename = secure_filename(f.filename)
       filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
       f.save(filepath)
-      nomes_salvos.append(filename)
-  if nomes_salvos:
-    return '|'.join(nomes_salvos)
-  return antigos
+      if filename not in nomes_salvos:
+        nomes_salvos.append(filename)
+  return '|'.join(nomes_salvos) if nomes_salvos else ''
 
 # ==========================================
 # ROTEADOR DE DOMÍNIOS E SEGURANÇA
@@ -260,11 +256,13 @@ def login():
       return redirect(url_for('index'))
 
     conn = get_db_connection()
-    membro = conn.execute(
-        "SELECT * FROM equipe WHERE usuario = ? AND status_acesso = 'Ativo'",
-        (usuario_digitado,),
-    ).fetchone()
-    conn.close()
+    try:
+      membro = conn.execute(
+          "SELECT * FROM equipe WHERE usuario = ? AND status_acesso = 'Ativo'",
+          (usuario_digitado,),
+      ).fetchone()
+    finally:
+      conn.close()
 
     if membro and check_password_hash(membro['senha'], senha_digitada):
       session.permanent = True
@@ -291,42 +289,49 @@ def solicitar_acesso():
     cargo = request.form.get('cargo')
     usuario = request.form.get('usuario', '').strip()
     senha = request.form.get('senha')
+    
     conn = get_db_connection()
-    existente = conn.execute(
-        'SELECT * FROM equipe WHERE usuario = ?', (usuario,)
-    ).fetchone()
-    if existente:
-      erro = 'Este usuário já está sendo utilizado. Escolha outro.'
-    else:
-      hash_senha = generate_password_hash(senha, method='pbkdf2:sha256')
-      conn.execute(
-          'INSERT INTO equipe (nome, cargo, usuario, senha, status_acesso)'
-          ' VALUES (?, ?, ?, ?, ?)',
-          (nome, cargo, usuario, hash_senha, 'Pendente'),
-      )
-      conn.commit()
-      sucesso = 'Solicitação enviada! Aguarde a liberação do administrador.'
-    conn.close()
+    try:
+      existente = conn.execute(
+          'SELECT * FROM equipe WHERE usuario = ?', (usuario,)
+      ).fetchone()
+      if existente:
+        erro = 'Este usuário já está sendo utilizado. Escolha outro.'
+      else:
+        hash_senha = generate_password_hash(senha, method='pbkdf2:sha256')
+        conn.execute(
+            'INSERT INTO equipe (nome, cargo, usuario, senha, status_acesso)'
+            ' VALUES (?, ?, ?, ?, ?)',
+            (nome, cargo, usuario, hash_senha, 'Pendente'),
+        )
+        conn.commit()
+        sucesso = 'Solicitação enviada! Aguarde a liberação do administrador.'
+    finally:
+      conn.close()
   return render_template('solicitar_acesso.html', sucesso=sucesso, erro=erro)
 
 @app.route('/aprovar_equipe/<int:id>', methods=['POST'])
 @somente_admn
 def aprovar_equipe(id):
   conn = get_db_connection()
-  conn.execute(
-      "UPDATE equipe SET status_acesso = 'Ativo' WHERE id = ?", (id,)
-  )
-  conn.commit()
-  conn.close()
+  try:
+    conn.execute(
+        "UPDATE equipe SET status_acesso = 'Ativo' WHERE id = ?", (id,)
+    )
+    conn.commit()
+  finally:
+    conn.close()
   return redirect(url_for('index'))
 
 @app.route('/remover_equipe/<int:id>', methods=['POST'])
 @somente_admn
 def remover_equipe(id):
   conn = get_db_connection()
-  conn.execute('DELETE FROM equipe WHERE id = ?', (id,))
-  conn.commit()
-  conn.close()
+  try:
+    conn.execute('DELETE FROM equipe WHERE id = ?', (id,))
+    conn.commit()
+  finally:
+    conn.close()
   return redirect(url_for('index'))
 
 # ==========================================
@@ -335,14 +340,16 @@ def remover_equipe(id):
 @app.route('/')
 def index():
   conn = get_db_connection()
-  total_alunos = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()[0]
-  equipe_ativa = conn.execute(
-      "SELECT * FROM equipe WHERE status_acesso = 'Ativo'"
-  ).fetchall()
-  equipe_pendente = conn.execute(
-      "SELECT * FROM equipe WHERE status_acesso = 'Pendente'"
-  ).fetchall()
-  conn.close()
+  try:
+    total_alunos = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()[0]
+    equipe_ativa = conn.execute(
+        "SELECT * FROM equipe WHERE status_acesso = 'Ativo'"
+    ).fetchall()
+    equipe_pendente = conn.execute(
+        "SELECT * FROM equipe WHERE status_acesso = 'Pendente'"
+    ).fetchall()
+  finally:
+    conn.close()
   return render_template(
       'index.html', total=total_alunos, ativos=equipe_ativa, pendentes=equipe_pendente
   )
@@ -366,34 +373,36 @@ def cadastro():
     outros_docs = salvar_multiplos_arquivos(outros_files, dados.get('outros_antigo', ''))
 
     conn = get_db_connection()
-    conn.execute(
-        '''
-            INSERT INTO alunos (
-                nome, cpf, rg, orgao_rg, data_expedicao, data_nascimento, naturalidade, filiacao, endereco, foto, 
-                tipo_curso, curso, grau_academico, instituicao_ensino, data_inicio, data_conclusao, 
-                carga_horaria, matricula, registro_validacao, gerar_qrcode, 
-                diploma_frente, diploma_verso, certificado, historico, outros_docs,
-                edital_concurso, data_homologacao, dados_nomeacao, data_posse, data_exercicio, esfera_concurso, local_esfera,
-                orgao, numero_registro, uf_registro, faculdade_slug
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''',
-        (
-            dados['nome'], dados['cpf'], dados['rg'], dados['orgao_rg'], dados['data_expedicao'],
-            dados['data_nascimento'], dados['naturalidade'], dados['filiacao'], dados['endereco'], foto,
-            dados['tipo_curso'], dados['curso'], dados.get('grau_academico', ''),
-            dados.get('instituicao_ensino', ''), dados.get('data_inicio', ''),
-            dados.get('data_conclusao', ''), dados.get('carga_horaria', ''), dados['matricula'],
-            dados.get('registro_validacao', ''), dados.get('gerar_qrcode', 'Não'),
-            diploma_frente, diploma_verso, certificado, historico, outros_docs,
-            dados.get('edital_concurso', ''), dados.get('data_homologacao', ''),
-            dados.get('dados_nomeacao', ''), dados.get('data_posse', ''), dados.get('data_exercicio', ''),
-            dados.get('esfera_concurso', 'Federal'), dados.get('local_esfera', ''),
-            dados.get('orgao', ''), dados.get('numero_registro', ''),
-            dados.get('uf_registro', ''), dados.get('faculdade_slug', ''),
-        ),
-    )
-    conn.commit()
-    conn.close()
+    try:
+      conn.execute(
+          '''
+              INSERT INTO alunos (
+                  nome, cpf, rg, orgao_rg, data_expedicao, data_nascimento, naturalidade, filiacao, endereco, foto, 
+                  tipo_curso, curso, grau_academico, instituicao_ensino, data_inicio, data_conclusao, 
+                  carga_horaria, matricula, registro_validacao, gerar_qrcode, 
+                  diploma_frente, diploma_verso, certificado, historico, outros_docs,
+                  edital_concurso, data_homologacao, dados_nomeacao, data_posse, data_exercicio, esfera_concurso, local_esfera,
+                  orgao, numero_registro, uf_registro, faculdade_slug
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ''',
+          (
+              dados['nome'], dados['cpf'], dados['rg'], dados['orgao_rg'], dados['data_expedicao'],
+              dados['data_nascimento'], dados['naturalidade'], dados['filiacao'], dados['endereco'], foto,
+              dados['tipo_curso'], dados['curso'], dados.get('grau_academico', ''),
+              dados.get('instituicao_ensino', ''), dados.get('data_inicio', ''),
+              dados.get('data_conclusao', ''), dados.get('carga_horaria', ''), dados['matricula'],
+              dados.get('registro_validacao', ''), dados.get('gerar_qrcode', 'Não'),
+              diploma_frente, diploma_verso, certificado, historico, outros_docs,
+              dados.get('edital_concurso', ''), dados.get('data_homologacao', ''),
+              dados.get('dados_nomeacao', ''), dados.get('data_posse', ''), dados.get('data_exercicio', ''),
+              dados.get('esfera_concurso', 'Federal'), dados.get('local_esfera', ''),
+              dados.get('orgao', ''), dados.get('numero_registro', ''),
+              dados.get('uf_registro', ''), dados.get('faculdade_slug', ''),
+          ),
+      )
+      conn.commit()
+    finally:
+      conn.close()
 
     return redirect(url_for('cadastro'))
   return render_template('cadastro.html')
@@ -404,11 +413,13 @@ def alterar():
   if request.method == 'POST':
     termo = request.form.get('termo', '')
     conn = get_db_connection()
-    alunos = conn.execute(
-        'SELECT * FROM alunos WHERE nome LIKE ? OR cpf = ?',
-        ('%' + termo + '%', termo),
-    ).fetchall()
-    conn.close()
+    try:
+      alunos = conn.execute(
+          'SELECT * FROM alunos WHERE nome LIKE ? OR cpf = ?',
+          ('%' + termo + '%', termo),
+      ).fetchall()
+    finally:
+      conn.close()
   return render_template('alterar.html', alunos=alunos)
 
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
@@ -430,42 +441,48 @@ def editar(id):
     historico = salvar_multiplos_arquivos(hist_files, dados.get('hist_antigo', ''))
     outros_docs = salvar_multiplos_arquivos(outros_files, dados.get('outros_antigo', ''))
 
-    conn.execute(
-        '''
-            UPDATE alunos SET 
-                nome = ?, cpf = ?, rg = ?, orgao_rg = ?, data_expedicao = ?, 
-                data_nascimento = ?, naturalidade = ?, filiacao = ?, endereco = ?, foto = ?,
-                tipo_curso = ?, curso = ?, grau_academico = ?, instituicao_ensino = ?, 
-                data_inicio = ?, data_conclusao = ?, carga_horaria = ?, matricula = ?, 
-                registro_validacao = ?, gerar_qrcode = ?, 
-                diploma_frente = ?, diploma_verso = ?, certificado = ?, historico = ?, outros_docs = ?,
-                edital_concurso = ?, data_homologacao = ?, dados_nomeacao = ?, data_posse = ?, data_exercicio = ?, 
-                esfera_concurso = ?, local_esfera = ?,
-                orgao = ?, numero_registro = ?, uf_registro = ?, faculdade_slug = ?
-            WHERE id = ?
-        ''',
-        (
-            dados['nome'], dados['cpf'], dados['rg'], dados['orgao_rg'], dados['data_expedicao'],
-            dados['data_nascimento'], dados['naturalidade'], dados['filiacao'], dados['endereco'], foto,
-            dados['tipo_curso'], dados['curso'], dados.get('grau_academico', ''),
-            dados.get('instituicao_ensino', ''), dados.get('data_inicio', ''),
-            dados.get('data_conclusao', ''), dados.get('carga_horaria', ''), dados['matricula'],
-            dados.get('registro_validacao', ''), dados.get('gerar_qrcode', 'Não'),
-            diploma_frente, diploma_verso, certificado, historico, outros_docs,
-            dados.get('edital_concurso', ''), dados.get('data_homologacao', ''),
-            dados.get('dados_nomeacao', ''), dados.get('data_posse', ''), dados.get('data_exercicio', ''),
-            dados.get('esfera_concurso', 'Federal'), dados.get('local_esfera', ''),
-            dados.get('orgao', ''), dados.get('numero_registro', ''),
-            dados.get('uf_registro', ''), dados.get('faculdade_slug', ''),
-            id,
-        ),
-    )
-    conn.commit()
-    conn.close()
+    try:
+      conn.execute(
+          '''
+              UPDATE alunos SET 
+                  nome = ?, cpf = ?, rg = ?, orgao_rg = ?, data_expedicao = ?, 
+                  data_nascimento = ?, naturalidade = ?, filiacao = ?, endereco = ?, foto = ?,
+                  tipo_curso = ?, curso = ?, grau_academico = ?, instituicao_ensino = ?, 
+                  data_inicio = ?, data_conclusao = ?, carga_horaria = ?, matricula = ?, 
+                  registro_validacao = ?, gerar_qrcode = ?, 
+                  diploma_frente = ?, diploma_verso = ?, certificado = ?, historico = ?, outros_docs = ?,
+                  edital_concurso = ?, data_homologacao = ?, dados_nomeacao = ?, data_posse = ?, data_exercicio = ?, 
+                  esfera_concurso = ?, local_esfera = ?,
+                  orgao = ?, numero_registro = ?, uf_registro = ?, faculdade_slug = ?
+              WHERE id = ?
+          ''',
+          (
+              dados['nome'], dados['cpf'], dados['rg'], dados['orgao_rg'], dados['data_expedicao'],
+              dados['data_nascimento'], dados['naturalidade'], dados['filiacao'], dados['endereco'], foto,
+              dados['tipo_curso'], dados['curso'], dados.get('grau_academico', ''),
+              dados.get('instituicao_ensino', ''), dados.get('data_inicio', ''),
+              dados.get('data_conclusao', ''), dados.get('carga_horaria', ''), dados['matricula'],
+              dados.get('registro_validacao', ''), dados.get('gerar_qrcode', 'Não'),
+              diploma_frente, diploma_verso, certificado, historico, outros_docs,
+              dados.get('edital_concurso', ''), dados.get('data_homologacao', ''),
+              dados.get('dados_nomeacao', ''), dados.get('data_posse', ''), dados.get('data_exercicio', ''),
+              dados.get('esfera_concurso', 'Federal'), dados.get('local_esfera', ''),
+              dados.get('orgao', ''), dados.get('numero_registro', ''),
+              dados.get('uf_registro', ''), dados.get('faculdade_slug', ''),
+              id,
+          ),
+      )
+      conn.commit()
+    finally:
+      conn.close()
 
     return redirect(url_for('alterar'))
-  aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
-  conn.close()
+  
+  try:
+    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  finally:
+    conn.close()
+    
   return render_template('editar.html', aluno=aluno)
 
 @app.route('/excluir', methods=['GET', 'POST'])
@@ -474,34 +491,38 @@ def excluir():
   if request.method == 'POST':
     termo = request.form.get('termo', '')
     conn = get_db_connection()
-    alunos = conn.execute(
-        'SELECT * FROM alunos WHERE nome LIKE ? OR cpf = ?',
-        ('%' + termo + '%', termo),
-    ).fetchall()
-    conn.close()
+    try:
+      alunos = conn.execute(
+          'SELECT * FROM alunos WHERE nome LIKE ? OR cpf = ?',
+          ('%' + termo + '%', termo),
+      ).fetchall()
+    finally:
+      conn.close()
   return render_template('excluir.html', alunos=alunos)
 
 @app.route('/deletar/<int:id>', methods=['POST'])
 def deletar(id):
   conn = get_db_connection()
-  aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
-  if aluno:
-    colunas_arquivos = ['foto', 'diploma_frente', 'diploma_verso', 'certificado', 'historico', 'outros_docs']
-    for coluna in colunas_arquivos:
-      if aluno[coluna]:
-        arquivos = str(aluno[coluna]).split('|')
-        for arq in arquivos:
-          if arq.strip():
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(arq.strip()))
-            try:
-              if os.path.exists(filepath):
-                os.remove(filepath)
-            except Exception:
-              pass
-              
-  conn.execute('DELETE FROM alunos WHERE id = ?', (id,))
-  conn.commit()
-  conn.close()
+  try:
+    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+    if aluno:
+      colunas_arquivos = ['foto', 'diploma_frente', 'diploma_verso', 'certificado', 'historico', 'outros_docs']
+      for coluna in colunas_arquivos:
+        if aluno[coluna]:
+          arquivos = str(aluno[coluna]).split('|')
+          for arq in arquivos:
+            if arq.strip():
+              filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(arq.strip()))
+              try:
+                if os.path.exists(filepath):
+                  os.remove(filepath)
+              except Exception:
+                pass
+                
+    conn.execute('DELETE FROM alunos WHERE id = ?', (id,))
+    conn.commit()
+  finally:
+    conn.close()
   return redirect(url_for('excluir'))
 
 @app.route('/deletar_todos', methods=['POST'])
@@ -522,9 +543,11 @@ def deletar_todos():
         pass
         
   conn = get_db_connection()
-  conn.execute('DELETE FROM alunos')
-  conn.commit()
-  conn.close()
+  try:
+    conn.execute('DELETE FROM alunos')
+    conn.commit()
+  finally:
+    conn.close()
   return redirect(url_for('excluir'))
 
 @app.route('/informacoes/<tipo>', methods=['GET', 'POST'])
@@ -540,14 +563,16 @@ def informacoes(tipo):
   if request.method == 'POST':
     termo = request.form.get('termo', '')
     conn = get_db_connection()
-    alunos = conn.execute(
-        f'''
-            SELECT * FROM alunos 
-            WHERE (nome LIKE ? OR cpf = ?) AND ({filtro_sql})
-        ''',
-        ('%' + termo + '%', termo),
-    ).fetchall()
-    conn.close()
+    try:
+      alunos = conn.execute(
+          f'''
+              SELECT * FROM alunos 
+              WHERE (nome LIKE ? OR cpf = ?) AND ({filtro_sql})
+          ''',
+          ('%' + termo + '%', termo),
+      ).fetchall()
+    finally:
+      conn.close()
   return render_template(
       'informacoes.html', alunos=alunos, tipo=tipo, titulo=titulo
   )
@@ -555,8 +580,11 @@ def informacoes(tipo):
 @app.route('/painel_aluno/<int:id>')
 def painel_aluno(id):
   conn = get_db_connection()
-  aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
-  conn.close()
+  try:
+    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  finally:
+    conn.close()
+    
   if not aluno:
     return 'Aluno não encontrado.', 404
 
@@ -580,10 +608,13 @@ def painel_aluno(id):
 @app.route('/portal_aluno/<matricula>', methods=['GET', 'POST'])
 def portal_do_aluno_publico(matricula):
   conn = get_db_connection()
-  aluno = conn.execute(
-      'SELECT * FROM alunos WHERE matricula = ?', (matricula,)
-  ).fetchone()
-  conn.close()
+  try:
+    aluno = conn.execute(
+        'SELECT * FROM alunos WHERE matricula = ?', (matricula,)
+    ).fetchone()
+  finally:
+    conn.close()
+    
   if not aluno:
     return 'Matrícula não encontrada. Verifique o link.', 404
 
@@ -613,7 +644,7 @@ def portal_do_aluno_publico(matricula):
         logado_portal=logado_portal,
         erro=erro,
     )
-  except Exception as e:
+  except Exception:
     try:
       return render_template(
           f'portais/{faculdade_slug}.html',
@@ -632,8 +663,11 @@ def portal_do_aluno_publico(matricula):
 @app.route('/validacao/<faculdade_slug>/<cpf>')
 def validacao_qr_code(faculdade_slug, cpf):
   conn = get_db_connection()
-  aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ?', (cpf,)).fetchone()
-  conn.close()
+  try:
+    aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ?', (cpf,)).fetchone()
+  finally:
+    conn.close()
+    
   if not aluno:
     return (
         'Aluno não encontrado. Verifique se o CPF existe no banco de dados.',
@@ -650,7 +684,7 @@ def validacao_qr_code(faculdade_slug, cpf):
         logado_portal=False,
         erro=None,
     )
-  except Exception as e:
+  except Exception:
     try:
       return render_template(
           f'portais/{slug}.html',
@@ -665,8 +699,11 @@ def validacao_qr_code(faculdade_slug, cpf):
 @app.route('/visualizar_qrcode/<cpf>')
 def visualizar_qrcode(cpf):
   conn = get_db_connection()
-  aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ?', (cpf,)).fetchone()
-  conn.close()
+  try:
+    aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ?', (cpf,)).fetchone()
+  finally:
+    conn.close()
+    
   if not aluno:
     return 'Aluno não encontrado.', 404
 
@@ -687,30 +724,29 @@ def consulta_xml():
       busca_base = f'%{nome_base}%'
 
       conn = get_db_connection()
-      aluno = conn.execute(
-          '''
-                SELECT * FROM alunos 
-                WHERE diploma_frente LIKE ? OR diploma_verso LIKE ? OR historico LIKE ? OR certificado LIKE ?
-                   OR diploma_frente LIKE ? OR diploma_verso LIKE ? OR historico LIKE ? OR certificado LIKE ?
-            ''',
-          (
-              busca_completa,
-              busca_completa,
-              busca_completa,
-              busca_completa,
-              busca_base,
-              busca_base,
-              busca_base,
-              busca_base,
-          ),
-      ).fetchone()
-      conn.close()
+      try:
+        aluno = conn.execute(
+            '''
+                  SELECT * FROM alunos 
+                  WHERE diploma_frente LIKE ? OR diploma_verso LIKE ? OR historico LIKE ? OR certificado LIKE ?
+                     OR diploma_frente LIKE ? OR diploma_verso LIKE ? OR historico LIKE ? OR certificado LIKE ?
+              ''',
+            (
+                busca_completa,
+                busca_completa,
+                busca_completa,
+                busca_completa,
+                busca_base,
+                busca_base,
+                busca_base,
+                busca_base,
+            ),
+        ).fetchone()
+      finally:
+        conn.close()
 
       if not aluno:
-        erro = (
-            'Arquivo não reconhecido ou aluno não cadastrado com este'
-            ' documento.'
-        )
+        erro = 'Arquivo não reconhecido ou aluno não cadastrado com este documento.'
     else:
       erro = 'Nenhum arquivo selecionado.'
   return render_template('consulta_xml.html', aluno=aluno, erro=erro)
@@ -718,10 +754,13 @@ def consulta_xml():
 @app.route('/consulta/xml/<matricula>')
 def consulta_xml_direta(matricula):
   conn = get_db_connection()
-  aluno = conn.execute(
-      'SELECT * FROM alunos WHERE matricula = ?', (matricula,)
-  ).fetchone()
-  conn.close()
+  try:
+    aluno = conn.execute(
+        'SELECT * FROM alunos WHERE matricula = ?', (matricula,)
+    ).fetchone()
+  finally:
+    conn.close()
+    
   if not aluno:
     return 'Matrícula não encontrada.', 404
   return render_template('consulta_xml.html', aluno=aluno, erro=None)
@@ -729,10 +768,13 @@ def consulta_xml_direta(matricula):
 @app.route('/imprensanacional/consulta/<matricula>')
 def imprensanacional_consulta(matricula):
   conn = get_db_connection()
-  aluno = conn.execute(
-      'SELECT * FROM alunos WHERE matricula = ?', (matricula,)
-  ).fetchone()
-  conn.close()
+  try:
+    aluno = conn.execute(
+        'SELECT * FROM alunos WHERE matricula = ?', (matricula,)
+    ).fetchone()
+  finally:
+    conn.close()
+    
   if not aluno:
     return 'Candidato não encontrado.', 404
   return render_template(
@@ -758,10 +800,14 @@ def download_file(filename):
 @app.route('/visualizar_documento/<int:aluno_id>/<tipo_doc>')
 def visualizar_documento(aluno_id, tipo_doc):
   conn = get_db_connection()
-  aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (aluno_id,)).fetchone()
-  conn.close()
+  try:
+    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (aluno_id,)).fetchone()
+  finally:
+    conn.close()
+    
   if not aluno:
     return 'Aluno não encontrado.', 404
+    
   filenames_raw = ''
   titulo_doc = ''
   if tipo_doc == 'certificado':
@@ -772,6 +818,7 @@ def visualizar_documento(aluno_id, tipo_doc):
     filenames_raw, titulo_doc = aluno['outros_docs'], 'Outros'
   else:
     return abort(400)
+    
   filenames = [
       secure_filename(f) for f in (filenames_raw or '').split('|') if f
   ]
@@ -785,8 +832,11 @@ def visualizar_documento(aluno_id, tipo_doc):
 @app.route('/conselho_oab/<int:id>')
 def conselho_oab(id):
   conn = get_db_connection()
-  aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
-  conn.close()
+  try:
+    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  finally:
+    conn.close()
+    
   if not aluno:
     return 'Aluno não encontrado.', 404
   return render_template('conselhos/conselho_oab.html', aluno=aluno)
@@ -794,8 +844,11 @@ def conselho_oab(id):
 @app.route('/gerar_posse/<int:id>')
 def gerar_posse(id):
   conn = get_db_connection()
-  aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
-  conn.close()
+  try:
+    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  finally:
+    conn.close()
+    
   if not aluno:
     return 'Candidato não encontrado.', 404
   return render_template(
@@ -806,10 +859,25 @@ def gerar_posse(id):
   )
 
 @app.route('/gerar_exercicio/<int:id>')
+def gerando_exercicio(id):
+  conn = get_db_connection()
+  try:
+    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  finally:
+    conn.close()
+    
+  if not aluno:
+    return 'Candidato não encontrado.', 404
+  return render_template('termo_exercicio.html', aluno=aluno)
+
+@app.route('/gerar_exercicio/<int:id>')
 def gerar_exercicio(id):
   conn = get_db_connection()
-  aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
-  conn.close()
+  try:
+    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  finally:
+    conn.close()
+    
   if not aluno:
     return 'Candidato não encontrado.', 404
   return render_template('termo_exercicio.html', aluno=aluno)
