@@ -20,7 +20,6 @@ from flask_wtf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
-import requests
 
 # --- BIBLIOTECAS DE BANCO DE DADOS ---
 import sqlite3
@@ -253,28 +252,6 @@ def somente_admn(f):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
   if request.method == 'POST':
-    
-    # ==========================================
-    # VALIDAÇÃO CLOUDFLARE TURNSTILE (ANTIBOT)
-    # ==========================================
-    turnstile_response = request.form.get('cf-turnstile-response')
-    turnstile_secret = os.environ.get('TURNSTILE_SECRET', '')
-
-    verify_url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
-    try:
-        cf_req = requests.post(verify_url, data={
-            'secret': turnstile_secret,
-            'response': turnstile_response
-        }, timeout=5)
-        cf_result = cf_req.json()
-    except Exception as e:
-        cf_result = {'success': False}
-
-    if not cf_result.get('success'):
-        print(f"[ERRO TURNSTILE] Falha na validação: {cf_result.get('error-codes', 'desconhecido')}", flush=True)
-        return render_template('login.html', erro='Falha na verificação de segurança. O sistema bloqueou a tentativa.')
-    # ==========================================
-
     usuario_digitado = request.form.get('usuario', '').strip()
     senha_digitada = request.form.get('senha', '').strip()
 
@@ -903,7 +880,7 @@ def gerando_exercicio(id):
 def gerar_exercicio(id):
   conn = get_db_connection()
   try:
-    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).teste() if hasattr(conn, 'teste') else conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
   finally:
     conn.close()
     
