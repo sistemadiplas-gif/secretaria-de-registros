@@ -171,25 +171,32 @@ def init_db():
 init_db()
 
 # ==========================================
-# FUNÇÕES DE UPLOAD
+# FUNÇÕES DE UPLOAD E VALIDAÇÃO DE EXTENSÃO
 # ==========================================
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 def salvar_arquivo(file_storage):
   if file_storage and file_storage.filename != '':
-    filename = secure_filename(file_storage.filename)
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file_storage.save(filepath)
-    return filename
+    if allowed_file(file_storage.filename):
+        filename = secure_filename(file_storage.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file_storage.save(filepath)
+        return filename
   return ''
 
 def salvar_multiplos_arquivos(file_storage_list, antigos=''):
   nomes_salvos = [f for f in antigos.split('|') if f.strip()] if antigos else []
   for f in file_storage_list:
     if f and f.filename != '':
-      filename = secure_filename(f.filename)
-      filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-      f.save(filepath)
-      if filename not in nomes_salvos:
-        nomes_salvos.append(filename)
+      if allowed_file(f.filename):
+          filename = secure_filename(f.filename)
+          filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+          f.save(filepath)
+          if filename not in nomes_salvos:
+            nomes_salvos.append(filename)
   return '|'.join(nomes_salvos) if nomes_salvos else ''
 
 # ==========================================
