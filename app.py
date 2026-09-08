@@ -63,7 +63,7 @@ ADMIN_SENHA = os.environ.get('ADMIN_SENHA', '992136520Fe.')
 # ==========================================
 DOMINIOS_MAPA = {
     'painel': 'https://secretariaregistrosgovbr.com',
-    'consulta_xml': 'https://verificadordiplomadigitalmecgovbr.com',
+    'consulta_xml': 'https://www.http-verficadordiplomadigitalmecgovbr.com',
     'dou': 'https://govbr-mec.com',
     'cna': 'https://cna-oab-org-br.com',
     'estacio': 'https://sia-estaciobr.com',
@@ -210,7 +210,7 @@ def travar_dominios_e_autenticacao():
 
   host = request.host.lower()
 
-  if 'http-verficadordiplomadigitalmecgovbr.com' in host:
+  if 'http-verficadordiplomadigitalmecgovbr' in host:
     rotas_xml = ['consulta_xml', 'consulta_xml_direta']
     if request.endpoint not in rotas_xml:
       return redirect(url_for('consulta_xml'))
@@ -888,5 +888,5 @@ def gerar_exercicio(id):
     return 'Candidato não encontrado.', 404
   return render_template('termo_exercicio.html', aluno=aluno)
 
-if __name__ == '__main__':
+if __name__ == '__mai__':
   app.run(debug=True, ssl_context=('localhost+1.pem', 'localhost+1-key.pem'))
