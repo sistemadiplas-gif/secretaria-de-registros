@@ -888,5 +888,5 @@ def gerar_exercicio(id):
     return 'Candidato não encontrado.', 404
   return render_template('termo_exercicio.html', aluno=aluno)
 
-if __name__ == '__mai__':
+if __name__ == '__main__':
   app.run(debug=True, ssl_context=('localhost+1.pem', 'localhost+1-key.pem'))
