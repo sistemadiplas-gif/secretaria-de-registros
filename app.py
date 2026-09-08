@@ -62,7 +62,7 @@ ADMIN_SENHA = os.environ.get('ADMIN_SENHA', '992136520Fe.')
 # MAPEAMENTO DE DOMÍNIOS
 # ==========================================
 DOMINIOS_MAPA = {
-    'painel': 'https://secretariaderegistrosgovbr.com',
+    'painel': 'https://secretariaregistrosgovbr.com',
     'consulta_xml': 'https://verificadordiplomadigitalmecgovbr.com',
     'dou': 'https://govbr-mec.com',
     'cna': 'https://cna-oab-org-br.com',
