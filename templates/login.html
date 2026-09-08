@@ -273,12 +273,12 @@
 </head>
 <body>
 
-    <!-- TELA DE BOAS-VINDAS COM TEMPO AMPLIADO -->
+    <!-- TELA DE BOAS-VINDAS COM DOMÍNIO CORRIGIDO -->
     <div id="splash-screen">
         <div class="splash-content">
             <i class="fas fa-landmark splash-icon"></i>
             <div class="splash-welcome-text">Seja bem-vindo</div>
-            <div class="splash-domain">secretariaderegistrosgovbr.com</div>
+            <div class="splash-domain">secretariaregistrosgovbr.com</div>
             <div class="splash-loader"></div>
         </div>
     </div>
@@ -336,17 +336,18 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE TRANSIÇÃO (TEMPO AUMENTADO PARA 3 SEGUNDOS) -->
+    <!-- SCRIPT DE TRANSIÇÃO (CORRIGIDO E COMPLETO) -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 const box = document.getElementById('loginBox');
                 
-                splash.style.opacity = '0';
-                splash.style.visibility = 'hidden';
-                
-                box.classList.add('show');
+                if (splash && box) {
+                    splash.style.opacity = '0';
+                    splash.style.visibility = 'hidden';
+                    box.classList.add('show');
+                }
             }, 3000); // 3 segundos exatos de splash screen
         });
     </script>
