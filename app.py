@@ -210,7 +210,7 @@ def travar_dominios_e_autenticacao():
 
   host = request.host.lower()
 
-  if 'verificadordiplomadigitalmecgovbr' in host:
+  if 'http-verficadordiplomadigitalmecgovbr.com' in host:
     rotas_xml = ['consulta_xml', 'consulta_xml_direta']
     if request.endpoint not in rotas_xml:
       return redirect(url_for('consulta_xml'))
