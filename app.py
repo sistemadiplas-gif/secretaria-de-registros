@@ -68,8 +68,9 @@ DOMINIOS_MAPA = {
     'cna': 'https://cna-oab-org-br.com',
     'estacio': 'https://http-sia-estaciobr.com', 
     'puc': 'https://sol-puc-goias-edubr.com',
+    'puc_sp': 'https://http-pucsp.com',
     'unip': 'https://http-unipbr.com',
-    'anhanguera': 'https://https-login-anhanguera.com', # <-- DOMÍNIO OFICIAL ANHANGUERA ATUALIZADO
+    'anhanguera': 'https://https-login-anhanguera.com',
 }
 
 def obter_url_base_faculdade(slug):
@@ -79,6 +80,8 @@ def obter_url_base_faculdade(slug):
     return DOMINIOS_MAPA['estacio']
   elif slug == 'puc_go':
     return DOMINIOS_MAPA['puc']
+  elif slug == 'puc_sp':
+    return DOMINIOS_MAPA['puc_sp']
   elif slug == 'anhanguera':
     return DOMINIOS_MAPA['anhanguera']
   else:
@@ -156,8 +159,7 @@ def travar_dominios_e_autenticacao():
     if request.endpoint != 'conselho_oab':
       return "Acesso restrito. Utilize o link com o ID direto da consulta CNA.", 403
 
-  # <-- TRAVA ATUALIZADA PARA O DOMÍNIO OFICIAL DA ANHANGUERA
-  elif 'http-sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'http-unipbr' in host or 'https-login-anhanguera' in host:
+  elif 'http-sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'http-pucsp' in host or 'http-unipbr' in host or 'https-login-anhanguera' in host:
     rotas_portais = [
         'portal_do_aluno_publico', 'validacao_qr_code', 
         'visualizar_qrcode', 'visualizar_documento', 'download_file'

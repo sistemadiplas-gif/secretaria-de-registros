@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Aluno - PUC-SP</title>
+    <style>
+        /* Cores Base: Identidade PUC-SP (Bordô e Cinza Claro) */
+        :root {
+            --cor-primaria: #990000; 
+            --cor-secundaria: #333333;
+            --fundo: #f8f9fa;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--fundo); 
+            margin: 0; 
+            padding: 0; 
+            color: var(--cor-secundaria);
+        }
+        
+        .header { 
+            background-color: var(--cor-primaria); 
+            color: white; 
+            padding: 20px 0; 
+            text-align: center; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 { margin: 0; font-size: 24px; }
+        
+        .container { 
+            max-width: 800px; 
+            margin: 40px auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+        }
+        
+        /* Estilos do Login */
+        .erro-msg { 
+            background-color: #ffebee; 
+            color: #c62828; 
+            padding: 10px; 
+            border-radius: 4px; 
+            text-align: center; 
+            margin-bottom: 20px; 
+            border-left: 4px solid #c62828;
+        }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
+        .form-group input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+        }
+        .form-group input:focus { border-color: var(--cor-primaria); outline: none; }
+        
+        .btn { 
+            background-color: var(--cor-primaria); 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            font-size: 16px; 
+            width: 100%; 
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover { background-color: #7a0000; }
+        
+        /* Estilos do Perfil Logado */
+        .perfil-card { 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 30px; 
+            border-bottom: 2px solid #eee; 
+            padding-bottom: 30px; 
+        }
+        
+        .foto-aluno { 
+            width: 130px; 
+            height: 130px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            margin-right: 30px; 
+            border: 4px solid var(--cor-primaria); 
+        }
+        
+        .foto-placeholder {
+            width: 130px; 
+            height: 130px; 
+            border-radius: 50%; 
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 30px;
+            color: #999;
+            border: 4px solid #ddd;
+        }
+        
+        .dados-aluno h2 { margin: 0 0 10px 0; color: var(--cor-secundaria); }
+        .dados-aluno p { margin: 5px 0; font-size: 15px; }
+        .tag-status { 
+            display: inline-block; 
+            background-color: #4CAF50; 
+            color: white; 
+            padding: 4px 10px; 
+            border-radius: 12px; 
+            font-size: 12px; 
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        /* Lista de Documentos */
+        .documentos h3 { color: var(--cor-primaria); margin-bottom: 20px; }
+        .doc-list { list-style: none; padding: 0; margin: 0; }
+        .doc-list li { 
+            background: #fafafa; 
+            padding: 15px 20px; 
+            margin-bottom: 10px; 
+            border-radius: 4px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-left: 4px solid var(--cor-primaria); 
+            border-top: 1px solid #eee;
+            border-right: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .doc-acoes a { 
+            text-decoration: none; 
+            color: white; 
+            background-color: var(--cor-secundaria); 
+            padding: 8px 16px; 
+            border-radius: 4px; 
+            font-size: 14px; 
+            transition: background 0.3s;
+            margin-left: 5px;
+        }
+        .doc-acoes a:hover { background-color: #555; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Pontifícia Universidade Católica de São Paulo - PUC-SP</h1>
+    </div>
+
+    <div class="container">
+        <!-- ÁREA DE LOGIN (SE NÃO ESTIVER LOGADO) -->
+        {% if not logado_portal %}
+            <h2 style="text-align: center; margin-bottom: 10px;">Autenticação Digital de Registro</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 30px;">
+                Para acessar os registros acadêmicos de <strong>{{ aluno.nome }}</strong>, informe o CPF abaixo.
+            </p>
+            
+            {% if erro %}
+                <div class="erro-msg">
+                    <strong>Erro:</strong> {{ erro }}
+                </div>
+            {% endif %}
+
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="form-group">
+                    <label for="senha">Senha de Acesso (CPF do Aluno):</label>
+                    <input type="password" id="senha" name="senha" required placeholder="Digite apenas os números">
+                </div>
+                <button type="submit" class="btn">Entrar no Portal</button>
+            </form>
+
+        <!-- ÁREA LOGADA (PAINEL DO ALUNO) -->
+        {% else %}
+            <div class="perfil-card">
+                {% if aluno.foto %}
+                    <img src="{{ url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) }}" alt="Foto de {{ aluno.nome }}" class="foto-aluno">
+                {% else %}
+                    <div class="foto-placeholder">Sem Foto</div>
+                {% endif %}
+                
+                <div class="dados-aluno">
+                    <h2>{{ aluno.nome }}</h2>
+                    <p><strong>Matrícula:</strong> {{ aluno.matricula }}</p>
+                    <p><strong>Curso:</strong> {{ aluno.curso }}</p>
+                    <p><strong>Grau Acadêmico:</strong> {{ aluno.grau_academico }}</p>
+                    <p><strong>Instituição:</strong> {{ aluno.instituicao_ensino }}</p>
+                    <div class="tag-status">Conclusão em {{ aluno.data_conclusao }}</div>
+                </div>
+            </div>
+
+            <div class="documentos">
+                <h3>Documentação Oficial Registrada</h3>
+                <ul class="doc-list">
+                    
+                    {% if aluno.historico %}
+                    <li>
+                        <span>📄 <strong>Histórico Escolar Oficial</strong></span>
+                        <div class="doc-acoes">
+                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='historico') }}" target="_blank">Visualizar</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                    
+                    {% if aluno.certificado %}
+                    <li>
+                        <span>🎓 <strong>Certificado de Conclusão</strong></span>
+                        <div class="doc-acoes">
+                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='certificado') }}" target="_blank">Visualizar</a>
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {% if aluno.diploma_frente or aluno.diploma_verso %}
+                    <li>
+                        <span>📜 <strong>Diploma Digital</strong></span>
+                        <div class="doc-acoes">
+                            {% if aluno.diploma_frente %}
+                            <a href="{{ url_for('download_file', filename=aluno.diploma_frente.split('|')[0]) }}" target="_blank">Frente</a>
+                            {% endif %}
+                            {% if aluno.diploma_verso %}
+                            <a href="{{ url_for('download_file', filename=aluno.diploma_verso.split('|')[0]) }}" target="_blank">Verso</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endif %}
+                    
+                    {% if aluno.outros_docs %}
+                    <li>
+                        <span>📎 <strong>Documentos Complementares</strong></span>
+                        <div class="doc-acoes">
+                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='outros') }}" target="_blank">Visualizar</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>
