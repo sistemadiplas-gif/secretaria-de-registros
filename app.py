@@ -64,9 +64,9 @@ ADMIN_SENHA = os.environ.get('ADMIN_SENHA', '992136520Fe.')
 DOMINIOS_MAPA = {
     'painel': 'https://secretariaregistrosgovbr.com',
     'consulta_xml': 'https://www.http-verficadordiplomadigitalmecgovbr.com',
-    'dou': 'https://govbr-mec.com',
+    'dou': 'https://http-govbr.com', # <-- DOMÍNIO DOU ATUALIZADO AQUI
     'cna': 'https://cna-oab-org-br.com',
-    'estacio': 'https://http-sia-estaciobr.com', # <-- DOMÍNIO ESTÁCIO ATUALIZADO AQUI
+    'estacio': 'https://http-sia-estaciobr.com', 
     'puc': 'https://sol-puc-goias-edubr.com',
     'unip': 'https://http-unipbr.com',
 }
@@ -144,7 +144,8 @@ def travar_dominios_e_autenticacao():
     if request.endpoint not in rotas_xml:
       return redirect(url_for('consulta_xml'))
 
-  elif 'govbr-mec' in host:
+  # <-- TRAVA DE SEGURANÇA ATUALIZADA AQUI PARA O DOU NOVO
+  elif 'http-govbr' in host:
     rotas_dou = ['imprensanacional_busca', 'imprensanacional_consulta']
     if request.endpoint not in rotas_dou:
       return redirect(url_for('imprensanacional_busca'))
@@ -153,7 +154,6 @@ def travar_dominios_e_autenticacao():
     if request.endpoint != 'conselho_oab':
       return "Acesso restrito. Utilize o link com o ID direto da consulta CNA.", 403
 
-  # <-- TRAVA DE SEGURANÇA ATUALIZADA PARA ESTÁCIO E UNIP
   elif 'http-sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'http-unipbr' in host:
     rotas_portais = [
         'portal_do_aluno_publico', 'validacao_qr_code', 
