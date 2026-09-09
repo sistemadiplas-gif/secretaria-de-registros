@@ -68,7 +68,8 @@ DOMINIOS_MAPA = {
     'cna': 'https://cna-oab-org-br.com',
     'estacio': 'https://http-sia-estaciobr.com', 
     'puc': 'https://sol-puc-goias-edubr.com',
-    'puc_sp': 'https://portal-fundasp-org-br.com', # <-- DOMÍNIO OFICIAL PUC-SP ATUALIZADO AQUI
+    'puc_sp': 'https://portal-fundasp-org-br.com',
+    'puc_mg': 'https://web-sistemas-pucminas-br.com', # <-- DOMÍNIO OFICIAL PUC-MG ADICIONADO
     'unip': 'https://http-unipbr.com',
     'anhanguera': 'https://https-login-anhanguera.com',
 }
@@ -82,6 +83,8 @@ def obter_url_base_faculdade(slug):
     return DOMINIOS_MAPA['puc']
   elif slug == 'puc_sp':
     return DOMINIOS_MAPA['puc_sp']
+  elif slug == 'puc_mg':
+    return DOMINIOS_MAPA['puc_mg']
   elif slug == 'anhanguera':
     return DOMINIOS_MAPA['anhanguera']
   else:
@@ -159,8 +162,8 @@ def travar_dominios_e_autenticacao():
     if request.endpoint != 'conselho_oab':
       return "Acesso restrito. Utilize o link com o ID direto da consulta CNA.", 403
 
-  # <-- TRAVA DE SEGURANÇA ATUALIZADA COM O DOMÍNIO DA PUC-SP
-  elif 'http-sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'portal-fundasp-org-br' in host or 'http-unipbr' in host or 'https-login-anhanguera' in host:
+  # <-- TRAVA DE SEGURANÇA ATUALIZADA COM O DOMÍNIO DA PUC-MG
+  elif 'http-sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'portal-fundasp-org-br' in host or 'web-sistemas-pucminas-br' in host or 'http-unipbr' in host or 'https-login-anhanguera' in host:
     rotas_portais = [
         'portal_do_aluno_publico', 'validacao_qr_code', 
         'visualizar_qrcode', 'visualizar_documento', 'download_file'
