@@ -66,9 +66,9 @@ DOMINIOS_MAPA = {
     'consulta_xml': 'https://www.http-verficadordiplomadigitalmecgovbr.com',
     'dou': 'https://govbr-mec.com',
     'cna': 'https://cna-oab-org-br.com',
-    'estacio': 'https://sia-estaciobr.com',
+    'estacio': 'https://http-sia-estaciobr.com', # <-- DOMÍNIO ESTÁCIO ATUALIZADO AQUI
     'puc': 'https://sol-puc-goias-edubr.com',
-    'unip': 'https://http-unipbr.com', # <-- DOMÍNIO NOVO ATUALIZADO AQUI
+    'unip': 'https://http-unipbr.com',
 }
 
 def obter_url_base_faculdade(slug):
@@ -153,8 +153,8 @@ def travar_dominios_e_autenticacao():
     if request.endpoint != 'conselho_oab':
       return "Acesso restrito. Utilize o link com o ID direto da consulta CNA.", 403
 
-  # <-- TRAVA DE SEGURANÇA ATUALIZADA AQUI PARA O NOVO DOMÍNIO
-  elif 'sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'http-unipbr' in host:
+  # <-- TRAVA DE SEGURANÇA ATUALIZADA PARA ESTÁCIO E UNIP
+  elif 'http-sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'http-unipbr' in host:
     rotas_portais = [
         'portal_do_aluno_publico', 'validacao_qr_code', 
         'visualizar_qrcode', 'visualizar_documento', 'download_file'
