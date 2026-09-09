@@ -65,10 +65,9 @@ DOMINIOS_MAPA = {
     'painel': 'https://secretariaregistrosgovbr.com',
     'consulta_xml': 'https://www.http-verficadordiplomadigitalmecgovbr.com',
     'dou': 'https://http-govbr.com',
-    'cna': 'https://cna-oab-org-br.com',
-    'confea': 'https://https-consultaprofissional-confea-org-br.com', # <-- DOMÍNIO OFICIAL CONFEA ATUALIZADO
+    'cna': 'https://https-cna-oab-org-br.com',
+    'confea': 'https://https-consultaprofissional-confea-org-br.com',
     'estacio': 'https://http-sia-estaciobr.com', 
-    'puc': 'https://sol-puc-goias-edubr.com',
     'puc_sp': 'https://portal-fundasp-org-br.com',
     'puc_mg': 'https://web-sistemas-pucminas-br.com',
     'unip': 'https://http-unipbr.com',
@@ -80,8 +79,6 @@ def obter_url_base_faculdade(slug):
     return DOMINIOS_MAPA['unip']
   elif slug == 'sia_estacio_br':
     return DOMINIOS_MAPA['estacio']
-  elif slug == 'puc_go':
-    return DOMINIOS_MAPA['puc']
   elif slug == 'puc_sp':
     return DOMINIOS_MAPA['puc_sp']
   elif slug == 'puc_mg':
@@ -89,7 +86,7 @@ def obter_url_base_faculdade(slug):
   elif slug == 'anhanguera':
     return DOMINIOS_MAPA['anhanguera']
   else:
-    return DOMINIOS_MAPA['puc']
+    return DOMINIOS_MAPA['puc_sp']
 
 @app.after_request
 def aplicar_headers_seguranca(response):
@@ -159,7 +156,7 @@ def travar_dominios_e_autenticacao():
     if request.endpoint not in rotas_dou:
       return redirect(url_for('imprensanacional_busca'))
 
-  elif 'cna-oab-org-br' in host:
+  elif 'https-cna-oab' in host:
     if request.endpoint != 'conselho_oab':
       return "Acesso restrito. Utilize o link com o ID direto da consulta CNA.", 403
 
@@ -167,7 +164,7 @@ def travar_dominios_e_autenticacao():
     if request.endpoint != 'conselho_confea':
       return "Acesso restrito. Utilize o link com o ID direto da consulta Confea.", 403
 
-  elif 'http-sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'portal-fundasp-org-br' in host or 'web-sistemas-pucminas-br' in host or 'http-unipbr' in host or 'https-login-anhanguera' in host:
+  elif 'http-sia-estaciobr' in host or 'portal-fundasp-org-br' in host or 'web-sistemas-pucminas-br' in host or 'http-unipbr' in host or 'https-login-anhanguera' in host:
     rotas_portais = [
         'portal_do_aluno_publico', 'validacao_qr_code', 
         'visualizar_qrcode', 'visualizar_documento', 'download_file'
@@ -470,7 +467,7 @@ def painel_aluno(id):
   if not aluno:
     return 'Aluno não encontrado.', 404
 
-  slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_go'
+  slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_sp'
   dominio_faculdade = obter_url_base_faculdade(slug)
 
   url_base_custom = {
@@ -502,7 +499,7 @@ def portal_do_aluno_publico(matricula):
     return 'Matrícula não encontrada. Verifique o link.', 404
 
   faculdade_slug = (
-      aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_go'
+      aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_sp'
   )
 
   logado_portal = False
@@ -590,7 +587,7 @@ def visualizar_qrcode(cpf):
   if not aluno:
     return 'Aluno não encontrado.', 404
 
-  slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_go'
+  slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_sp'
   dominio_alvo = obter_url_base_faculdade(slug)
   return redirect(f'{dominio_alvo}/validacao/{slug}/{cpf}', code=301)
 
