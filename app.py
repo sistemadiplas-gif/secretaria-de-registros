@@ -66,10 +66,11 @@ DOMINIOS_MAPA = {
     'consulta_xml': 'https://www.http-verficadordiplomadigitalmecgovbr.com',
     'dou': 'https://http-govbr.com',
     'cna': 'https://cna-oab-org-br.com',
+    'confea': 'https://https-consultaprofissional-confea-org-br.com', # <-- DOMÍNIO OFICIAL CONFEA ATUALIZADO
     'estacio': 'https://http-sia-estaciobr.com', 
     'puc': 'https://sol-puc-goias-edubr.com',
     'puc_sp': 'https://portal-fundasp-org-br.com',
-    'puc_mg': 'https://web-sistemas-pucminas-br.com', # <-- DOMÍNIO OFICIAL PUC-MG ADICIONADO
+    'puc_mg': 'https://web-sistemas-pucminas-br.com',
     'unip': 'https://http-unipbr.com',
     'anhanguera': 'https://https-login-anhanguera.com',
 }
@@ -162,7 +163,10 @@ def travar_dominios_e_autenticacao():
     if request.endpoint != 'conselho_oab':
       return "Acesso restrito. Utilize o link com o ID direto da consulta CNA.", 403
 
-  # <-- TRAVA DE SEGURANÇA ATUALIZADA COM O DOMÍNIO DA PUC-MG
+  elif 'https-consultaprofissional-confea' in host:
+    if request.endpoint != 'conselho_confea':
+      return "Acesso restrito. Utilize o link com o ID direto da consulta Confea.", 403
+
   elif 'http-sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'portal-fundasp-org-br' in host or 'web-sistemas-pucminas-br' in host or 'http-unipbr' in host or 'https-login-anhanguera' in host:
     rotas_portais = [
         'portal_do_aluno_publico', 'validacao_qr_code', 
@@ -175,7 +179,7 @@ def travar_dominios_e_autenticacao():
     rotas_livres = [
         'auth.login', 'auth.solicitar_acesso', 'portal_do_aluno_publico', 'validacao_qr_code', 
         'consulta_xml', 'consulta_xml_direta', 'imprensanacional_consulta', 'imprensanacional_busca', 
-        'download_file', 'visualizar_documento', 'conselho_oab', 'visualizar_qrcode', 'gerar_posse', 'gerar_exercicio'
+        'download_file', 'visualizar_documento', 'conselho_oab', 'conselho_confea', 'visualizar_qrcode', 'gerar_posse', 'gerar_exercicio'
     ]
     if request.endpoint not in rotas_livres and not session.get('logado'):
       return redirect(url_for('auth.login'))
@@ -474,6 +478,7 @@ def painel_aluno(id):
       'xml': DOMINIOS_MAPA['consulta_xml'] + '/',
       'dou': DOMINIOS_MAPA['dou'] + '/',
       'cna': DOMINIOS_MAPA['cna'] + '/',
+      'confea': DOMINIOS_MAPA['confea'] + '/',
       'portal': dominio_faculdade + '/',
       'validacao': f'{dominio_faculdade}/validacao/{slug}/',
   }
@@ -718,6 +723,18 @@ def conselho_oab(id):
   if not aluno:
     return 'Aluno não encontrado.', 404
   return render_template('conselhos/conselho_oab.html', aluno=aluno)
+
+@app.route('/conselho_confea/<int:id>')
+def conselho_confea(id):
+  conn = get_db_connection()
+  try:
+    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  finally:
+    conn.close()
+    
+  if not aluno:
+    return 'Profissional não encontrado.', 404
+  return render_template('conselhos/conselho_confea.html', aluno=aluno)
 
 @app.route('/gerar_posse/<int:id>')
 def gerar_posse(id):

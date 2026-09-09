@@ -197,6 +197,7 @@
         <select name="orgao" id="seletor_orgao" style="width: 100%;">
             <option value="" {% if not aluno['orgao'] %}selected{% endif %}>Nenhum / Não se aplica</option>
             <option value="oab" {% if aluno['orgao'] == 'oab' %}selected{% endif %}>⚖️ OAB - Cadastro Nacional (CNA)</option>
+            <option value="confea" {% if aluno['orgao'] == 'confea' %}selected{% endif %}>🏗️ Confea / Crea - Sistema de Engenharia</option>
         </select>
     </div>
     
