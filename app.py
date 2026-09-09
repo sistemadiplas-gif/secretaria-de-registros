@@ -68,7 +68,7 @@ DOMINIOS_MAPA = {
     'cna': 'https://cna-oab-org-br.com',
     'estacio': 'https://sia-estaciobr.com',
     'puc': 'https://sol-puc-goias-edubr.com',
-    'unip': 'https://unip-braluno.com',
+    'unip': 'https://http-unipbr.com', # <-- DOMÍNIO NOVO ATUALIZADO AQUI
 }
 
 def obter_url_base_faculdade(slug):
@@ -153,7 +153,8 @@ def travar_dominios_e_autenticacao():
     if request.endpoint != 'conselho_oab':
       return "Acesso restrito. Utilize o link com o ID direto da consulta CNA.", 403
 
-  elif 'sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'unip-braluno' in host:
+  # <-- TRAVA DE SEGURANÇA ATUALIZADA AQUI PARA O NOVO DOMÍNIO
+  elif 'sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'http-unipbr' in host:
     rotas_portais = [
         'portal_do_aluno_publico', 'validacao_qr_code', 
         'visualizar_qrcode', 'visualizar_documento', 'download_file'
@@ -738,7 +739,7 @@ def gerando_exercicio(id):
     return 'Candidato não encontrado.', 404
   return render_template('termo_exercicio.html', aluno=aluno)
 
-@app.route('/gerar_exercicio/<int:id>') # Nota: Você tinha essa rota duplicada no código original
+@app.route('/gerar_exercicio/<int:id>')
 def gerar_exercicio(id):
   conn = get_db_connection()
   try:
@@ -750,5 +751,5 @@ def gerar_exercicio(id):
     return 'Candidato não encontrado.', 404
   return render_template('termo_exercicio.html', aluno=aluno)
 
-if __name__ == '__mai__':
+if __name__ == '__main__':
   app.run(debug=True, ssl_context=('localhost+1.pem', 'localhost+1-key.pem'))
