@@ -21,17 +21,18 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
-# --- BIBLIOTECAS DE BANCO DE DADOS ---
-import sqlite3
-import psycopg2
-from psycopg2.extras import DictCursor
+# --- NOSSOS NOVOS MÓDULOS (BLUEPRINTS E BANCO) ---
+from database import get_db_connection, init_db
+from blueprints.auth import auth_bp
 
 app = Flask(__name__)
+
+# REGISTRANDO O BLUEPRINT DE AUTENTICAÇÃO
+app.register_blueprint(auth_bp)
 
 # ==========================================
 # CONFIGURAÇÕES DE SEGURANÇA SÊNIOR
 # ==========================================
-# Protegido: Busca diretamente da variável de ambiente com fallback seguro para testes locais
 app.secret_key = os.environ.get('SECRET_KEY', 'kR9#m2Pq!v8Z$xL5@nW3*yT7^c4F1bN0')
 
 csrf = CSRFProtect(app)
@@ -94,78 +95,7 @@ def aplicar_headers_seguranca(response):
     )
   return response
 
-# ==========================================
-# BANCO DE DADOS INTELIGENTE: POSTGRESQL (PRODUÇÃO) / SQLITE (LOCAL)
-# ==========================================
-DB_URL = os.environ.get('DATABASE_URL')
-
-if DB_URL and DB_URL.startswith('postgres://'):
-  DB_URL = DB_URL.replace('postgres://', 'postgresql://', 1)
-
-class DBConnWrapper:
-    def __init__(self):
-        self.usa_postgres = bool(DB_URL)
-        if self.usa_postgres:
-            try:
-                self.conn = psycopg2.connect(DB_URL, sslmode='require')
-                self.conn.autocommit = False
-            except Exception as e:
-                print(f"[ERRO CONEXAO POSTGRES] {type(e).__name__}: {e}", flush=True)
-                raise
-        else:
-            self.conn = sqlite3.connect('database.db', check_same_thread=False)
-            self.conn.row_factory = sqlite3.Row
-
-    def execute(self, query, params=()):
-        if self.usa_postgres:
-            cur = self.conn.cursor(cursor_factory=DictCursor)
-            pg_query = query.replace('?', '%s')
-            cur.execute(pg_query, params)
-            return cur
-        else:
-            cur = self.conn.cursor()
-            sqlite_query = query.replace('SERIAL PRIMARY KEY', 'INTEGER PRIMARY KEY AUTOINCREMENT')
-            cur.execute(sqlite_query, params)
-            return cur
-
-    def commit(self):
-        self.conn.commit()
-
-    def close(self):
-        if self.conn:
-            self.conn.close()
-
-def get_db_connection():
-    return DBConnWrapper()
-
-def init_db():
-  conn = get_db_connection()
-  try:
-      conn.execute('''
-            CREATE TABLE IF NOT EXISTS alunos (
-                id SERIAL PRIMARY KEY,
-                nome TEXT, cpf TEXT, rg TEXT, orgao_rg TEXT, data_expedicao TEXT,
-                data_nascimento TEXT, naturalidade TEXT, filiacao TEXT, endereco TEXT, foto TEXT,
-                tipo_curso TEXT, curso TEXT, grau_academico TEXT, instituicao_ensino TEXT, 
-                data_inicio TEXT, data_conclusao TEXT, carga_horaria TEXT, matricula TEXT, 
-                registro_validacao TEXT, gerar_qrcode TEXT,
-                diploma_frente TEXT, diploma_verso TEXT,
-                certificado TEXT, historico TEXT, outros_docs TEXT,
-                edital_concurso TEXT, data_homologacao TEXT, dados_nomeacao TEXT, data_posse TEXT, data_exercicio TEXT,
-                esfera_concurso TEXT, local_esfera TEXT, orgao TEXT, numero_registro TEXT, uf_registro TEXT, faculdade_slug TEXT
-            )
-        ''')
-
-      conn.execute('''
-            CREATE TABLE IF NOT EXISTS equipe (
-                id SERIAL PRIMARY KEY,
-                nome TEXT, cargo TEXT, usuario TEXT, senha TEXT, status_acesso TEXT
-            )
-        ''')
-      conn.commit()
-  finally:
-      conn.close()
-
+# INICIALIZA O BANCO DE DADOS
 init_db()
 
 # ==========================================
@@ -233,12 +163,12 @@ def travar_dominios_e_autenticacao():
 
   else:
     rotas_livres = [
-        'login', 'solicitar_acesso', 'portal_do_aluno_publico', 'validacao_qr_code', 
+        'auth.login', 'auth.solicitar_acesso', 'portal_do_aluno_publico', 'validacao_qr_code', 
         'consulta_xml', 'consulta_xml_direta', 'imprensanacional_consulta', 'imprensanacional_busca', 
         'download_file', 'visualizar_documento', 'conselho_oab', 'visualizar_qrcode', 'gerar_posse', 'gerar_exercicio'
     ]
     if request.endpoint not in rotas_livres and not session.get('logado'):
-      return redirect(url_for('login'))
+      return redirect(url_for('auth.login'))
 
 def somente_admn(f):
   @wraps(f)
@@ -247,73 +177,6 @@ def somente_admn(f):
       abort(403)
     return f(*args, **kwargs)
   return wrapper
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-  if request.method == 'POST':
-    usuario_digitado = request.form.get('usuario', '').strip()
-    senha_digitada = request.form.get('senha', '').strip()
-
-    if usuario_digitado == ADMIN_USUARIO and senha_digitada == ADMIN_SENHA:
-      session.permanent = True
-      session['logado'] = True
-      session['cargo'] = 'admn'
-      return redirect(url_for('index'))
-
-    conn = get_db_connection()
-    try:
-      membro = conn.execute(
-          "SELECT * FROM equipe WHERE usuario = ? AND status_acesso = 'Ativo'",
-          (usuario_digitado,),
-      ).fetchone()
-    finally:
-      conn.close()
-
-    if membro and check_password_hash(membro['senha'], senha_digitada):
-      session.permanent = True
-      session['logado'] = True
-      session['cargo'] = 'secretario'
-      return redirect(url_for('index'))
-
-    return render_template(
-        'login.html', erro='Credenciais inválidas ou acesso pendente.'
-    )
-  return render_template('login.html')
-
-@app.route('/logout')
-def logout():
-  session.clear()
-  return redirect(url_for('login'))
-
-@app.route('/solicitar_acesso', methods=['GET', 'POST'])
-def solicitar_acesso():
-  sucesso = None
-  erro = None
-  if request.method == 'POST':
-    nome = request.form.get('nome')
-    cargo = request.form.get('cargo')
-    usuario = request.form.get('usuario', '').strip()
-    senha = request.form.get('senha')
-    
-    conn = get_db_connection()
-    try:
-      existente = conn.execute(
-          'SELECT * FROM equipe WHERE usuario = ?', (usuario,)
-      ).fetchone()
-      if existente:
-        erro = 'Este usuário já está sendo utilizado. Escolha outro.'
-      else:
-        hash_senha = generate_password_hash(senha, method='pbkdf2:sha256')
-        conn.execute(
-            'INSERT INTO equipe (nome, cargo, usuario, senha, status_acesso)'
-            ' VALUES (?, ?, ?, ?, ?)',
-            (nome, cargo, usuario, hash_senha, 'Pendente'),
-        )
-        conn.commit()
-        sucesso = 'Solicitação enviada! Aguarde a liberação do administrador.'
-    finally:
-      conn.close()
-  return render_template('solicitar_acesso.html', sucesso=sucesso, erro=erro)
 
 @app.route('/aprovar_equipe/<int:id>', methods=['POST'])
 @somente_admn
@@ -875,7 +738,7 @@ def gerando_exercicio(id):
     return 'Candidato não encontrado.', 404
   return render_template('termo_exercicio.html', aluno=aluno)
 
-@app.route('/gerar_exercicio/<int:id>')
+@app.route('/gerar_exercicio/<int:id>') # Nota: Você tinha essa rota duplicada no código original
 def gerar_exercicio(id):
   conn = get_db_connection()
   try:
@@ -887,5 +750,5 @@ def gerar_exercicio(id):
     return 'Candidato não encontrado.', 404
   return render_template('termo_exercicio.html', aluno=aluno)
 
-if __name__ == '__main__':
+if __name__ == '__mai__':
   app.run(debug=True, ssl_context=('localhost+1.pem', 'localhost+1-key.pem'))
