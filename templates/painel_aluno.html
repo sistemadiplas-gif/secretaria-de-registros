@@ -72,7 +72,6 @@
         <div style="margin-bottom: 30px;">
             <label style="color: #ccc; font-size: 20px; font-weight: bold;">Consulta XML:</label>
             <div style="display: flex; gap: 15px; margin-top: 12px;">
-                <!-- DOMÍNIO CORRIGIDO COM O 'http-' -->
                 <input type="text" id="link_xml" value="https://www.http-verficadordiplomadigitalmecgovbr.com/consulta/xml/{{ aluno['matricula'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
                 <button onclick="copiarLink('link_xml')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
                 <a href="https://www.http-verficadordiplomadigitalmecgovbr.com/consulta/xml/{{ aluno['matricula'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
@@ -95,10 +94,8 @@
                 
                 {% set link_da_pasta = url_base['validacao'] ~ aluno['cpf'] %}
                 
-                <!-- CAIXA DO SELO COM ID EXATO PARA CAPTURA -->
                 <div id="selo-autenticidade" style="width: 480px; background: #ffffff; border: 2px solid #000; padding: 20px; position: relative; font-family: Arial, sans-serif; box-sizing: border-box; text-align: center; color: #000; margin-bottom: 15px;">
                     
-                    <!-- CARIMBO CIRCULAR AZUL COM TEXTO CURVADO VIA SVG -->
                     <div style="position: absolute; left: 15px; top: 45px; width: 125px; height: 125px;">
                         <svg viewBox="0 0 120 120" style="width: 100%; height: 100%;">
                             <circle cx="60" cy="60" r="54" fill="none" stroke="#0033cc" stroke-width="2"/>
@@ -111,20 +108,16 @@
                         </svg>
                     </div>
 
-                    <!-- TEXTO SUPERIOR DO SELO -->
                     <div style="font-size: 10px; font-weight: bold; margin-bottom: 4px; letter-spacing: 0.5px;">CONSULTE A AUTENTICIDADE DESTE DOCUMENTO</div>
                     <div style="font-size: 13px; margin-bottom: 12px; color: #222;">&nbsp;</div>
 
-                    <!-- ÁREA DO QR CODE NATIVO (Visível na tela e capturável pelo html2canvas) -->
                     <div style="margin: 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; width: 135px; height: 135px;" id="qrcode-render"></div>
 
-                    <!-- URL INFERIOR -->
                     <div style="font-size: 11px; color: #333; margin-top: 8px; word-break: break-all;">
                         {{ link_da_pasta }}
                     </div>
                 </div>
 
-                <!-- CAMPO DE LINK E BOTÕES DE APOIO -->
                 <div style="display: flex; gap: 15px; align-items: center; max-width: 800px;">
                     <input type="text" id="link_qrcode" value="{{ link_da_pasta }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 18px; padding: 15px; border-radius: 8px;">
                     <button onclick="copiarLink('link_qrcode')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 15px 25px; cursor: pointer; font-size: 18px; font-weight: bold;">📋 Copiar</button>
@@ -139,9 +132,15 @@
         <div>
             <label style="color: #ccc; font-size: 20px; font-weight: bold;">Registro Institucional ({{ aluno['orgao'] | upper }}):</label>
             <div style="display: flex; gap: 15px; margin-top: 12px;">
-                <input type="text" id="link_registro" value="{{ url_base['cna'] }}conselho_oab/{{ aluno['id'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
-                <button onclick="copiarLink('link_registro')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
-                <a href="{{ url_base['cna'] }}conselho_oab/{{ aluno['id'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
+                {% if aluno['orgao'] == 'confea' %}
+                    <input type="text" id="link_registro" value="{{ url_base['confea'] }}conselho_confea/{{ aluno['id'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
+                    <button onclick="copiarLink('link_registro')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
+                    <a href="{{ url_base['confea'] }}conselho_confea/{{ aluno['id'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
+                {% else %}
+                    <input type="text" id="link_registro" value="{{ url_base['cna'] }}conselho_oab/{{ aluno['id'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
+                    <button onclick="copiarLink('link_registro')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
+                    <a href="{{ url_base['cna'] }}conselho_oab/{{ aluno['id'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
+                {% endif %}
             </div>
         </div>
         {% else %}
@@ -208,7 +207,6 @@
 {% endif %}
 
 <script>
-    // Gera o QR Code nativamente na tela e garante que o html2canvas consiga capturá-lo no download
     document.addEventListener("DOMContentLoaded", function() {
         const renderDiv = document.getElementById("qrcode-render");
         if (renderDiv) {
