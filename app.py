@@ -64,11 +64,12 @@ ADMIN_SENHA = os.environ.get('ADMIN_SENHA', '992136520Fe.')
 DOMINIOS_MAPA = {
     'painel': 'https://secretariaregistrosgovbr.com',
     'consulta_xml': 'https://www.http-verficadordiplomadigitalmecgovbr.com',
-    'dou': 'https://http-govbr.com', # <-- DOMÍNIO DOU ATUALIZADO AQUI
+    'dou': 'https://http-govbr.com',
     'cna': 'https://cna-oab-org-br.com',
     'estacio': 'https://http-sia-estaciobr.com', 
     'puc': 'https://sol-puc-goias-edubr.com',
     'unip': 'https://http-unipbr.com',
+    'anhanguera': 'https://https-login-anhanguera.com', # <-- DOMÍNIO OFICIAL ANHANGUERA ATUALIZADO
 }
 
 def obter_url_base_faculdade(slug):
@@ -78,6 +79,8 @@ def obter_url_base_faculdade(slug):
     return DOMINIOS_MAPA['estacio']
   elif slug == 'puc_go':
     return DOMINIOS_MAPA['puc']
+  elif slug == 'anhanguera':
+    return DOMINIOS_MAPA['anhanguera']
   else:
     return DOMINIOS_MAPA['puc']
 
@@ -144,7 +147,6 @@ def travar_dominios_e_autenticacao():
     if request.endpoint not in rotas_xml:
       return redirect(url_for('consulta_xml'))
 
-  # <-- TRAVA DE SEGURANÇA ATUALIZADA AQUI PARA O DOU NOVO
   elif 'http-govbr' in host:
     rotas_dou = ['imprensanacional_busca', 'imprensanacional_consulta']
     if request.endpoint not in rotas_dou:
@@ -154,7 +156,8 @@ def travar_dominios_e_autenticacao():
     if request.endpoint != 'conselho_oab':
       return "Acesso restrito. Utilize o link com o ID direto da consulta CNA.", 403
 
-  elif 'http-sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'http-unipbr' in host:
+  # <-- TRAVA ATUALIZADA PARA O DOMÍNIO OFICIAL DA ANHANGUERA
+  elif 'http-sia-estaciobr' in host or 'sol-puc-goias-edubr' in host or 'http-unipbr' in host or 'https-login-anhanguera' in host:
     rotas_portais = [
         'portal_do_aluno_publico', 'validacao_qr_code', 
         'visualizar_qrcode', 'visualizar_documento', 'download_file'
