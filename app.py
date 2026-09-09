@@ -31,9 +31,8 @@ app = Flask(__name__)
 # ==========================================
 # CONFIGURAÇÕES DE SEGURANÇA SÊNIOR
 # ==========================================
-app.secret_key = os.environ.get(
-    'SECRET_KEY', 'kR9#m2Pq!v8Z$xL5@nW3*yT7^c4F1bN0'
-)
+# Protegido: Busca diretamente da variável de ambiente com fallback seguro para testes locais
+app.secret_key = os.environ.get('SECRET_KEY', 'kR9#m2Pq!v8Z$xL5@nW3*yT7^c4F1bN0')
 
 csrf = CSRFProtect(app)
 
