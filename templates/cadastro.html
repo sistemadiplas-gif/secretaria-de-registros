@@ -253,6 +253,12 @@
         $('#seletor_orgao').select2({ placeholder: "Pesquise o conselho...", allowClear: true });
         alternarCampos();
         alternarEsfera();
+
+        // CORREÇÃO: Normaliza o CPF antes de enviar (remove pontos, traços e espaços)
+        $('form').on('submit', function() {
+            var campoCpf = $('input[name="cpf"]');
+            campoCpf.val(campoCpf.val().replace(/\D/g, ''));
+        });
     });
 </script>
 {% endblock %}
