@@ -121,7 +121,7 @@
         }
 
         /* ==========================================
-           TELA 2: RESULTADO DE TELA INTEIRA
+           TELA 2: RESULTADO DE TELA INTEIRA (COMPACTO)
            ========================================== */
         
         .tela-full-screen {
@@ -131,7 +131,7 @@
             background-color: #ffffff; 
             z-index: 9999;
             overflow-y: auto; 
-            padding: 40px; 
+            padding: 20px; 
             box-sizing: border-box;
             justify-content: center;
             align-items: center; 
@@ -154,15 +154,15 @@
         .documento-card {
             position: relative;
             width: 100%;
-            max-width: 1300px; 
-            background-color: rgba(244, 248, 253, 0.65); 
-            border: 2px solid rgba(185, 210, 239, 0.8); 
+            max-width: 950px; /* Reduzido de 1300px para ficar mais compacto */
+            background-color: rgba(255, 255, 255, 0.2); 
+            border: 2px solid rgba(185, 210, 239, 0.4); 
             border-radius: 6px;
-            padding: 30px 40px;
+            padding: 20px 25px; /* Espaçamento interno reduzido */
             box-sizing: border-box;
             overflow: hidden;
             margin: auto; 
-            box-shadow: 0 4px 20px rgba(11, 60, 124, 0.06);
+            box-shadow: 0 4px 20px rgba(11, 60, 124, 0.02);
             z-index: 2;
         }
 
@@ -172,7 +172,7 @@
 
         .banner-bloco-imagem {
             width: 100%;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             box-sizing: border-box;
             border-radius: 4px;
             overflow: hidden;
@@ -182,43 +182,45 @@
             height: auto;
             display: block;
             mix-blend-mode: multiply;
-            opacity: 0.90;
+            opacity: 0.75;
             filter: contrast(125%) brightness(102%);
         }
 
-        .linha-fechar { text-align: right; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
-        .linha-fechar a { color: #0b3c7c; font-size: 16px; font-weight: bold; text-decoration: underline; cursor: pointer; }
+        .linha-fechar { text-align: right; width: 100%; margin-bottom: 10px; box-sizing: border-box; }
+        .linha-fechar a { color: #0b3c7c; font-size: 15px; font-weight: bold; text-decoration: underline; cursor: pointer; }
 
-        .layout-credencial { display: flex; gap: 40px; align-items: flex-start; width: 100%; }
+        .layout-credencial { display: flex; gap: 25px; align-items: center; justify-content: center; width: 100%; }
 
-        .bloco-foto { width: 160px; text-align: center; flex-shrink: 0; }
+        .bloco-foto { width: 140px; text-align: center; flex-shrink: 0; }
         .moldura {
-            width: 155px; height: 200px; border: 2px solid #aaa; background: #fff;
-            margin: 0 auto 12px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            width: 130px; height: 170px; border: 2px solid #aaa; background: rgba(255, 255, 255, 0.8);
+            margin: 0 auto 8px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
         .moldura img { width: 100%; height: 100%; object-fit: cover; }
-        .lbl-sit { font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 19px; color: #111; margin-bottom: 6px; }
-        .lbl-ativo { font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 26px; color: #00aa00; }
+        .lbl-sit { font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 17px; color: #111; margin-bottom: 4px; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
+        .lbl-ativo { font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 22px; color: #00aa00; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
 
-        .bloco-tabela { flex: 1; }
+        .bloco-tabela { flex: 1; max-width: 750px; }
         
-        /* Faixa de título com o azul clarinho institucional idêntico ao formulário */
+        /* Faixa de título mais compacta */
         .faixa-titulo {
-            background-color: #eef4f9; color: #1a4973; text-align: center;
-            font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 19px;
-            padding: 9px; margin-bottom: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.06);
-            border: 1px solid #d0dbe5;
+            background-color: rgba(238, 244, 249, 0.75); color: #1a4973; text-align: center;
+            font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 17px;
+            padding: 7px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+            border: 1px solid rgba(208, 219, 229, 0.8);
+            backdrop-filter: blur(2px);
         }
         
-        /* Fundo dos dados do aluno alterado para o mesmo azul clarinho */
+        /* Fundo dos dados do aluno mais compacto */
         .faixa-dado {
-            background-color: #eef4f9; padding: 12px 18px; margin-bottom: 14px; display: flex; align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03); 
-            border: 1px solid #d0dbe5;
+            background-color: rgba(238, 244, 249, 0.75); padding: 8px 14px; margin-bottom: 8px; display: flex; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02); 
+            border: 1px solid rgba(208, 219, 229, 0.8);
+            backdrop-filter: blur(2px);
         }
 
-        .campo { font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 18px; color: #0b3c7c; width: 160px; flex-shrink: 0; }
-        .valor { font-family: Arial, sans-serif; font-size: 17px; color: #000; text-transform: uppercase; flex: 1; font-weight: 600;}
+        .campo { font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 16px; color: #0b3c7c; width: 140px; flex-shrink: 0; }
+        .valor { font-family: Arial, sans-serif; font-size: 15px; color: #000; text-transform: uppercase; flex: 1; font-weight: 600;}
 
         /* Responsividade Extrema */
         @media (max-width: 600px) {
@@ -236,10 +238,10 @@
             .bloco-foto { width: 100%; margin-bottom: 10px; }
             .bloco-tabela { width: 100%; }
             
-            .faixa-dado { flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px; }
+            .faixa-dado { flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px; }
             .campo { width: 100%; margin: 0 !important;}
             
-            .linha-dupla { flex-direction: column !important; gap: 10px;}
+            .linha-dupla { flex-direction: column !important; gap: 8px;}
             .linha-dupla > div { width: 100%; display: flex; flex-direction: column; align-items: flex-start !important; }
         }
     </style>
