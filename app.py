@@ -88,6 +88,12 @@ def obter_url_base_faculdade(slug):
   else:
     return DOMINIOS_MAPA['unip']
 
+# ==========================================
+# CORREÇÃO: Função auxiliar para normalizar CPF
+# ==========================================
+def normalizar_cpf(cpf):
+  return ''.join(filter(str.isdigit, str(cpf or '')))
+
 @app.after_request
 def aplicar_headers_seguranca(response):
   response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -251,12 +257,14 @@ def cadastro():
     historico = salvar_multiplos_arquivos(hist_files, dados.get('hist_antigo', ''))
     outros_docs = salvar_multiplos_arquivos(outros_files, dados.get('outros_antigo', ''))
 
+    # CORREÇÃO: Normaliza o CPF antes de salvar
+    cpf = normalizar_cpf(dados['cpf'])
+
     conn = get_db_connection()
     try:
-      # VERIFICA APENAS O CPF AGORA
       duplicado = conn.execute(
           'SELECT nome FROM alunos WHERE cpf = ?', 
-          (dados['cpf'],)
+          (cpf,)
       ).fetchone()
       
       if duplicado:
@@ -274,7 +282,7 @@ def cadastro():
               ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           ''',
           (
-              dados['nome'], dados['cpf'], dados['rg'], dados['orgao_rg'], dados['data_expedicao'],
+              dados['nome'], cpf, dados['rg'], dados['orgao_rg'], dados['data_expedicao'],
               dados['data_nascimento'], dados['naturalidade'], dados['filiacao'], dados['endereco'], foto,
               dados['tipo_curso'], dados['curso'], dados.get('grau_academico', ''),
               dados.get('instituicao_ensino', ''), dados.get('data_inicio', ''),
@@ -304,7 +312,7 @@ def alterar():
     try:
       alunos = conn.execute(
           'SELECT * FROM alunos WHERE nome LIKE ? OR cpf = ?',
-          ('%' + termo + '%', termo),
+          ('%' + termo + '%', normalizar_cpf(termo)),
       ).fetchall()
     finally:
       conn.close()
@@ -329,11 +337,13 @@ def editar(id):
     historico = salvar_multiplos_arquivos(hist_files, dados.get('hist_antigo', ''))
     outros_docs = salvar_multiplos_arquivos(outros_files, dados.get('outros_antigo', ''))
 
+    # CORREÇÃO: Normaliza o CPF antes de salvar
+    cpf = normalizar_cpf(dados['cpf'])
+
     try:
-      # VERIFICA APENAS O CPF AGORA
       duplicado = conn.execute(
           'SELECT nome FROM alunos WHERE cpf = ? AND id != ?', 
-          (dados['cpf'], id)
+          (cpf, id)
       ).fetchone()
       
       if duplicado:
@@ -354,7 +364,7 @@ def editar(id):
               WHERE id = ?
           ''',
           (
-              dados['nome'], dados['cpf'], dados['rg'], dados['orgao_rg'], dados['data_expedicao'],
+              dados['nome'], cpf, dados['rg'], dados['orgao_rg'], dados['data_expedicao'],
               dados['data_nascimento'], dados['naturalidade'], dados['filiacao'], dados['endereco'], foto,
               dados['tipo_curso'], dados['curso'], dados.get('grau_academico', ''),
               dados.get('instituicao_ensino', ''), dados.get('data_inicio', ''),
@@ -391,7 +401,7 @@ def excluir():
     try:
       alunos = conn.execute(
           'SELECT * FROM alunos WHERE nome LIKE ? OR cpf = ?',
-          ('%' + termo + '%', termo),
+          ('%' + termo + '%', normalizar_cpf(termo)),
       ).fetchall()
     finally:
       conn.close()
@@ -466,7 +476,7 @@ def informacoes(tipo):
               SELECT * FROM alunos 
               WHERE (nome LIKE ? OR cpf = ?) AND ({filtro_sql})
           ''',
-          ('%' + termo + '%', termo),
+          ('%' + termo + '%', normalizar_cpf(termo)),
       ).fetchall()
     finally:
       conn.close()
@@ -501,13 +511,13 @@ def painel_aluno(id):
   return render_template('painel_aluno.html', aluno=aluno, url_base=url_base_custom)
 
 # ==========================================
-# ROTAS PÚBLICAS REVISADAS (Busca EXCLUSIVA por CPF)
+# ROTAS PÚBLICAS (Busca EXCLUSIVA por CPF)
 # ==========================================
 @app.route('/portal_aluno/<cpf>', methods=['GET', 'POST'])
 def portal_do_aluno_publico(cpf):
+  cpf = normalizar_cpf(cpf)
   conn = get_db_connection()
   try:
-    # MODIFICADO: Busca estritamente pelo CPF ignorando a matrícula
     aluno = conn.execute(
         'SELECT * FROM alunos WHERE cpf = ?', (cpf,)
     ).fetchone()
@@ -528,7 +538,7 @@ def portal_do_aluno_publico(cpf):
     senha_digitada = ''.join(
         filter(str.isdigit, request.form.get('senha', ''))
     )
-    cpf_banco = ''.join(filter(str.isdigit, str(aluno['cpf'])))
+    cpf_banco = normalizar_cpf(aluno['cpf'])
 
     if senha_digitada and senha_digitada == cpf_banco:
       logado_portal = True
@@ -561,9 +571,9 @@ def portal_do_aluno_publico(cpf):
 
 @app.route('/validacao/<faculdade_slug>/<cpf>')
 def validacao_qr_code(faculdade_slug, cpf):
+  cpf = normalizar_cpf(cpf)
   conn = get_db_connection()
   try:
-    # MODIFICADO: Busca estritamente pelo CPF ignorando a matrícula
     aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ?', (cpf,)).fetchone()
   finally:
     conn.close()
@@ -598,9 +608,9 @@ def validacao_qr_code(faculdade_slug, cpf):
 
 @app.route('/visualizar_qrcode/<cpf>')
 def visualizar_qrcode(cpf):
+  cpf = normalizar_cpf(cpf)
   conn = get_db_connection()
   try:
-    # MODIFICADO: Busca estritamente pelo CPF ignorando a matrícula
     aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ?', (cpf,)).fetchone()
   finally:
     conn.close()
@@ -654,9 +664,9 @@ def consulta_xml():
 
 @app.route('/consulta/xml/<cpf>')
 def consulta_xml_direta(cpf):
+  cpf = normalizar_cpf(cpf)
   conn = get_db_connection()
   try:
-    # MODIFICADO: Busca estritamente pelo CPF ignorando a matrícula
     aluno = conn.execute(
         'SELECT * FROM alunos WHERE cpf = ?', (cpf,)
     ).fetchone()
@@ -669,9 +679,9 @@ def consulta_xml_direta(cpf):
 
 @app.route('/imprensanacional/consulta/<cpf>')
 def imprensanacional_consulta(cpf):
+  cpf = normalizar_cpf(cpf)
   conn = get_db_connection()
   try:
-    # MODIFICADO: Busca estritamente pelo CPF ignorando a matrícula
     aluno = conn.execute(
         'SELECT * FROM alunos WHERE cpf = ?', (cpf,)
     ).fetchone()
@@ -773,18 +783,7 @@ def gerar_posse(id):
       p_ano=random.randint(2023, 2026),
   )
 
-@app.route('/gerar_exercicio/<int:id>')
-def gerando_exercicio(id):
-  conn = get_db_connection()
-  try:
-    aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
-  finally:
-    conn.close()
-    
-  if not aluno:
-    return 'Candidato não encontrado.', 404
-  return render_template('termo_exercicio.html', aluno=aluno)
-
+# CORREÇÃO: Rota duplicada removida — mantida apenas esta versão
 @app.route('/gerar_exercicio/<int:id>')
 def gerar_exercicio(id):
   conn = get_db_connection()
