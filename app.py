@@ -253,6 +253,16 @@ def cadastro():
 
     conn = get_db_connection()
     try:
+      # --- TRAVA DE SEGURANÇA PARA DUPLICIDADE NO CADASTRO ---
+      duplicado = conn.execute(
+          'SELECT nome FROM alunos WHERE matricula = ? OR cpf = ?', 
+          (dados['matricula'], dados['cpf'])
+      ).fetchone()
+      
+      if duplicado:
+          return f"Erro: A matrícula ou CPF digitados já estão sendo usados pelo aluno(a) {duplicado['nome']}. Volte a página e verifique os dados antes de salvar.", 400
+      # -------------------------------------------------------
+
       conn.execute(
           '''
               INSERT INTO alunos (
@@ -321,6 +331,17 @@ def editar(id):
     outros_docs = salvar_multiplos_arquivos(outros_files, dados.get('outros_antigo', ''))
 
     try:
+      # --- TRAVA DE SEGURANÇA PARA DUPLICIDADE NA EDIÇÃO ---
+      # Ignora o ID do próprio aluno que está sendo editado
+      duplicado = conn.execute(
+          'SELECT nome FROM alunos WHERE (matricula = ? OR cpf = ?) AND id != ?', 
+          (dados['matricula'], dados['cpf'], id)
+      ).fetchone()
+      
+      if duplicado:
+          return f"Erro: A matrícula ou CPF digitados já pertencem ao aluno(a) {duplicado['nome']}. Volte a página e corrija os dados.", 400
+      # -----------------------------------------------------
+
       conn.execute(
           '''
               UPDATE alunos SET 
