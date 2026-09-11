@@ -23,9 +23,9 @@
         <div style="margin-bottom: 30px;">
             <label style="color: #ccc; font-size: 20px; font-weight: bold;">Link do Diário Oficial da União:</label>
             <div style="display: flex; gap: 15px; margin-top: 12px;">
-                <input type="text" id="link_dou" value="{{ url_base['dou'] }}imprensanacional/consulta/{{ aluno['matricula'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
+                <input type="text" id="link_dou" value="{{ url_base['dou'] }}imprensanacional/consulta/{{ aluno['cpf'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
                 <button onclick="copiarLink('link_dou')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
-                <a href="{{ url_base['dou'] }}imprensanacional/consulta/{{ aluno['matricula'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir DOU</a>
+                <a href="{{ url_base['dou'] }}imprensanacional/consulta/{{ aluno['cpf'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir DOU</a>
             </div>
         </div>
     </div>
@@ -72,18 +72,18 @@
         <div style="margin-bottom: 30px;">
             <label style="color: #ccc; font-size: 20px; font-weight: bold;">Consulta XML:</label>
             <div style="display: flex; gap: 15px; margin-top: 12px;">
-                <input type="text" id="link_xml" value="https://www.http-verficadordiplomadigitalmecgovbr.com/consulta/xml/{{ aluno['matricula'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
+                <input type="text" id="link_xml" value="https://www.http-verficadordiplomadigitalmecgovbr.com/consulta/xml/{{ aluno['cpf'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
                 <button onclick="copiarLink('link_xml')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
-                <a href="https://www.http-verficadordiplomadigitalmecgovbr.com/consulta/xml/{{ aluno['matricula'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
+                <a href="https://www.http-verficadordiplomadigitalmecgovbr.com/consulta/xml/{{ aluno['cpf'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
             </div>
         </div>
 
         <div style="margin-bottom: 30px;">
             <label style="color: #ccc; font-size: 20px; font-weight: bold;">Portal do Aluno:</label>
             <div style="display: flex; gap: 15px; margin-top: 12px;">
-                <input type="text" id="link_portal" value="{{ url_base['portal'] }}portal_aluno/{{ aluno['matricula'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
+                <input type="text" id="link_portal" value="{{ url_base['portal'] }}portal_aluno/{{ aluno['cpf'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 20px; padding: 18px; border-radius: 8px;">
                 <button onclick="copiarLink('link_portal')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 35px; cursor: pointer; font-size: 20px; font-weight: bold;">📋 Copiar</button>
-                <a href="{{ url_base['portal'] }}portal_aluno/{{ aluno['matricula'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
+                <a href="{{ url_base['portal'] }}portal_aluno/{{ aluno['cpf'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 18px 35px; font-size: 20px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
             </div>
         </div>
 
@@ -233,7 +233,7 @@
         const seloElement = document.getElementById('selo-autenticidade');
         html2canvas(seloElement, { scale: 3, useCORS: true }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'Selo_Autenticidade_{{ aluno["matricula"] }}.png';
+            link.download = 'Selo_Autenticidade_{{ aluno["cpf"] }}.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         });

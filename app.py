@@ -253,13 +253,14 @@ def cadastro():
 
     conn = get_db_connection()
     try:
+      # VERIFICA APENAS O CPF AGORA
       duplicado = conn.execute(
-          'SELECT nome FROM alunos WHERE matricula = ? OR cpf = ?', 
-          (dados['matricula'], dados['cpf'])
+          'SELECT nome FROM alunos WHERE cpf = ?', 
+          (dados['cpf'],)
       ).fetchone()
       
       if duplicado:
-          return f"Erro: A matrícula ou CPF digitados já estão sendo usados pelo aluno(a) {duplicado['nome']}. Volte a página e verifique os dados antes de salvar.", 400
+          return f"Erro: O CPF digitado já está cadastrado para o aluno(a) {duplicado['nome']}. Volte a página e verifique os dados.", 400
 
       conn.execute(
           '''
@@ -329,13 +330,14 @@ def editar(id):
     outros_docs = salvar_multiplos_arquivos(outros_files, dados.get('outros_antigo', ''))
 
     try:
+      # VERIFICA APENAS O CPF AGORA
       duplicado = conn.execute(
-          'SELECT nome FROM alunos WHERE (matricula = ? OR cpf = ?) AND id != ?', 
-          (dados['matricula'], dados['cpf'], id)
+          'SELECT nome FROM alunos WHERE cpf = ? AND id != ?', 
+          (dados['cpf'], id)
       ).fetchone()
       
       if duplicado:
-          return f"Erro: A matrícula ou CPF digitados já pertencem ao aluno(a) {duplicado['nome']}. Volte a página e corrija os dados.", 400
+          return f"Erro: O CPF digitado já pertence ao aluno(a) {duplicado['nome']}. Volte a página e corrija os dados.", 400
 
       conn.execute(
           '''
@@ -499,21 +501,21 @@ def painel_aluno(id):
   return render_template('painel_aluno.html', aluno=aluno, url_base=url_base_custom)
 
 # ==========================================
-# ROTAS PÚBLICAS REVISADAS (Busca Inteligente)
+# ROTAS PÚBLICAS REVISADAS (Busca EXCLUSIVA por CPF)
 # ==========================================
-@app.route('/portal_aluno/<matricula>', methods=['GET', 'POST'])
-def portal_do_aluno_publico(matricula):
+@app.route('/portal_aluno/<cpf>', methods=['GET', 'POST'])
+def portal_do_aluno_publico(cpf):
   conn = get_db_connection()
   try:
-    # MODIFICADO: Busca tanto na Matrícula quanto no CPF
+    # MODIFICADO: Busca estritamente pelo CPF ignorando a matrícula
     aluno = conn.execute(
-        'SELECT * FROM alunos WHERE matricula = ? OR cpf = ?', (matricula, matricula)
+        'SELECT * FROM alunos WHERE cpf = ?', (cpf,)
     ).fetchone()
   finally:
     conn.close()
     
   if not aluno:
-    return 'Matrícula não encontrada. Verifique o link.', 404
+    return 'Cadastro não encontrado. Verifique se o link possui o CPF correto.', 404
 
   faculdade_slug = (
       aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'unip'
@@ -561,16 +563,14 @@ def portal_do_aluno_publico(matricula):
 def validacao_qr_code(faculdade_slug, cpf):
   conn = get_db_connection()
   try:
-    # MODIFICADO: Busca tanto no CPF quanto na Matrícula
-    aluno = conn.execute(
-        'SELECT * FROM alunos WHERE cpf = ? OR matricula = ?', (cpf, cpf)
-    ).fetchone()
+    # MODIFICADO: Busca estritamente pelo CPF ignorando a matrícula
+    aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ?', (cpf,)).fetchone()
   finally:
     conn.close()
     
   if not aluno:
     return (
-        'Aluno não encontrado. Verifique se o CPF ou Matrícula existe no banco de dados.',
+        'Aluno não encontrado. Verifique se o CPF existe no banco de dados.',
         404,
     )
 
@@ -600,10 +600,8 @@ def validacao_qr_code(faculdade_slug, cpf):
 def visualizar_qrcode(cpf):
   conn = get_db_connection()
   try:
-    # MODIFICADO: Busca tanto no CPF quanto na Matrícula
-    aluno = conn.execute(
-        'SELECT * FROM alunos WHERE cpf = ? OR matricula = ?', (cpf, cpf)
-    ).fetchone()
+    # MODIFICADO: Busca estritamente pelo CPF ignorando a matrícula
+    aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ?', (cpf,)).fetchone()
   finally:
     conn.close()
     
@@ -612,7 +610,6 @@ def visualizar_qrcode(cpf):
 
   slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'unip'
   dominio_alvo = obter_url_base_faculdade(slug)
-  # Usa o identificador original que foi recebido na URL para manter a consistência
   return redirect(f'{dominio_alvo}/validacao/{slug}/{cpf}', code=301)
 
 @app.route('/consulta_xml', methods=['GET', 'POST'])
@@ -655,28 +652,28 @@ def consulta_xml():
       erro = 'Nenhum arquivo selecionado.'
   return render_template('consulta_xml.html', aluno=aluno, erro=erro)
 
-@app.route('/consulta/xml/<matricula>')
-def consulta_xml_direta(matricula):
+@app.route('/consulta/xml/<cpf>')
+def consulta_xml_direta(cpf):
   conn = get_db_connection()
   try:
-    # MODIFICADO: Busca tanto na Matrícula quanto no CPF
+    # MODIFICADO: Busca estritamente pelo CPF ignorando a matrícula
     aluno = conn.execute(
-        'SELECT * FROM alunos WHERE matricula = ? OR cpf = ?', (matricula, matricula)
+        'SELECT * FROM alunos WHERE cpf = ?', (cpf,)
     ).fetchone()
   finally:
     conn.close()
     
   if not aluno:
-    return 'Matrícula não encontrada.', 404
+    return 'Cadastro não encontrado.', 404
   return render_template('consulta_xml.html', aluno=aluno, erro=None)
 
-@app.route('/imprensanacional/consulta/<matricula>')
-def imprensanacional_consulta(matricula):
+@app.route('/imprensanacional/consulta/<cpf>')
+def imprensanacional_consulta(cpf):
   conn = get_db_connection()
   try:
-    # MODIFICADO: Busca tanto na Matrícula quanto no CPF
+    # MODIFICADO: Busca estritamente pelo CPF ignorando a matrícula
     aluno = conn.execute(
-        'SELECT * FROM alunos WHERE matricula = ? OR cpf = ?', (matricula, matricula)
+        'SELECT * FROM alunos WHERE cpf = ?', (cpf,)
     ).fetchone()
   finally:
     conn.close()
