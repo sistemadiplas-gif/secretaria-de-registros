@@ -61,12 +61,12 @@
     <!-- CAMPOS EXCLUSIVOS DE GRADUAÇÃO -->
     <div id="secao_graduacao" style="width: 60%; max-width: 500px; display: none; flex-direction: column; gap: 15px;">
         
-        <!-- CAIXA DE SELEÇÃO DA FACULDADE ATUALIZADA COM AS AUTOMAÇÕES -->
+        <!-- CAIXA DE SELEÇÃO DA FACULDADE -->
         <div style="text-align: left; background-color: #2a2a35; padding: 15px; border-radius: 5px; border: 1px solid #4da6ff;">
             <label style="color: #4da6ff; font-weight: bold; font-size: 15px;">Portal da Faculdade (Automação QR Code)</label>
             <p style="font-size: 11px; color: #aaa; margin: 5px 0 10px 0;">Selecione a faculdade para definir qual tela o QR Code irá abrir.</p>
-            <select name="faculdade_slug" id="seletor_faculdade" style="width: 100%;" required>
-                <option value=""></option> <!-- Necessário para o placeholder do Select2 funcionar -->
+            <select name="faculdade_slug" id="seletor_faculdade" class="select2-faculdade" style="width: 100%;" required>
+                <option value=""></option>
                 <option value="unip">🟥 UNIP - Universidade Paulista (Abre: Meus Dados)</option>
                 <option value="sia_estacio_br">🟦 Estácio (SIA) (Abre: Pasta do Aluno)</option>
                 <option value="anhanguera">🟧 Anhanguera (Abre: Portal do Aluno)</option>

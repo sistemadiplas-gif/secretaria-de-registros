@@ -3,199 +3,381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Profissional - Confea</title>
+    <title>Consulta Profissional - Confea</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
-            color: #333;
+        /* ==========================================
+           RESET E TELA 1 (BUSCA)
+           ========================================== */
+        body, html {
+            margin: 0; padding: 0; min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #eef2f5; color: #333;
         }
-        .main-container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-            border-top: 4px solid #0b3c5d;
+
+        body.modo-resultado { 
+            background: #ffffff;
         }
-        .header-confea {
-            text-align: center;
-            padding: 25px 20px 15px 20px;
-            border-bottom: 1px solid #eaeaea;
+
+        .container-busca { 
+            max-width: 850px; 
+            margin: 20px auto; 
+            width: 100%; 
+            padding: 20px; 
+            box-sizing: border-box; 
+            padding-bottom: 80px;
         }
-        .header-confea img {
-            width: 70px;
-            height: auto;
-            margin-bottom: 10px;
+
+        /* Faixa superior institucional alterada para o azul correto */
+        .faixa-preta-topo {
+            background-color: #1b4d7e;
+            height: 4px;
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            margin-bottom: 0;
         }
-        .header-confea h3 {
-            font-size: 11px;
-            color: #666;
-            margin: 0;
-            letter-spacing: 1px;
+
+        .card-header-top {
+            background-color: #ffffff; 
+            border: 1px solid #ced4da; 
+            border-top: none; 
+            border-radius: 0 0 4px 4px; 
+            padding: 20px 30px;
+            display: flex; align-items: center; gap: 20px; 
+            margin-bottom: 25px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .card-header-top img { width: 65px; height: auto; }
+        
+        .header-text { display: flex; flex-direction: column; gap: 4px; }
+        .header-text .subtitle { font-size: 12px; font-weight: bold; color: #1b4d7e; letter-spacing: 1px; }
+        .header-text .title { font-size: 15px; font-weight: bold; color: #1b4d7e; text-transform: uppercase; }
+
+        .card-form {
+            background-color: #ffffff; border: 1px solid #ced4da; border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 25px;
+        }
+        
+        .card-form-title {
+            background-color: #eef4f9; 
+            padding: 18px 30px; 
+            border-bottom: 1px solid #d0dbe5;
+            font-size: 15px; 
+            font-weight: bold; 
+            color: #1a4973; 
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .header-confea h2 {
-            font-size: 14px;
-            color: #0b3c5d;
-            margin: 5px 0 0 0;
-            text-transform: uppercase;
-            line-height: 1.4;
-        }
-        .form-section {
-            padding: 25px 25px 35px 25px;
-        }
-        .form-section h4 {
-            font-size: 15px;
-            color: #0b3c5d;
-            margin-top: 0;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 8px;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            color: #444;
-            margin-bottom: 6px;
-            font-weight: bold;
-        }
+        
+        .card-form-body { padding: 30px; background-color: #fdfdfd; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: bold; color: #495057; margin-bottom: 8px; }
         .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
-            background-color: #fff;
-            color: #333;
+            width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px;
+            box-sizing: border-box; font-size: 14px; background-color: #e9ecef; color: #495057; font-family: inherit;
         }
-        .form-control[readonly] {
-            background-color: #fafafa;
-            color: #555;
+
+        .recaptcha-wrapper {
+            border: 1px solid #d3d3d3; background: #f9f9f9; border-radius: 3px; padding: 10px 15px;
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px;
+            width: 300px; max-width: 100%; box-shadow: 0 0 4px rgba(0,0,0,0.1);
         }
-        .recaptcha-box {
-            border: 1px solid #d3d3d3;
-            background: #f9f9f9;
-            border-radius: 4px;
-            padding: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 22px;
-        }
-        .recaptcha-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-        }
-        .recaptcha-left input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #0b3c5d;
-            cursor: pointer;
-        }
-        .recaptcha-right {
-            text-align: center;
-        }
-        .recaptcha-right img {
-            width: 32px;
-            height: auto;
-        }
-        .recaptcha-right span {
-            display: block;
-            font-size: 9px;
-            color: #555;
-            margin-top: 2px;
-        }
-        .recaptcha-footer {
-            font-size: 9px;
-            color: #777;
-            margin-top: 4px;
-        }
-        .recaptcha-footer a {
-            color: #555;
-            text-decoration: underline;
-        }
+        .recaptcha-left { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #222; }
+        .recaptcha-left input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; }
+        .recaptcha-right { text-align: center; }
+        .recaptcha-right img { width: 26px; height: auto; }
+        .recaptcha-right span { display: block; font-size: 9px; color: #555; margin-top: 2px; }
+
         .btn-submit {
-            width: 100%;
-            background-color: #1d4ed8;
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            text-align: center;
-            transition: background 0.3s;
+            background-color: #1b4d7e; color: white; border: none; padding: 12px 25px;
+            font-size: 14px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.3s;
         }
-        .btn-submit:hover {
-            background-color: #1e40af;
+        .btn-submit:hover { background-color: #12355c; }
+
+        .card-warning {
+            background-color: #fcf8e3; 
+            border: 1px solid #faebcc; 
+            border-radius: 4px; 
+            padding: 25px 30px;
+            color: #66512c; 
+            font-size: 12.5px; 
+            line-height: 1.7; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            min-height: 120px;
+            box-sizing: border-box;
+            margin-bottom: 40px;
+        }
+        .card-warning strong { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-size: 13.5px; 
+            text-transform: uppercase; 
+            color: #513e1c;
+        }
+        .card-warning .rodape-aviso {
+            margin-top: 15px;
+            font-size: 11.5px;
+            color: #66512c;
+        }
+
+        /* ==========================================
+           TELA 2: RESULTADO DE TELA INTEIRA
+           ========================================== */
+        
+        .tela-full-screen {
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #ffffff; 
+            z-index: 9999;
+            overflow-y: auto; 
+            padding: 40px; 
+            box-sizing: border-box;
+            justify-content: center;
+            align-items: center; 
+        }
+
+        .fundo-minerva-global {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120vw; height: 120vh;
+            background-image: url("{{ url_for('static', filename='minerva.png') }}");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.28; 
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .documento-card {
+            position: relative;
+            width: 100%;
+            max-width: 1300px; 
+            background-color: rgba(244, 248, 253, 0.65); 
+            border: 2px solid rgba(185, 210, 239, 0.8); 
+            border-radius: 6px;
+            padding: 30px 40px;
+            box-sizing: border-box;
+            overflow: hidden;
+            margin: auto; 
+            box-shadow: 0 4px 20px rgba(11, 60, 124, 0.06);
+            z-index: 2;
+        }
+
+        .conteudo-credencial { 
+            position: relative; z-index: 2; width: 100%;
+        }
+
+        .banner-bloco-imagem {
+            width: 100%;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .banner-bloco-imagem img {
+            width: 100%;
+            height: auto;
+            display: block;
+            mix-blend-mode: multiply;
+            opacity: 0.90;
+            filter: contrast(125%) brightness(102%);
+        }
+
+        .linha-fechar { text-align: right; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+        .linha-fechar a { color: #0b3c7c; font-size: 16px; font-weight: bold; text-decoration: underline; cursor: pointer; }
+
+        .layout-credencial { display: flex; gap: 40px; align-items: flex-start; width: 100%; }
+
+        .bloco-foto { width: 160px; text-align: center; flex-shrink: 0; }
+        .moldura {
+            width: 155px; height: 200px; border: 2px solid #aaa; background: #fff;
+            margin: 0 auto 12px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .moldura img { width: 100%; height: 100%; object-fit: cover; }
+        .lbl-sit { font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 19px; color: #111; margin-bottom: 6px; }
+        .lbl-ativo { font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 26px; color: #00aa00; }
+
+        .bloco-tabela { flex: 1; }
+        
+        /* Faixa de título com o azul clarinho institucional idêntico ao formulário */
+        .faixa-titulo {
+            background-color: #eef4f9; color: #1a4973; text-align: center;
+            font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 19px;
+            padding: 9px; margin-bottom: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+            border: 1px solid #d0dbe5;
+        }
+        
+        /* Fundo dos dados do aluno alterado para o mesmo azul clarinho */
+        .faixa-dado {
+            background-color: #eef4f9; padding: 12px 18px; margin-bottom: 14px; display: flex; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); 
+            border: 1px solid #d0dbe5;
+        }
+
+        .campo { font-family: 'Arial Narrow', Arial, sans-serif; font-weight: bold; font-size: 18px; color: #0b3c7c; width: 160px; flex-shrink: 0; }
+        .valor { font-family: Arial, sans-serif; font-size: 17px; color: #000; text-transform: uppercase; flex: 1; font-weight: 600;}
+
+        /* Responsividade Extrema */
+        @media (max-width: 600px) {
+            .container-busca { padding: 10px; }
+            .card-header-top { flex-direction: column; text-align: center; padding: 20px 15px; }
+            .card-form-title { font-size: 14px; text-align: center; }
+            .btn-submit { width: 100%; }
+        }
+
+        @media (max-width: 900px) {
+            .tela-full-screen { padding: 15px; align-items: flex-start; }
+            .documento-card { padding: 15px; width: 100%; margin: 10px auto; }
+            
+            .layout-credencial { flex-direction: column; align-items: center; }
+            .bloco-foto { width: 100%; margin-bottom: 10px; }
+            .bloco-tabela { width: 100%; }
+            
+            .faixa-dado { flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px; }
+            .campo { width: 100%; margin: 0 !important;}
+            
+            .linha-dupla { flex-direction: column !important; gap: 10px;}
+            .linha-dupla > div { width: 100%; display: flex; flex-direction: column; align-items: flex-start !important; }
         }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <!-- CABEÇALHO OFICIAL CONFEA -->
-        <div class="header-confea">
-            <!-- Brasão da República Oficial -->
-            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fb.Bras%C3%A3o_de_armas_do_Brasil.svg" alt="Brasão do Brasil">
-            <h3>Serviço Público Federal</h3>
-            <h2>Conselho Federal de Engenharia e Agronomia - Confea</h2>
+    <!-- TELA 1: FORMULÁRIO DE BUSCA -->
+    <div id="tela-busca" class="container-busca">
+        <div class="faixa-preta-topo"></div>
+        <div class="card-header-top">
+            <img src="{{ url_for('static', filename='brasao_da_republica.jpg') }}" alt="Brasão do Brasil">
+            <div class="header-text">
+                <span class="subtitle">SERVIÇO PÚBLICO FEDERAL</span>
+                <span class="title">CONSELHO FEDERAL DE ENGENHARIA E AGRONOMIA - CONFEA</span>
+            </div>
         </div>
 
-        <!-- FORMULÁRIO DE CONSULTA -->
-        <div class="form-section">
-            <h4>Consultar Profissional do Sistema Confea/Crea</h4>
+        <div class="card-form">
+            <div class="card-form-title">CONSULTAR PROFISSIONAL DO SISTEMA CONFEA/CREA</div>
+            <div class="card-form-body">
+                <form action="#" method="GET">
+                    <div class="form-group">
+                        <label>Nome do profissional:</label>
+                        <input type="text" class="form-control" value="{{ aluno.nome }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>CPF:</label>
+                        <input type="text" class="form-control" value="{{ aluno.cpf }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Nº Registro Nacional (RNP):</label>
+                        <input type="text" class="form-control" value="{{ aluno.numero_registro or aluno.matricula }}" readonly>
+                    </div>
 
-            <form action="#" method="GET">
-                <div class="form-group">
-                    <label>Nome do profissional:</label>
-                    <input type="text" class="form-control" value="{{ aluno.nome }}" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label>CPF:</label>
-                    <input type="text" class="form-control" value="{{ aluno.cpf }}" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label>Nº Registro Nacional (RNP):</label>
-                    <input type="text" class="form-control" value="{{ aluno.numero_registro or aluno.matricula }}" readonly>
-                </div>
-
-                <!-- BLOCO RECAPTCHA FIEL À IMAGEM -->
-                <div class="recaptcha-box">
-                    <div>
+                    <div class="recaptcha-wrapper">
                         <div class="recaptcha-left">
                             <input type="checkbox" id="robot" checked onclick="return false;">
                             <label for="robot" style="margin:0; cursor:pointer; font-weight:normal;">Não sou um robô</label>
                         </div>
-                        <div class="recaptcha-footer">
-                            reCAPTCHA · <a href="#">Privacidade</a> · <a href="#">Termos</a>
+                        <div class="recaptcha-right">
+                            <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
+                            <span>reCAPTCHA</span>
                         </div>
                     </div>
-                    <div class="recaptcha-right">
-                        <!-- Ícone oficial reCAPTCHA -->
-                        <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
-                        <span>reCAPTCHA</span>
-                    </div>
-                </div>
+                    <button type="button" class="btn-submit" onclick="abrirTelaInteira();">Localizar Profissional</button>
+                </form>
+            </div>
+        </div>
 
-                <button type="button" class="btn-submit" onclick="alert('Registro validado e verificado com sucesso pelo Sistema Confea/Crea.');">Localizar Profissional</button>
-            </form>
+        <div class="card-warning">
+            <strong>AVISO IMPORTANTE:</strong>
+            O conteúdo desta consulta é meramente informativo e não possui valor de certidão. Em caso de divergência ou inconsistência nos dados apresentados, entre em contato com o Conselho Regional de Engenharia e Agronomia (CREA) ao qual o profissional está registrado.
+            <div class="rodape-aviso">
+                Informações obtidas do Sistema de Informações Confea/Crea - SIC.
+            </div>
         </div>
     </div>
+
+
+    <!-- TELA 2: RESULTADO DE TELA INTEIRA -->
+    <div id="tela-resultado" class="tela-full-screen">
+        
+        <div class="fundo-minerva-global"></div>
+
+        <div class="documento-card">
+
+            <div class="conteudo-credencial">
+                
+                <div class="banner-bloco-imagem">
+                    <img src="{{ url_for('static', filename='bloco_azul_confea.png') }}" alt="CONFEA CREA Banner">
+                </div>
+
+                <div class="linha-fechar">
+                    <a onclick="fecharTelaInteira()">Fechar</a>
+                </div>
+
+                <div class="layout-credencial">
+                    
+                    <div class="bloco-foto">
+                        <div class="moldura">
+                            {% if aluno.foto %}
+                                <img src="{{ url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) }}" alt="Foto">
+                            {% endif %}
+                        </div>
+                        <div class="lbl-sit">SITUAÇÃO</div>
+                        <div class="lbl-ativo">ATIVO</div>
+                    </div>
+
+                    <div class="bloco-tabela">
+                        <div class="faixa-titulo">REGISTRO DE PROFISSIONAL DIPLOMADO NO PAIS</div>
+                        
+                        <div class="faixa-dado">
+                            <span class="campo">NOME:</span>
+                            <span class="valor">{{ aluno.nome }}</span>
+                        </div>
+                        
+                        <div class="faixa-dado linha-dupla" style="display: flex;">
+                            <div style="flex: 1; display: flex; align-items: center;">
+                                <span class="campo">Nº INSCRIÇÃO:</span>
+                                <span class="valor">{{ aluno.numero_registro or aluno.matricula }}</span>
+                            </div>
+                            <div style="flex: 1; display: flex; align-items: center;">
+                                <span class="campo" style="width: auto; margin-right: 15px;">TIPO DE INSCRIÇÃO:</span>
+                                <span class="valor">{{ aluno.grau_academico or aluno.tipo_curso or 'BACHAREL' }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="faixa-dado">
+                            <span class="campo">CURSO:</span>
+                            <span class="valor">{{ aluno.curso }}</span>
+                        </div>
+                        
+                        <div class="faixa-dado">
+                            <span class="campo">SECCIONAL:</span>
+                            <span class="valor">CREA- {{ (aluno.uf_registro or 'DF') | upper }}</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirTelaInteira() {
+            document.getElementById('tela-busca').style.display = 'none';
+            document.getElementById('tela-resultado').style.display = 'flex';
+            document.body.classList.add('modo-resultado');
+            window.scrollTo(0, 0);
+        }
+
+        function fecharTelaInteira() {
+            document.getElementById('tela-resultado').style.display = 'none';
+            document.getElementById('tela-busca').style.display = 'block';
+            document.body.classList.remove('modo-resultado');
+            window.scrollTo(0, 0);
+        }
+    </script>
 
 </body>
 </html>

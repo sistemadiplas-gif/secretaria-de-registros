@@ -86,7 +86,7 @@ def obter_url_base_faculdade(slug):
   elif slug == 'anhanguera':
     return DOMINIOS_MAPA['anhanguera']
   else:
-    return DOMINIOS_MAPA['puc_sp']
+    return DOMINIOS_MAPA['unip']
 
 @app.after_request
 def aplicar_headers_seguranca(response):
@@ -276,7 +276,7 @@ def cadastro():
               dados.get('dados_nomeacao', ''), dados.get('data_posse', ''), dados.get('data_exercicio', ''),
               dados.get('esfera_concurso', 'Federal'), dados.get('local_esfera', ''),
               dados.get('orgao', ''), dados.get('numero_registro', ''),
-              dados.get('uf_registro', ''), dados.get('faculdade_slug', ''),
+              dados.get('uf_registro', ''), dados.get('faculdade_slug', 'unip'),
           ),
       )
       conn.commit()
@@ -347,7 +347,7 @@ def editar(id):
               dados.get('dados_nomeacao', ''), dados.get('data_posse', ''), dados.get('data_exercicio', ''),
               dados.get('esfera_concurso', 'Federal'), dados.get('local_esfera', ''),
               dados.get('orgao', ''), dados.get('numero_registro', ''),
-              dados.get('uf_registro', ''), dados.get('faculdade_slug', ''),
+              dados.get('uf_registro', ''), dados.get('faculdade_slug', 'unip'),
               id,
           ),
       )
@@ -467,7 +467,7 @@ def painel_aluno(id):
   if not aluno:
     return 'Aluno não encontrado.', 404
 
-  slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_sp'
+  slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'unip'
   dominio_faculdade = obter_url_base_faculdade(slug)
 
   url_base_custom = {
@@ -499,7 +499,7 @@ def portal_do_aluno_publico(matricula):
     return 'Matrícula não encontrada. Verifique o link.', 404
 
   faculdade_slug = (
-      aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_sp'
+      aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'unip'
   )
 
   logado_portal = False
@@ -587,7 +587,7 @@ def visualizar_qrcode(cpf):
   if not aluno:
     return 'Aluno não encontrado.', 404
 
-  slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'puc_sp'
+  slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'unip'
   dominio_alvo = obter_url_base_faculdade(slug)
   return redirect(f'{dominio_alvo}/validacao/{slug}/{cpf}', code=301)
 
