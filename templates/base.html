@@ -5,12 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECRETARIA DE REGISTROS CNE|MEC</title>
     <style>
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; height: 100vh; background-color: #1e1e24; color: white; }
-        .sidebar { width: 250px; background-color: #0056b3; color: white; display: flex; flex-direction: column; position: fixed; height: 100%; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
+        /* --- CORREÇÃO DO DESLIZADOR APLICADA AQUI --- */
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            min-height: 100vh; /* Permite que a página cresça naturalmente */
+            background-color: #1e1e24; 
+            color: white; 
+            overflow-x: hidden; /* Evita barra de rolagem horizontal acidental */
+        }
+        .sidebar { 
+            width: 250px; 
+            background-color: #0056b3; 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            position: fixed; 
+            height: 100%; 
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5); 
+            z-index: 100;
+        }
         .sidebar h2 { text-align: center; padding: 20px 0; margin: 0; font-size: 18px; border-bottom: 1px solid #003d82; text-transform: uppercase; }
         .sidebar a { padding: 15px 20px; text-decoration: none; color: white; font-weight: bold; border-bottom: 1px solid #003d82; transition: 0.3s; }
         .sidebar a:hover { background-color: #003d82; }
-        .content { margin-left: 250px; padding: 50px; width: calc(100% - 250px); text-align: center; overflow-y: auto; }
+        
+        .content { 
+            margin-left: 250px; 
+            padding: 50px; 
+            width: calc(100% - 250px); 
+            text-align: center; 
+            box-sizing: border-box; /* Garante que o padding não quebre a largura */
+            /* Removido o overflow-y: auto para usar apenas a rolagem natural do navegador */
+        }
         .content h1 { font-size: 36px; margin-bottom: 20px; }
         select, input { padding: 10px; width: 60%; max-width: 500px; border-radius: 5px; border: none; font-size: 16px; }
 
