@@ -3,1155 +3,457 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imprensa Nacional</title>
-    <!-- Font Awesome para ícones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <!-- Fonte Montserrat para o título idêntico ao Gov.br -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;800;900&display=swap" rel="stylesheet">
-    <!-- Barra Gov.br Web Component -->
-    <script type="module" src="https://barra.sistema.gov.br/v1/barra-govbr-wc.js" defer=""></script>
+    <title>Diário Oficial da União - Pesquisa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rawline:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        body {
-            background-color: #fff;
-            color: #333;
-        }
-        /* Topo e Barra Gov */
-        .header-container {
-            background-color: #fff;
-            border-bottom: 1px solid #ddd;
-        }
-        .header-bottom-custom {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header-title-main {
-            font-size: 24px;
-            color: #0c326f;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        /* Barra de Serviços Recomendados do Gov.br */
-        .gov-services-bar {
-            background-color: #eaecef;
-            padding: 12px 20px;
-            border-bottom: 1px solid #dcdfe6;
-        }
-        .services-container-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-        .service-dropdown-box {
-            background-color: #fff;
-            border: 1px solid #ccd0d7;
-            padding: 10px 15px;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Rawline', Arial, sans-serif; }
         
-        /* Conteúdo Principal */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+        body { background-color: #ffffff; color: #333; }
         
-        /* --- TÍTULO PRINCIPAL (IMPRENSA NACIONAL) MAIOR E FINO --- */
-        .document-first-heading {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 48px; 
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: 300; 
-            letter-spacing: -0.5px;
-        }
+        /* HEADER TOPO */
+        .top-header { background-color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 22px 40px; border-bottom: 1px solid #ddd; }
+        .logo-gov img { height: 48px; }
+        .nav-links { display: flex; gap: 20px; font-size: 12px; color: #333; align-items: center; font-weight: 500; }
+        .nav-links a { text-decoration: none; color: #333; }
+        .nav-links a:hover { text-decoration: underline; }
+        .contrast-icon { background: #000; color: #fff !important; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; text-decoration: none !important; }
+        .btn-entrar { background-color: #dbeafe; color: #1e3a8a; border: none; padding: 10px 18px; border-radius: 4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 12px; }
         
-        /* Barra de Metadados e Compartilhamento */
-        .meta-row {
-            border-top: 1px solid #e0e0e0;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 15px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 30px;
-        }
-        .share-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-circle {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: #0c326f;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-size: 14px;
-        }
+        .sub-header { background-color: #fff; padding: 15px 40px; border-bottom: 1px solid #ddd; font-size: 20px; color: #333; display: flex; align-items: center; gap: 12px; font-weight: 400; }
+        .sub-header i { font-size: 22px; color: #555; cursor: pointer; }
 
-        /* --- TÍTULO DA SEÇÃO (BUSCA DOU) MAIOR E FINO --- */
-        .section-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 40px; 
-            color: #333;
-            margin: 40px 0 20px 0;
-            font-weight: 300; 
-            letter-spacing: -0.5px;
-        }
-
-        /* --- BLOCO AZUL DE PESQUISA (EXATAMENTE COMO NA FOTO) --- */
-        .dou-banner-box {
-            border-radius: 6px;
-            overflow: hidden;
-            margin-bottom: 50px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-        }
+        .main-content { max-width: 1000px; margin: 0 auto; padding: 20px 20px; min-height: 70vh; }
         
-        /* Parte superior com a imagem */
-        .dou-banner-top {
-            background: linear-gradient(rgba(15, 52, 107, 0.72), rgba(15, 52, 107, 0.82)), url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40');
-            background-size: cover;
-            background-position: center;
-            padding: 80px 30px 40px 30px;
-            text-align: center;
-            color: white;
-        }
+        /* BREADCRUMB */
+        .breadcrumb { font-size: 12px; color: #555; margin-bottom: 40px; font-weight: 600; display: flex; align-items: center; gap: 5px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .breadcrumb i { color: #1e3a8a; font-size: 14px; }
+        .breadcrumb span { color: #333; }
 
-        /* Parte inferior escura sólida (Edição do dia) */
-        .dou-banner-bottom {
-            background-color: #091e42; 
-            padding: 30px 20px 40px 20px;
-            text-align: center;
-            color: white;
-        }
+        /* TELA 1: BUSCA */
+        .page-title { text-align: center; font-size: 42px; font-weight: 500; color: #0c326f; margin-bottom: 12px; letter-spacing: -0.5px; }
+        .page-subtitle { text-align: center; font-size: 26px; font-weight: 400; color: #0c326f; margin-bottom: 45px; }
 
-        /* Título interno */
-        .dou-banner-top h2 {
-            font-family: 'Montserrat', 'Arial Black', sans-serif;
-            font-size: 42px; 
-            font-weight: 900; 
-            margin-bottom: 15px;
-            letter-spacing: -1px;
-        }
+        .search-container { border: 1px solid #aaa; border-radius: 8px; display: flex; align-items: center; margin-bottom: 25px; background-color: transparent; }
+        .search-container input { flex: 1; padding: 18px 20px; border: none; background: transparent; font-size: 15px; color: #333; outline: none; }
+        .search-actions { display: flex; align-items: center; padding-right: 15px; }
+        .search-actions .btn-search { background: transparent; border: none; color: #1e3a8a; font-size: 18px; padding: 0 15px; cursor: pointer; }
+        .divider-vertical { width: 1px; height: 24px; background-color: #bbb; margin: 0 10px; }
+        .search-actions .btn-advanced { background: transparent; border: none; color: #111; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 
-        /* Divisórias */
-        .divider-linha {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #b0d4f1;
-            font-size: 11px;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-            font-weight: bold;
-        }
-        .divider-linha::before, .divider-linha::after {
-            content: "";
-            flex: 1;
-            max-width: 250px;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.3);
-            margin: 0 15px;
-        }
+        .filters-section { border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 20px 0; display: flex; margin-bottom: 40px; }
+        .filter-group { flex: 1; border-right: 1px solid #ccc; padding: 0 20px; display: flex; flex-direction: column; justify-content: center; }
+        .filter-group:first-child { padding-left: 0; }
+        .filter-group:last-child { border-right: none; padding-right: 0; }
+        .filter-group label { font-size: 11px; font-weight: 700; color: #555; margin-bottom: 12px; }
+        .custom-select { position: relative; width: 100%; }
+        .custom-select select { width: 100%; border: none; background: transparent; font-size: 13px; color: #444; outline: none; appearance: none; -webkit-appearance: none; cursor: pointer; }
+        .custom-select i { position: absolute; right: 0; top: 50%; transform: translateY(-50%); font-size: 12px; color: #666; pointer-events: none; }
 
-        /* Layout da barra de pesquisa */
-        .search-container-outer {
-            max-width: 850px;
-            margin: 0 auto;
-        }
-        .dou-search-wrapper {
-            background: white;
-            display: flex;
-            align-items: center;
-            border-radius: 4px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-            overflow: hidden;
-            margin-bottom: 12px;
-        }
-        .dou-search-btn-lupa {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            color: #0c326f;
-            padding: 15px 20px;
-        }
-        .dou-search-input {
-            flex: 1;
-            border: none;
-            padding: 18px 0;
-            font-size: 16px;
-            outline: none;
-            color: #333;
-        }
+        .btn-inverter-wrapper { text-align: center; margin-bottom: 30px; padding-bottom: 40px; border-bottom: 1px solid #ccc; }
+        .btn-inverter { background: transparent; border: 1px solid #1e3a8a; color: #1e3a8a; padding: 14px 60px; border-radius: 40px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-inverter:hover { background: #f0f4f8; }
+
+        .results-info-row { display: flex; justify-content: center; position: relative; margin-bottom: 30px; }
+        .results-count { font-size: 13px; color: #555; }
+        .verif-autenticidade { position: absolute; right: 0; bottom: 0; }
+        .verif-autenticidade a { color: #1e3a8a; font-size: 11px; text-decoration: underline; font-weight: 500; }
+
+        .result-item { padding: 30px 0; border-bottom: 1px solid #eee; text-align: left; }
+        .result-item:first-child { border-top: 1px solid #eee; }
+        .result-meta { font-size: 11px; color: #666; margin-bottom: 10px; font-weight: 600; line-height: 1.4; }
+        .result-meta strong { color: #333; }
+        .result-title { font-size: 18px; color: #155bce; font-weight: 700; margin-bottom: 10px; display: inline-block; text-decoration: none; line-height: 1.3; cursor: pointer; }
+        .result-title:hover { text-decoration: underline; }
+        .result-snippet { font-size: 14px; color: #444; line-height: 1.6; }
+        .highlight { background-color: #fceea7; font-weight: bold; padding: 0 4px; border-radius: 2px; }
+
+        .footer-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; }
+        .btn-reportar { background: none; border: none; color: #1351b4; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .pagination { display: flex; gap: 5px; align-items: center; font-size: 13px; }
+        .page-item { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; text-decoration: none; color: #333; }
+        .page-item.active { background-color: #1351b4; color: #fff; }
+        .page-item:hover:not(.active) { background-color: #e0e0e0; }
+
+
+        /* ========================================= */
+        /* TELA 2: VISUALIZAÇÃO DO DOCUMENTO OFICIAL */
+        /* ========================================= */
+        #tela-documento { display: none; text-align: left; }
         
-        /* Botão Pesquisa Avançada idêntico à foto */
-        .dou-btn-avancada {
-            background: none;
-            border: none;
-            color: #333;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px 20px;
-        }
-        .dou-btn-avancada:hover {
-            background-color: #f9f9f9;
-        }
-        .search-divider-vertical {
-            width: 1px;
-            height: 25px;
-            background-color: #ccc;
-        }
-
-        .verif-autenticidade-link {
-            display: inline-block;
-            color: #d0e7ff;
-            font-size: 12px;
-            text-decoration: underline;
-            cursor: pointer;
-            text-align: right;
-            width: 100%;
-        }
-
-        /* Edição do dia (Bottom) */
-        .edicao-links-row {
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-            flex-wrap: wrap;
-            margin-bottom: 35px;
-        }
-        .edicao-link-item {
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .icon-corner {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-left: 3px solid;
-            border-bottom: 3px solid;
-            margin-bottom: 4px;
-        }
-        .color-sec1 { border-color: #42a5f5; }
-        .color-sec2 { border-color: #66bb6a; }
-        .color-sec3 { border-color: #ffa726; }
-
-        .diario-completo-link a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .diario-completo-link a:hover {
-            text-decoration: underline;
-        }
-
-        /* Destaques do DOU (Cards) */
-        .destaques-heading {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 46px; 
-            color: #222;
-            text-align: center;
-            margin: 60px 0 40px 0;
-            font-weight: 500;
-            letter-spacing: -0.5px;
-        }
-        .destaques-grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px; 
-            margin-bottom: 40px;
-        }
-        .destaque-card {
-            background-size: cover;
-            background-position: center;
-            border-radius: 6px;
-            overflow: hidden;
-            min-height: 380px; 
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 30px;
-            color: white;
-            position: relative;
-        }
-        .card-bg-1 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1466611653911-95081537e5b7'); }
-        .card-bg-2 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05'); }
-        .card-bg-3 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1'); }
-        .card-bg-4 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1527482797697-8795b05a13fe'); }
-        .card-bg-5 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad'); }
-        .card-bg-6 { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1541427468627-a89a96e5ca1d'); }
-
-        .destaque-card span {
-            font-size: 12px; 
-            text-transform: uppercase;
-            color: #ddd;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        .destaque-card h3 {
-            font-size: 18px; 
-            line-height: 1.4;
-            font-weight: bold;
-        }
-
-        /* --- BOTÕES E CONCURSOS E SELEÇÕES --- */
-        .btn-outline-blue {
-            display: inline-block;
-            border: 2px solid #1351b4;
-            color: #1351b4;
-            background-color: transparent;
-            padding: 14px 45px;
-            border-radius: 35px;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: bold;
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-        .btn-outline-blue:hover {
-            background-color: #1351b4;
-            color: #fff;
-        }
-        .btn-wrapper-center {
-            text-align: center;
-            margin: 30px 0 80px 0;
-        }
-
-        .concursos-heading {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 46px; 
-            color: #222;
-            text-align: center;
-            margin: 80px 0 60px 0;
-            font-weight: 500;
-            letter-spacing: -0.5px;
-        }
-        .concursos-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 50px; 
-            margin-bottom: 70px;
-            padding: 0 15px; 
-        }
-        .concurso-item {
-            text-align: left;
-        }
-        .concurso-item span {
-            display: block;
-            font-size: 14px; 
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 15px; 
-            line-height: 1.4;
-        }
-        .concurso-item p {
-            font-size: 18px; 
-            color: #1351b4; 
-            line-height: 1.5;
-        }
-
-        .servicos-in-heading {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 40px; 
-            color: #333;
-            text-align: center;
-            margin: 100px 0 50px 0;
-            font-weight: normal;
-        }
-
-        /* --- SERVIÇOS DA IN (CARDS CINZAS COM 9 BLOCOS) --- */
-        .servicos-in-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px; 
-            margin-bottom: 80px;
-            padding: 0 15px;
-        }
-        .servicos-in-card {
-            background-color: #f0f2f5; 
-            border-radius: 8px;
-            padding: 50px 20px;
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 220px;
-            transition: background-color 0.2s;
-        }
-        .servicos-in-card:hover {
-            background-color: #e4e7eb; 
-        }
-        .servicos-in-card i {
-            font-size: 38px; 
-            color: #0c326f; 
-            margin-bottom: 15px;
-        }
-        .servicos-in-card span {
-            font-size: 16px;
-            font-weight: 500;
-            line-height: 1.3;
-        }
-
-        /* --- SEÇÃO DE NOTÍCIAS (2 COLUNAS) --- */
-        .noticias-heading {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 40px; 
-            color: #333;
-            text-align: center;
-            margin: 100px 0 50px 0;
-            font-weight: normal;
-        }
-        .noticias-grid-2 {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 40px; 
-            margin-bottom: 40px;
-            padding: 0 15px;
-        }
-        .noticia-item {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-        }
-        .noticia-item img {
-            width: 100%;
-            height: 350px; 
-            border-radius: 8px;
-            margin-bottom: 20px;
-            object-fit: cover;
-        }
-        .noticia-item span {
-            font-size: 12px;
-            font-weight: 700;
-            color: #555;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
-            line-height: 1.4;
-        }
-        .noticia-item h3 {
-            font-size: 20px;
-            color: #1351b4;
-            font-weight: 500;
-            line-height: 1.4;
-        }
-
-        /* --- FAIXA AZUL ESCURA (DIVISÓRIA FULL WIDTH) --- */
-        .faixa-azul-escura-divider {
-            width: 100vw;
-            height: 90px;
-            background-color: #071936; 
-            position: relative;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
-            margin-top: 80px;
-            margin-bottom: 60px;
-        }
+        /* A COR AQUI AGORA É O AZUL ESCURO OFICIAL (#0c326f) */
+        .doc-page-title { font-size: 32px; color: #0c326f; font-weight: 600; margin-bottom: 25px; letter-spacing: -0.5px; }
         
-        /* --- SEÇÃO: ACESSO À INFORMAÇÃO --- */
-        .acesso-informacao-heading {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 40px;
-            color: #333;
-            text-align: center;
-            margin: 0 0 50px 0;
-            font-weight: 300;
-        }
+        /* Barra de Ações 1: Voltar e Compartilhar */
+        .doc-action-row-1 { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 15px; margin-bottom: 20px; }
+        .btn-voltar { background: transparent; border: 1px solid #777; color: #555; padding: 6px 18px; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-voltar:hover { background: #f0f0f0; color: #111; }
         
-        .acesso-informacao-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 30px; 
-            padding: 0 15px;
-            margin-bottom: 40px; 
-        }
+        .doc-share { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #666; font-weight: 600; }
+        .doc-share i { font-size: 16px; color: #1e3a8a; cursor: pointer; }
         
-        .acesso-card {
-            background-color: #f0f2f5;
-            border-radius: 8px;
-            padding: 50px 20px; 
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 220px; 
-            transition: background-color 0.2s;
-        }
-        .acesso-card:hover {
-            background-color: #e4e7eb;
-        }
-        .acesso-card i {
-            font-size: 38px; 
-            color: #0c326f;
-            margin-bottom: 15px;
-        }
-        .acesso-card span {
-            font-size: 16px; 
-            font-weight: 500;
-            line-height: 1.3;
-        }
+        /* Barra de Ações 2: Botões grandes */
+        .doc-action-row-2 { display: flex; gap: 15px; border-bottom: 1px solid #ddd; padding-bottom: 20px; margin-bottom: 60px; }
+        .btn-doc-action { background: transparent; border: 1px solid #aaa; color: #333; padding: 10px 25px; border-radius: 25px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-doc-action i { color: #1e3a8a; font-size: 15px; }
+        .btn-doc-action:hover { background: #f9f9f9; border-color: #1e3a8a; }
 
-        /* --- NOVAS SEÇÕES: CENTRAIS DE CONTEÚDO E ATENDIMENTO --- */
-        .centrais-conteudo-heading, .atendimento-heading {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 40px;
-            color: #333;
-            text-align: center;
-            margin: 80px 0 40px 0;
-            font-weight: 300;
-        }
+        /* Corpo do Documento (Visual Papel Oficial) */
+        .doc-paper { max-width: 850px; margin: 0 auto; text-align: center; padding-bottom: 60px; }
+        .doc-brasao { width: 75px; height: auto; margin: 0 auto 25px auto; display: block; }
+        .doc-dou-title { font-family: "Times New Roman", Times, serif; font-size: 34px; font-weight: bold; color: #222; margin-bottom: 10px; letter-spacing: 0.5px; }
+        .doc-meta { font-size: 11px; color: #777; margin-bottom: 5px; }
+        .doc-orgao { font-size: 12px; color: #555; margin-bottom: 40px; font-weight: bold; }
         
-        .centrais-grid-2 {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 30px; 
-            max-width: 850px; 
-            margin: 0 auto 40px auto;
-            padding: 0 15px;
-        }
+        .doc-subtitulo { font-size: 18px; font-weight: bold; color: #222; margin-bottom: 40px; }
         
-        .centrais-card {
-            background-color: #f0f2f5;
-            border-radius: 8px;
-            padding: 50px 20px; 
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 220px; 
-            transition: background-color 0.2s;
-        }
-        .centrais-card:hover {
-            background-color: #e4e7eb;
-        }
-        .centrais-card i {
-            font-size: 38px; 
-            color: #0c326f;
-            margin-bottom: 15px;
-        }
-        .centrais-card span {
-            font-size: 16px; 
-            font-weight: 500;
-            line-height: 1.3;
-        }
+        .doc-texto-corrido { font-family: Arial, sans-serif; font-size: 15px; color: #333; text-align: justify; line-height: 1.8; margin-bottom: 60px; }
+        
+        .doc-assinatura-bloco { text-align: right; margin-right: 50px; margin-bottom: 60px; }
+        .doc-assinatura-data { font-size: 14px; color: #444; margin-bottom: 20px; }
+        .doc-assinatura-nome { font-size: 14px; font-weight: bold; color: #222; text-transform: uppercase; }
 
-        /* --- COMPARTILHE INFERIOR (ANTES DO RODAPÉ) --- */
-        .bottom-share-container {
-            border-top: 1px solid #e0e0e0;
-            padding: 20px 0;
-            background-color: #fff;
-        }
-        .bottom-share-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 15px;
-        }
-        .bottom-share-content span {
-            font-size: 13px;
-            color: #666;
-            margin-right: 5px;
-        }
-        .bottom-share-content a {
-            color: #0c326f;
-            font-size: 18px;
-            text-decoration: none;
-            transition: opacity 0.2s;
-        }
-        .bottom-share-content a:hover {
-            opacity: 0.7;
-        }
+        .doc-alerta-vermelho { font-size: 11px; color: #c0392b; text-align: left; margin-bottom: 50px; border-top: 1px solid #ddd; padding-top: 20px; }
 
-        /* RODAPÉ GOV.BR GRANDÃO E MAIS ESCURO */
-        .footer-gov {
-            background-color: #071936;
-            color: white;
-            padding: 70px 40px 30px 40px;
-            margin-top: 0; 
-        }
-        .footer-container-main {
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-        .footer-logo-area {
-            margin-bottom: 45px;
-        }
-        .footer-logo-text {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 46px;
-            font-weight: bold;
-            color: white;
-            letter-spacing: -1px;
-        }
-        .footer-columns-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 40px;
-        }
-        .footer-column h4 {
-            font-size: 13px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: #fff;
-            margin-bottom: 18px;
-            font-weight: bold;
-        }
-        .footer-column ul {
-            list-style: none;
-            margin-bottom: 25px;
-        }
-        .footer-column ul li {
-            margin-bottom: 10px;
-        }
-        .footer-column ul li a {
-            color: #bcdffb;
-            text-decoration: none;
-            font-size: 13px;
-        }
-        .footer-column ul li a:hover {
-            text-decoration: underline;
-        }
-
-        /* Seção final do rodapé */
-        .footer-bottom-extra {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            margin-top: 40px;
-            padding-top: 30px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .footer-cookies-btn {
-            background-color: #13396b;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .footer-social-section {
-            margin-top: 15px;
-        }
-        .footer-social-title {
-            font-size: 11px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            color: #bcdffb;
-            font-weight: bold;
-        }
-        .footer-social-icons {
-            display: flex;
-            gap: 15px;
-            font-size: 16px;
-        }
-        .footer-social-icons a {
-            color: white;
-            text-decoration: none;
-        }
-        .footer-acesso-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.05);
-            padding: 10px 15px;
-            border-radius: 4px;
-        }
-        .footer-acesso-badge i {
-            font-size: 24px;
-        }
-
-        .footer-bottom-divider {
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            margin-top: 25px;
-            padding-top: 20px;
-            font-size: 12px;
-            color: #bcdffb;
-        }
+        /* RODAPÉ AZUL GERAL */
+        .gov-footer { background-color: #0a1c3a; color: #fff; padding: 80px 40px 0 40px; margin-top: 80px; font-family: 'Rawline', sans-serif; text-align: left; width: 100%; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; }
+        .footer-top-row { display: flex; justify-content: space-between; margin-bottom: 60px; }
+        .footer-left { display: flex; flex-direction: column; }
+        .footer-logo-img { height: 95px; margin-bottom: 45px; filter: brightness(0) invert(1); width: fit-content; }
+        .footer-links-grid { display: flex; gap: 60px; }
+        .footer-col h4 { font-size: 18px; font-weight: 700; margin-bottom: 25px; line-height: 1.2; }
+        .footer-col ul { list-style: none; padding: 0; margin: 0; }
+        .footer-col ul li { margin-bottom: 16px; }
+        .footer-col ul li a { color: #fff; text-decoration: none; font-size: 14px; font-weight: 600; }
+        .footer-col ul li a:hover { text-decoration: underline; }
+        .footer-right { text-align: right; margin-top: 15px; }
+        .footer-right h4 { font-size: 13px; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; }
+        .footer-right p { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+        .footer-right p i { font-size: 20px; margin: 0 2px; }
+        .footer-bottom-row { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 30px; }
+        .redes-sociais h4 { font-size: 12px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; }
+        .redes-sociais .icons { display: flex; gap: 20px; }
+        .redes-sociais .icons a { color: #fff; font-size: 16px; text-decoration: none; }
+        .footer-badges { display: flex; align-items: center; gap: 30px; }
+        .badge-acesso { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; line-height: 1.1; }
+        .badge-acesso i { font-size: 35px; }
+        .btn-up-arrow { background: transparent; border: 2px solid #fff; color: #fff; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 18px; transition: 0.2s; cursor: pointer;}
+        .btn-up-arrow:hover { background: #fff; color: #1351b4; }
+        .footer-legal { text-align: center; padding: 25px 0; font-size: 12px; color: #fff; border-top: 1px solid rgba(255,255,255,0.2); }
     </style>
 </head>
 <body>
 
-    <!-- SCRIPT DE BLINDAGEM DE BUSCA: Força a abertura da segunda tela não importa onde clique -->
-    <script>
-        function acionarBusca() {
-            var termo = document.querySelector('.dou-search-input').value;
-            window.location.href = '/imprensanacional/busca?q=' + encodeURIComponent(termo);
-        }
-    </script>
-
-    <!-- BARRA GOV.BR OFICIAL -->
-    <header class="header-container">
-        <div style="max-width: 1200px; margin: 0 auto;">
-            <barra-govbr id="barraGovBr" class="width100 shadow-none" ambiente="producao"></barra-govbr>
+    <header class="top-header">
+        <div class="logo-gov">
+            <img src="https://www.gov.br/++theme++padrao_govbr/img/govbr-logo-large.png" alt="gov.br">
         </div>
-        <div class="header-bottom-custom">
-            <a href="#" class="header-title-main">Imprensa Nacional</a>
-            <div>
-                <!-- Ação configurada na Lupa do Topo -->
-                <button type="button" onclick="acionarBusca()" style="background:none; border:none; font-size:20px; cursor:pointer;"><i class="fas fa-search"></i></button>
-            </div>
+        <div class="nav-links">
+            <a href="#">Órgãos do Governo</a>
+            <a href="#">Acesso à Informação</a>
+            <a href="#">Legislação</a>
+            <a href="#">Acessibilidade</a>
+            <a href="#" class="contrast-icon"><i class="fas fa-adjust"></i></a>
+            <button class="btn-entrar"><i class="fas fa-external-link-square-alt"></i> Acesso GOV.BR</button>
         </div>
     </header>
 
-    <!-- BARRA DE SERVIÇOS RECOMENDADOS -->
-    <div class="gov-services-bar">
-        <div class="services-container-grid">
-            <div class="service-dropdown-box"><span style="color:#2e7d32;"><i class="fas fa-seedling"></i></span> Serviços recomendados para você <span><i class="fas fa-chevron-down" style="font-size:11px; color:#666;"></i></span></div>
-            <div class="service-dropdown-box"><span style="color:#ef6c00;"><i class="fas fa-fire"></i></span> Serviços mais acessados do Gov.br <span><i class="fas fa-chevron-down" style="font-size:11px; color:#666;"></i></span></div>
-            <div class="service-dropdown-box"><span style="color:#fbc02d;"><i class="fas fa-star"></i></span> Serviços em destaque do Gov.br <span><i class="fas fa-chevron-down" style="font-size:11px; color:#666;"></i></span></div>
-        </div>
+    <div class="sub-header">
+        <i class="fas fa-bars"></i> Imprensa Nacional
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="main-container">
-        <h1 class="document-first-heading">Imprensa Nacional</h1>
+    <main class="main-content">
         
-        <!-- BARRA DE METADADOS E COMPARTILHAMENTO -->
-        <div class="meta-row">
-            <div>
-                <span>Criado em 23/09/2020 14:06</span> &nbsp;|&nbsp; <span>Modificado em 28/08/2026 09:37</span>
-            </div>
-            <div class="share-group">
-                <span>Compartilhe:</span>
-                <a href="#" class="btn-circle" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-                <a href="#" class="btn-circle" title="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
-                <a href="#" class="btn-circle" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="btn-circle" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-                <a href="#" class="btn-circle" title="Copiar link"><i class="fa-solid fa-link"></i></a>
-            </div>
-        </div>
-
-        <!-- BUSCA DOU -->
-        <h2 class="section-title">Busca DOU</h2>
-        
-        <!-- BLOCO AZUL DIVIDIDO (FOTO EM CIMA, ESCURO EMBAIXO) -->
-        <div class="dou-banner-box">
+        <!-- ======================================================= -->
+        <!-- TELA 1: RESULTADOS DA BUSCA                             -->
+        <!-- ======================================================= -->
+        <div id="tela-busca">
             
-            <div class="dou-banner-top">
-                <h2>Diário Oficial da União</h2>
-                <div class="divider-linha">PESQUISA</div>
+            <div class="breadcrumb">
+                <i class="fas fa-home"></i> &nbsp;&gt;&nbsp; <span>Diário Oficial da União</span> &nbsp;&gt;&nbsp; <span>Busca</span>
+            </div>
+
+            <h1 class="page-title">Diário Oficial da União</h1>
+            <h2 class="page-subtitle">Pesquisa</h2>
+
+            <div class="search-container">
+                <input type="text" value="{{ aluno['nome'] }}" readonly>
+                <div class="search-actions">
+                    <button class="btn-search"><i class="fas fa-search"></i></button>
+                    <div class="divider-vertical"></div>
+                    <button class="btn-advanced">PESQUISA AVANÇADA <i class="fas fa-chevron-down"></i></button>
+                </div>
+            </div>
+
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label>Organização Principal</label>
+                    <div class="custom-select"><select><option>Selecionar Organização Principal</option></select><i class="fas fa-sort"></i></div>
+                </div>
+                <div class="filter-group">
+                    <label>Organização Subordinada</label>
+                    <div class="custom-select"><select><option>Selecionar Organização Subordinada</option></select><i class="fas fa-sort"></i></div>
+                </div>
+                <div class="filter-group">
+                    <label>Tipo de Ato</label>
+                    <div class="custom-select"><select><option>Selecionar o Tipo de Ato</option></select><i class="fas fa-sort"></i></div>
+                </div>
+            </div>
+
+            <div class="btn-inverter-wrapper">
+                <button class="btn-inverter">INVERTER ORDEM</button>
+            </div>
+
+            {% set primeiro_nome = aluno['nome'].split(' ')[0] %}
+            
+            <div class="results-info-row">
+                <div class="results-count">374286 resultados para <strong>{{ primeiro_nome | lower }}</strong></div>
+                <div class="verif-autenticidade"><a href="#">Verificação de autenticidade</a></div>
+            </div>
+
+            <div class="results-list">
                 
-                <div class="search-container-outer">
-                    <!-- Formulário interceptado pelo script -->
-                    <form action="/imprensanacional/busca" method="GET" class="dou-search-wrapper" onsubmit="acionarBusca(); return false;">
-                        <button type="submit" class="dou-search-btn-lupa" style="cursor: pointer;"><i class="fas fa-search"></i></button>
-                        
-                        <!-- Campo de input limpo, preenchido automaticamente com o nome do aluno -->
-                        <input type="text" name="q" class="dou-search-input" value="{{ aluno['nome'] }}" required>
-                        
-                        <!-- Ação configurada no botão de Pesquisa Avançada -->
-                        <button type="button" class="dou-btn-avancada" onclick="acionarBusca()" style="cursor: pointer;">
-                            <i class="fas fa-search" style="color:#666; font-size:14px;"></i>
-                            <span class="search-divider-vertical"></span>
-                            PESQUISA AVANÇADA <i class="fas fa-chevron-down"></i>
-                        </button>
-                    </form>
-                    <a class="verif-autenticidade-link">Verificação de autenticidade</a>
-                </div>
-            </div>
-
-            <div class="dou-banner-bottom">
-                <div class="divider-linha">EDIÇÃO DO DIA</div>
-                <div class="edicao-links-row">
-                    <a href="#" class="edicao-link-item"><span class="icon-corner color-sec1"></span> SEÇÃO 1: ATOS NORMATIVOS</a>
-                    <a href="#" class="edicao-link-item"><span class="icon-corner color-sec2"></span> SEÇÃO 2: ATOS DE PESSOAL</a>
-                    <a href="#" class="edicao-link-item"><span class="icon-corner color-sec3"></span> SEÇÃO 3: CONTRATOS, EDITAIS E AVISOS</a>
-                </div>
-                <div class="diario-completo-link">
-                    <a href="#"><i class="fas fa-folder-open" style="font-size:16px;"></i> DIÁRIO COMPLETO: VERSÃO CERTIFICADA</a>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- DESTAQUES DO DOU -->
-        <h2 class="destaques-heading">Destaques do DOU</h2>
-        <div class="destaques-grid-3">
-            
-            <!-- LINHA 1 -->
-            <div class="destaque-card card-bg-1">
-                <span>Presidência da República</span>
-                <h3>Prorrogado prazo de conclusão dos trabalhos do Grupo de Trabalho Eólicas Offshore</h3>
-            </div>
-            <div class="destaque-card card-bg-2">
-                <span>Ministério de Portos e Aeroportos</span>
-                <h3>Reajustados tetos de tarifas aeroportuárias de embarque, conexão e pouso do Aeroporto de...</h3>
-            </div>
-            <div class="destaque-card card-bg-3">
-                <span>Ministério da Justiça e Segurança Pública</span>
-                <h3>MJSPB divulga nova lista de filmes cuja classificação indicativa foi estabelecida</h3>
-            </div>
-            
-            <!-- LINHA 2 -->
-            <div class="destaque-card card-bg-4">
-                <span>Ministério da Integração e do Desenvolvimento Regional</span>
-                <h3>Reconhecida situação de emergência em municípios de Paraná, Rio Grande do Sul e Santa Catarina</h3>
-            </div>
-            <div class="destaque-card card-bg-5">
-                <span>Ministério da Fazenda</span>
-                <h3>Aprovado Regulamento de Utilização do Acesso de Serviço da Ponte Internacional da Amizade</h3>
-            </div>
-            <div class="destaque-card card-bg-6">
-                <span>Ministério da Cultura</span>
-                <h3>Veja os projetos culturais homologados para obtenção de doações e patrocínios</h3>
-            </div>
-            
-        </div>
-
-        <!-- BOTÃO VEJA MAIS DESTAQUES -->
-        <div class="btn-wrapper-center">
-            <a href="#" class="btn-outline-blue">Veja mais destaques DOU</a>
-        </div>
-
-        <!-- CONCURSOS E SELEÇÕES -->
-        <h2 class="concursos-heading">Concursos e Seleções</h2>
-        <div class="concursos-grid">
-            <div class="concurso-item">
-                <span>Ministério do Desenvolvimento Agrário e Agricultura Familiar</span>
-                <p>PNUD publica vaga para contratação de profissional de NS das áreas de ciências humanas e ciências agrárias</p>
-            </div>
-            <div class="concurso-item">
-                <span>Ministério da Educação</span>
-                <p>Federal de Itajubá lança processo seletivo para contratação de professor substituto</p>
-            </div>
-            <div class="concurso-item">
-                <span>Ministério do Trabalho e Emprego</span>
-                <p>MTE divulga regras para distribuição das vagas preenchidas pelos candidatos aprovados no CPNU</p>
-            </div>
-        </div>
-
-        <!-- BOTÃO ACESSE A LISTA COMPLETA -->
-        <div class="btn-wrapper-center" style="margin-bottom: 0;">
-            <a href="#" class="btn-outline-blue">Acesse a lista completa</a>
-        </div>
-
-        <!-- TÍTULO SERVIÇOS DA IN -->
-        <h2 class="servicos-in-heading">Serviços da IN</h2>
-        
-        <!-- 9 BLOCOS DE SERVIÇOS DA IN -->
-        <div class="servicos-in-grid">
-            <!-- Linha 1 -->
-            <a href="#" class="servicos-in-card">
-                <i class="far fa-newspaper"></i>
-                <span>Diário Oficial da União</span>
-            </a>
-            <a href="#" class="servicos-in-card">
-                <i class="far fa-edit"></i>
-                <span>Publicação de matérias</span>
-            </a>
-            <a href="#" class="servicos-in-card">
-                <i class="fas fa-tablet-alt"></i>
-                <span>Tutorial do APP DOU</span>
-            </a>
-            <!-- Linha 2 -->
-            <a href="#" class="servicos-in-card">
-                <i class="fas fa-archway"></i>
-                <span>Museu da Imprensa</span>
-            </a>
-            <a href="#" class="servicos-in-card">
-                <i class="fas fa-print"></i>
-                <span>Serviços Gráficos</span>
-            </a>
-            <a href="#" class="servicos-in-card">
-                <i class="fas fa-file-signature"></i>
-                <span>Contratos com a Imprensa<br>Nacional</span>
-            </a>
-            <!-- Linha 3 -->
-            <a href="#" class="servicos-in-card">
-                <i class="fas fa-lightbulb"></i>
-                <span>INLabs</span>
-            </a>
-            <a href="#" class="servicos-in-card">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                <span>INCom</span>
-            </a>
-            <a href="#" class="servicos-in-card">
-                <i class="fas fa-book"></i>
-                <span>Biblioteca</span>
-            </a>
-        </div>
-
-        <!-- SEÇÃO DE NOTÍCIAS (2 COLUNAS) -->
-        <h2 class="noticias-heading">Notícias</h2>
-        <div class="noticias-grid-2">
-            <!-- Notícia 1 -->
-            <div class="noticia-item">
-                <img src="https://images.unsplash.com/photo-1544928147-79a2dbc1f389?auto=format&fit=crop&w=800&q=80" alt="Dama da gravura">
-                <span>"Dama da gravura" deixa um legado na história cultural e artística brasiliense.</span>
-                <h3>O legado de Lêda Watson na Imprensa Nacional</h3>
-            </div>
-            <!-- Notícia 2 -->
-            <div class="noticia-item">
-                <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80" alt="Impressoras de alta tecnologia">
-                <span>O objetivo é oferecer soluções melhores e novos produtos</span>
-                <h3>Imprensa Nacional renova parque gráfico com impressoras de alta tecnologia</h3>
-            </div>
-        </div>
-
-        <!-- BOTÃO MAIS NOTÍCIAS -->
-        <div class="btn-wrapper-center">
-            <a href="#" class="btn-outline-blue">Mais notícias</a>
-        </div>
-        
-        <!-- FAIXA AZUL ESCURA (DIVISÓRIA FULL WIDTH) -->
-        <div class="faixa-azul-escura-divider"></div>
-        
-        <!-- --- SEÇÃO: ACESSO À INFORMAÇÃO --- -->
-        <h2 class="acesso-informacao-heading">Acesso à Informação</h2>
-        <div class="acesso-informacao-grid">
-            <a href="#" class="acesso-card">
-                <i class="fas fa-info"></i>
-                <span>Institucional</span>
-            </a>
-            <a href="#" class="acesso-card">
-                <i class="fas fa-list-check"></i>
-                <span>Ações e programas</span>
-            </a>
-            <a href="#" class="acesso-card">
-                <i class="fas fa-user-friends"></i>
-                <span>Participação Social</span>
-            </a>
-            <a href="#" class="acesso-card">
-                <i class="fas fa-file-alt"></i>
-                <span>Auditorias</span>
-            </a>
-            
-            <a href="#" class="acesso-card">
-                <i class="fas fa-receipt"></i>
-                <span>Convênios e Transferências</span>
-            </a>
-            <a href="#" class="acesso-card">
-                <i class="fas fa-file-invoice-dollar"></i>
-                <span>Receitas e Despesas</span>
-            </a>
-            <a href="#" class="acesso-card">
-                <i class="fas fa-file-signature"></i>
-                <span>Licitações e Contratos</span>
-            </a>
-            <a href="#" class="acesso-card">
-                <i class="fas fa-user-tie"></i>
-                <span>Servidores</span>
-            </a>
-        </div>
-
-        <!-- BOTÃO MAIS INFORMAÇÕES -->
-        <div class="btn-wrapper-center" style="margin-bottom: 80px;">
-            <a href="#" class="btn-outline-blue">Mais informações</a>
-        </div>
-
-        <!-- --- SEÇÕES: CENTRAIS DE CONTEÚDO E ATENDIMENTO --- -->
-        <h2 class="centrais-conteudo-heading">Centrais de Conteúdo</h2>
-        <div class="centrais-grid-2">
-            <a href="#" class="centrais-card">
-                <i class="fab fa-youtube"></i>
-                <span>Vídeos</span>
-            </a>
-            <a href="#" class="centrais-card">
-                <i class="fas fa-spell-check"></i>
-                <span>Dicionário Eletrônico</span>
-            </a>
-        </div>
-
-        <h2 class="atendimento-heading">Atendimento ao Cidadão</h2>
-        <div class="centrais-grid-2" style="margin-bottom: 60px;">
-            <a href="#" class="centrais-card">
-                <i class="fas fa-comment"></i>
-                <span>Ouvidoria</span>
-            </a>
-            <a href="#" class="centrais-card">
-                <i class="fas fa-newspaper"></i>
-                <span>Imprensa</span>
-            </a>
-        </div>
-
-    </main>
-
-    <!-- --- COMPARTILHE INFERIOR (ANTES DO RODAPÉ) --- -->
-    <div class="bottom-share-container">
-        <div class="bottom-share-content">
-            <span>Compartilhe:</span>
-            <a href="#" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-            <a href="#" title="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
-            <a href="#" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-            <a href="#" title="Copiar link"><i class="fa-solid fa-link"></i></a>
-        </div>
-    </div>
-
-    <!-- RODAPÉ GOV.BR GRANDÃO E MAIS ESCURO -->
-    <footer class="footer-gov">
-        <div class="footer-container-main">
-            <div class="footer-logo-area">
-                <div class="footer-logo-text">gov.br</div>
-            </div>
-            
-            <div class="footer-columns-grid">
-                <!-- Coluna 1 -->
-                <div class="footer-column">
-                    <h4>Composição</h4>
-                    <ul>
-                        <li><a href="#">Diretoria-Geral</a></li>
-                        <li><a href="#">Coordenação-Geral de Tecnologia - CGTI</a></li>
-                        <li><a href="#">Coordenação-Geral de Publicação, Produção e Preservação - CGPPP</a></li>
-                        <li><a href="#">Coordenação-Geral de Administração - CGAD</a></li>
-                        <li><a href="#">Quem é quem</a></li>
-                    </ul>
-
-                    <h4>Centrais de Conteúdo</h4>
-                    <ul>
-                        <li><a href="#">Dicionário Eletrônico</a></li>
-                        <li><a href="#">Vídeos</a></li>
-                        <li><a href="#">Revista Imprensa Nacional</a></li>
-                        <li><a href="#">Info Produtos da Exposição Especial</a></li>
-                    </ul>
-                </div>
-
-                <!-- Coluna 2 -->
-                <div class="footer-column">
-                    <h4>Notícias</h4>
-                    <ul>
-                        <li><a href="#">Noticias</a></li>
-                    </ul>
-
-                    <h4>Serviços</h4>
-                    <ul>
-                        <li><a href="#">Diário Oficial da União</a></li>
-                        <li><a href="#">Publicação de matérias</a></li>
-                        <li><a href="#">Biblioteca</a></li>
-                        <li><a href="#">Museu da Imprensa</a></li>
-                        <li><a href="#">Serviços Gráficos</a></li>
-                        <li><a href="#">Contratos com a Imprensa Nacional</a></li>
-                        <li><a href="#">Tutorial do APP DOU</a></li>
-                        <li><a href="#">Termo de Uso e Política de Privacidade - APP DOU</a></li>
-                        <li><a href="#">INLabs</a></li>
-                        <li><a href="#">INCom</a></li>
-                    </ul>
-                </div>
-
-                <!-- Coluna 3 -->
-                <div class="footer-column">
-                    <h4>Acesso à Informação</h4>
-                    <ul>
-                        <li><a href="#">Institucional</a></li>
-                        <li><a href="#">Agenda de Autoridades</a></li>
-                        <li><a href="#">Ações e programas</a></li>
-                        <li><a href="#">Participação Social</a></li>
-                        <li><a href="#">Auditorias</a></li>
-                        <li><a href="#">Convênios e Transferências</a></li>
-                        <li><a href="#">Receitas e Despesas</a></li>
-                        <li><a href="#">Licitações e Contratos</a></li>
-                        <li><a href="#">Servidores</a></li>
-                        <li><a href="#">Informações classificadas</a></li>
-                        <li><a href="#">Serviços de Informação ao cidadão - SIC</a></li>
-                        <li><a href="#">Perguntas Frequentes</a></li>
-                        <li><a href="#">Dados Abertos</a></li>
-                        <li><a href="#">Tratamento de Dados Pessoais</a></li>
-                    </ul>
-                </div>
-
-                <!-- Coluna 4 -->
-                <div class="footer-column">
-                    <h4>Canais de Atendimento</h4>
-                    <ul>
-                        <li><a href="#">Canais de Atendimento</a></li>
-                        <li><a href="#">Fale Conosco</a></li>
-                        <li><a href="#">Ouvidoria</a></li>
-                        <li><a href="#">Imprensa</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- PARTE FINAL DO RODAPÉ (COOKIES, REDES SOCIAIS E ACESSO À INFORMAÇÃO) -->
-            <div class="footer-bottom-extra">
-                <div>
-                    <button class="footer-cookies-btn">
-                        <i class="fas fa-cookie-bite"></i> Redefinir Cookies
-                    </button>
-                    
-                    <div class="footer-social-section">
-                        <div class="footer-social-title">Redes Sociais</div>
-                        <div class="footer-social-icons">
-                            <a href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#"><i class="fab fa-x-twitter"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="#"><i class="fab fa-youtube"></i></a>
-                        </div>
+                <!-- RESULTADO 1: O ALUNO VERDADEIRO -->
+                <div class="result-item">
+                    <div class="result-meta">
+                        <strong>Seção 3</strong> &gt; Ministério da Educação &gt; Secretaria de Educação Superior &gt; Edição Nº 176 de {{ aluno['data_homologacao'] or '17/09/2026' }} - Pág. 148
+                    </div>
+                    <!-- CLIQUE AQUI ABRE O DOCUMENTO E ESCONDE A BUSCA -->
+                    <a class="result-title" onclick="abrirPublicacao()">AVISO DE REGISTRO DE DIPLOMA DE {{ aluno['nome'] | upper }}</a>
+                    <div class="result-snippet">
+                        O Reitor da instituição de ensino <strong>{{ aluno['instituicao_ensino'] | upper }}</strong>, atendendo as disposições da Portaria MEC nº 1.095, de 25 de outubro de 2018, Artigo 21, informa que foi registrado o diploma do(a) discente <span class="highlight">{{ aluno['nome'] | upper }}</span>, portador(a) do CPF {{ aluno['cpf'] }}...
                     </div>
                 </div>
 
-                <div class="footer-acesso-badge">
-                    <i class="fas fa-info-circle"></i>
-                    <div style="font-size: 12px; font-weight: bold; line-height: 1.2;">Acesso à<br>Informação</div>
+                <!-- PREENCHIMENTOS FICTÍCIOS -->
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 3</strong> &gt; Ministério da Educação &gt; Universidade Federal de Minas Gerais &gt; Pró-Reitoria de Pós-Graduação &gt; Diretoria Acadêmica &gt; Edição Nº 176 de 17/09/2026 - Pág. 55</div>
+                    <a href="#" class="result-title">Edital Regular - Seleção 2027, 16 de setembro de 2026</a>
+                    <div class="result-snippet">Edital Regular - Seleção 2027, 16 de setembro de 2026 Mestrado e Doutorado O Programa de Pós-Graduação ... Coordenador do Programa de Pós-Graduação em Saúde Pública <span class="highlight">{{ primeiro_nome | upper }}</span> Bulegon Pilecco. Edital Regular - Seleção 2027.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 2</strong> &gt; Ministério da Justiça e Segurança Pública &gt; Polícia Federal &gt; Diretoria de Gestão de Pessoal &gt; Edição Nº 176 de 17/09/2026 - Pág. 12</div>
+                    <a href="#" class="result-title">PORTARIA DGP/PF Nº 12.350, DE 16 DE SETEMBRO DE 2026</a>
+                    <div class="result-snippet">A DIRETORA DE GESTÃO DE PESSOAL DA POLÍCIA FEDERAL, no uso de suas atribuições, resolve: APOSENTAR <span class="highlight">{{ primeiro_nome | upper }}</span> ALVES NOGUEIRA, matrícula SIAPE nº 1234567, ocupante do cargo de Agente de Polícia Federal, Classe Especial.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 1</strong> &gt; Tribunal de Contas da União &gt; 1ª Câmara &gt; Edição Nº 175 de 16/09/2026 - Pág. 119</div>
+                    <a href="#" class="result-title">ATA Nº 30, DE 8 DE SETEMBRO DE 2026</a>
+                    <div class="result-snippet">Leia-se: (...) posto/graduação de 2º Sargento, 2º Tenente, Major e 2º Sargento, respectivamente(...) ... instituidores das pensões, verificou-se que os benefícios pensionais foram calculados com base no posto/graduação ... proventos da pensionista militar leda Maria de Matos e <span class="highlight">{{ primeiro_nome | upper }}</span>.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 3</strong> &gt; Ministério do Meio Ambiente e Mudança do Clima &gt; Instituto Brasileiro do Meio Ambiente &gt; Edição Nº 175 de 16/09/2026 - Pág. 89</div>
+                    <a href="#" class="result-title">EXTRATO DE DISPENSA DE LICITAÇÃO Nº 14/2026 - UASG 193001</a>
+                    <div class="result-snippet">Nº Processo: 02001.000456/2026-89. Objeto: Aquisição de material de consumo para a Superintendência do IBAMA/RJ. Total de Itens Licitados: 00004. Fundamento Legal: Art. 75º, Inciso II da Lei nº 14.133 de 2021.. Justificativa: <span class="highlight">{{ primeiro_nome | upper }}</span> SILVEIRA DE SOUZA - Coordenador de Administração.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 2</strong> &gt; Ministério da Educação &gt; Universidade Federal da Fronteira Sul &gt; Edição Nº 175 de 16/09/2026 - Pág. 22</div>
+                    <a href="#" class="result-title">PORTARIA DE PESSOAL Nº 684/GR/UFFS/2026, DE 15 DE SETEMBRO DE 2026</a>
+                    <div class="result-snippet"><span class="highlight">{{ primeiro_nome | upper }}</span> SURDI, Professor do Magistério Superior, Siape nº 1769798, da função de Coordenador do Curso de Graduação em Letras - Português e Espanhol - Licenciatura, do Campus Chapecó, Código FCC.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 2</strong> &gt; Ministério da Defesa &gt; Comando do Exército &gt; Departamento-Geral do Pessoal &gt; Diretoria de Assistência ao Pessoal &gt; Edição Nº 175 de 16/09/2026 - Pág. 8</div>
+                    <a href="#" class="result-title">PORTARIA - DAP/DGP/C Ex Nº 788, DE 14 DE SETEMBRO DE 2026</a>
+                    <div class="result-snippet">remuneração a que fazem jus, observados os art. 12 e 15 da Lei nº 13.954, de 16 de dezembro de 2019: GRADUAÇÃORTARIA - DAP/DGP/C Ex Nº 788, DE 14 DE SETEMBRO DE 2026 O DIRETOR DE ASSISTÊNCIA AO PESSOAL, no uso da competência delegada a <span class="highlight">{{ primeiro_nome | upper }}</span>.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 2</strong> &gt; Ministério da Saúde &gt; Gabinete da Ministra &gt; Edição Nº 174 de 15/09/2026 - Pág. 41</div>
+                    <a href="#" class="result-title">PORTARIA GM/MS Nº 1.450, DE 14 DE SETEMBRO DE 2026</a>
+                    <div class="result-snippet">A MINISTRA DE ESTADO DA SAÚDE, no uso das atribuições que lhe conferem os incisos I e II do parágrafo único do art. 87 da Constituição, resolve: Art. 1º Exonerar, a pedido, <span class="highlight">{{ primeiro_nome | upper }}</span> DE ALMEIDA COSTA do cargo de Coordenador-Geral, Código CCE 1.13.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 3</strong> &gt; Ministério da Fazenda &gt; Receita Federal do Brasil &gt; Alfândega da Receita Federal &gt; Edição Nº 174 de 15/09/2026 - Pág. 62</div>
+                    <a href="#" class="result-title">EDITAL DE INTIMAÇÃO Nº 55, DE 14 DE SETEMBRO DE 2026</a>
+                    <div class="result-snippet">O Inspetor-Chefe da Alfândega da Receita Federal do Brasil no Aeroporto Internacional de Viracopos/Campinas-SP, intima <span class="highlight">{{ primeiro_nome | upper }}</span> TRANSPORTES LTDA, CNPJ 12.345.678/0001-90, a apresentar defesa no prazo de 20 dias, referente ao Auto de Infração.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 2</strong> &gt; Ministério da Educação &gt; Fundação Universidade Federal de Mato Grosso do Sul &gt; Edição Nº 175 de 16/09/2026 - Pág. 34</div>
+                    <a href="#" class="result-title">PORTARIAS DE 11 DE SETEMBRO DE 2026</a>
+                    <div class="result-snippet">FCC) da Presidência da Comissão Acadêmica Local do Curso de Mestrado Profissional do Programa de Pós-Graduação ... FCC) da Presidência da Comissão Acadêmica Local do Curso de Mestrado Profissional do Programa de Pós-Graduação, substituído por <span class="highlight">{{ primeiro_nome | upper }}</span>.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 1</strong> &gt; Atos do Poder Judiciário &gt; Supremo Tribunal Federal &gt; Edição Nº 173 de 14/09/2026 - Pág. 2</div>
+                    <a href="#" class="result-title">RESOLUÇÃO Nº 785, DE 11 DE SETEMBRO DE 2026</a>
+                    <div class="result-snippet">Altera a Resolução STF nº 642, de 14 de junho de 2019, que dispõe sobre a estrutura orgânica do Tribunal. O PRESIDENTE DO SUPREMO TRIBUNAL FEDERAL, no uso de suas atribuições, resolve: Art. 1º Aprovado o projeto arquitetônico encaminhado por <span class="highlight">{{ primeiro_nome | upper }}</span> ARQUITETURA.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 2</strong> &gt; Ministério da Defesa &gt; Comando da Aeronáutica &gt; Gabinete do Comandante &gt; Edição Nº 173 de 14/09/2026 - Pág. 11</div>
+                    <a href="#" class="result-title">PORTARIA DIRAP Nº 4.567/3SC1, DE 10 DE SETEMBRO DE 2026</a>
+                    <div class="result-snippet">O DIRETOR DE ADMINISTRAÇÃO DO PESSOAL, no uso da delegação de competência, resolve: Conceder transferência para a reserva remunerada ao Coronel Aviador (1234567) <span class="highlight">{{ primeiro_nome | upper }}</span> MARTINS FERREIRA, do efetivo do Comando de Preparo (COMPREP).</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 3</strong> &gt; Ministério de Minas e Energia &gt; Agência Nacional de Energia Elétrica &gt; Edição Nº 172 de 11/09/2026 - Pág. 88</div>
+                    <a href="#" class="result-title">AVISO DE LICITAÇÃO - PREGÃO ELETRÔNICO Nº 12/2026</a>
+                    <div class="result-snippet">Objeto: Contratação de empresa especializada para prestação de serviços continuados de manutenção predial preventiva e corretiva. Entrega das Propostas: a partir de 11/09/2026. <span class="highlight">{{ primeiro_nome | upper }}</span> DE OLIVEIRA SILVA - Pregoeiro.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 2</strong> &gt; Ministério das Relações Exteriores &gt; Secretaria de Estado &gt; Edição Nº 172 de 11/09/2026 - Pág. 55</div>
+                    <a href="#" class="result-title">PORTARIA DE 10 DE SETEMBRO DE 2026</a>
+                    <div class="result-snippet">O MINISTRO DE ESTADO DAS RELAÇÕES EXTERIORES, de acordo com o disposto no art. 18, inciso II, do Anexo I ao Decreto nº 11.357, de 1º de janeiro de 2023, resolve: Designar o Conselheiro da Carreira de Diplomata <span class="highlight">{{ primeiro_nome | upper }}</span> RODRIGUES COSTA para exercer a função.</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-meta"><strong>Seção 1</strong> &gt; Banco Central do Brasil &gt; Diretoria Colegiada &gt; Edição Nº 171 de 10/09/2026 - Pág. 21</div>
+                    <a href="#" class="result-title">RESOLUÇÃO BCB Nº 345, DE 9 DE SETEMBRO DE 2026</a>
+                    <div class="result-snippet">Altera a Resolução BCB nº 1, de 12 de agosto de 2020, que institui o arranjo de pagamentos Pix. A Diretoria Colegiada do Banco Central do Brasil, em sessão realizada em 9 de setembro de 2026, com base no relatório expedido pelo auditor <span class="highlight">{{ primeiro_nome | upper }}</span>.</div>
+                </div>
+                
+            </div>
+
+            <div class="footer-actions">
+                <button class="btn-reportar"><i class="fas fa-exclamation-triangle"></i> REPORTAR ERRO</button>
+                <div class="pagination">
+                    <a href="#" class="page-item active">1</a>
+                    <a href="#" class="page-item">2</a>
+                    <span>...</span>
+                    <a href="#" class="page-item">18715</a>
+                    <a href="#" class="page-item"><i class="fas fa-chevron-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- TELA 2: DOCUMENTO OFICIAL (OCULTA INICIALMENTE)         -->
+        <!-- ======================================================= -->
+        <div id="tela-documento">
+            
+            <div class="breadcrumb" style="text-transform: uppercase;">
+                <i class="fas fa-home"></i> &nbsp;&gt;&nbsp; <span>Serviços</span> &nbsp;&gt;&nbsp; <span>Diário Oficial da União</span> &nbsp;&gt;&nbsp; <span>Aviso de Registro de Diploma</span>
+            </div>
+
+            <!-- TÍTULO AZUL IGUAL À FOTO -->
+            <h1 class="doc-page-title">AVISO DE REGISTRO DE DIPLOMA</h1>
+
+            <!-- Barra 1: Voltar e Compartilhar -->
+            <div class="doc-action-row-1">
+                <button class="btn-voltar" onclick="fecharPublicacao()">&lt; Voltar</button>
+                <div class="doc-share">
+                    Compartilhe: 
+                    <i class="fab fa-facebook-f"></i>
+                    <i class="fab fa-twitter"></i>
+                    <i class="fab fa-linkedin-in"></i>
+                    <i class="fab fa-whatsapp"></i>
+                    <i class="fas fa-share-alt"></i>
                 </div>
             </div>
 
-            <div class="footer-bottom-divider">
-                Todo o conteúdo deste site está publicado sob a licença Creative Commons Atribuição-SemDerivações 3.0 Não Adaptada.
+            <!-- Barra 2: Botões de Ação -->
+            <div class="doc-action-row-2">
+                <button class="btn-doc-action"><i class="fas fa-file-signature"></i> VERSÃO CERTIFICADA</button>
+                <button class="btn-doc-action"><i class="fas fa-book-open"></i> DIÁRIO COMPLETO</button>
+                <button class="btn-doc-action"><i class="fas fa-print"></i> IMPRESSÃO</button>
+            </div>
+
+            <!-- Papel Oficial -->
+            <div class="doc-paper">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Coat_of_arms_of_Brazil.svg/250px-Coat_of_arms_of_Brazil.svg.png" class="doc-brasao" alt="Brasão da República">
+                
+                <h2 class="doc-dou-title">DIÁRIO OFICIAL DA UNIÃO</h2>
+                
+                <div class="doc-meta">
+                    Publicado em: {{ aluno['data_homologacao'] or '17/09/2026' }} | Edição: 176 | Seção: 3 | Página: 148
+                </div>
+                <div class="doc-orgao">
+                    Órgão: Ineditoriais/{{ aluno['instituicao_ensino'] or 'Instituição de Ensino Superior' }}
+                </div>
+
+                <div class="doc-subtitulo">AVISO DE REGISTRO DE DIPLOMA</div>
+
+                <p class="doc-texto-corrido">
+                    O Reitor(a) da instituição de ensino <strong>{{ aluno['instituicao_ensino'] | upper }}</strong>, atendendo às disposições legais da Portaria MEC nº 1.095, de 25 de outubro de 2018, Artigo 21, informa que foi processado e registrado o diploma do(a) discente <strong>{{ aluno['nome'] | upper }}</strong>, devidamente qualificado(a) sob o CPF nº {{ aluno['cpf'] }}. O(a) titular concluiu com êxito todas as exigências curriculares do curso de graduação em <strong>{{ aluno['curso'] }}</strong>, adquirindo assim o respectivo grau e as prerrogativas profissionais que lhe são conferidas. O documento foi lavrado no respectivo livro oficial de registros da secretaria acadêmica, estando o processo de validação em estrita conformidade com as diretrizes do Ministério da Educação. A relação completa dos diplomas registrados permanecerá disponível para consulta pública e auditoria documental no sistema eletrônico do Cadastro e-MEC.
+                </p>
+
+                <div class="doc-assinatura-bloco">
+                    <div class="doc-assinatura-data">Brasília-DF, {{ aluno['data_homologacao'] or '17 de setembro de 2026' }}.</div>
+                    <div class="doc-assinatura-nome">GABINETE DA REITORIA E SECRETARIA ACADÊMICA</div>
+                </div>
+
+                <div class="doc-alerta-vermelho">
+                    Este conteúdo não substitui o publicado na versão certificada.
+                </div>
+            </div>
+
+            <!-- Botão reportar erro no final do documento também -->
+            <button class="btn-reportar" style="margin-top: -30px; display: block;"><i class="fas fa-exclamation-triangle"></i> REPORTAR ERRO</button>
+
+        </div>
+    </main>
+
+    <!-- RODAPÉ AZUL -->
+    <footer class="gov-footer">
+        <div class="footer-container">
+            <div class="footer-top-row">
+                <div class="footer-left">
+                    <img src="https://www.gov.br/++theme++padrao_govbr/img/govbr-logo-large.png" alt="gov.br" class="footer-logo-img">
+                    <div class="footer-links-grid">
+                        <div class="footer-col">
+                            <h4>Diário Oficial da<br>União</h4>
+                            <ul>
+                                <li><a href="#">Leitura do Jornal</a></li>
+                                <li><a href="#">Destaques do Diário Oficial da União</a></li>
+                                <li><a href="#">Base de Dados de Publicações do DOU</a></li>
+                                <li><a href="#">Verificação de autenticidade</a></li>
+                                <li><a href="#">Acesso ao sistema de envio de matérias INCom</a></li>
+                                <li><a href="#">Concursos e Seleções</a></li>
+                                <li><a href="#">Tutorial do APP DOU</a></li>
+                                <li><a href="#">Tutorial INCom</a></li>
+                                <li><a href="#">Termo de Uso e Política de Privacidade</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-col"><h4>Portal da<br>Imprensa<br>Nacional</h4></div>
+                    </div>
+                </div>
+                <div class="footer-right">
+                    <h4>Audiência do Portal</h4>
+                    <p>Páginas vistas null <i class="fas fa-info-circle"></i> null null</p>
+                    <p>Visitantes únicos null <i class="fas fa-info-circle"></i> null null</p>
+                </div>
+            </div>
+            <div class="footer-bottom-row">
+                <div class="redes-sociais">
+                    <h4>Redes Sociais</h4>
+                    <div class="icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-badges">
+                    <div class="badge-acesso"><i class="fas fa-info-circle"></i><span>Acesso à<br>Informação</span></div>
+                    <a class="btn-up-arrow" onclick="window.scrollTo(0,0)"><i class="fas fa-chevron-up"></i></a>
+                </div>
             </div>
         </div>
+        <div class="footer-legal">Todo o conteúdo deste site está publicado sob a licença Creative Commons Atribuição-SemDerivações 3.0 Não Adaptada.</div>
     </footer>
 
+    <!-- SCRIPT DE TRANSIÇÃO DAS TELAS -->
+    <script>
+        function abrirPublicacao() {
+            document.getElementById('tela-busca').style.display = 'none';
+            document.getElementById('tela-documento').style.display = 'block';
+            window.scrollTo(0, 0); // Sobe pro topo da página automaticamente
+        }
+
+        function fecharPublicacao() {
+            document.getElementById('tela-documento').style.display = 'none';
+            document.getElementById('tela-busca').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
 </body>
 </html>
