@@ -88,9 +88,6 @@ def obter_url_base_faculdade(slug):
   else:
     return DOMINIOS_MAPA['unip']
 
-# ==========================================
-# CORREÇÃO: Função auxiliar para normalizar CPF
-# ==========================================
 def normalizar_cpf(cpf):
   return ''.join(filter(str.isdigit, str(cpf or '')))
 
@@ -108,7 +105,6 @@ def aplicar_headers_seguranca(response):
     )
   return response
 
-# INICIALIZA O BANCO DE DADOS
 init_db()
 
 # ==========================================
@@ -257,7 +253,6 @@ def cadastro():
     historico = salvar_multiplos_arquivos(hist_files, dados.get('hist_antigo', ''))
     outros_docs = salvar_multiplos_arquivos(outros_files, dados.get('outros_antigo', ''))
 
-    # CORREÇÃO: Normaliza o CPF antes de salvar
     cpf = normalizar_cpf(dados['cpf'])
 
     conn = get_db_connection()
@@ -337,7 +332,6 @@ def editar(id):
     historico = salvar_multiplos_arquivos(hist_files, dados.get('hist_antigo', ''))
     outros_docs = salvar_multiplos_arquivos(outros_files, dados.get('outros_antigo', ''))
 
-    # CORREÇÃO: Normaliza o CPF antes de salvar
     cpf = normalizar_cpf(dados['cpf'])
 
     try:
@@ -457,24 +451,24 @@ def deletar_todos():
     conn.close()
   return redirect(url_for('excluir'))
 
+# ==========================================
+# ROTA DE INFORMAÇÕES UNIFICADA
+# ==========================================
 @app.route('/informacoes/<tipo>', methods=['GET', 'POST'])
 def informacoes(tipo):
   alunos = []
-  if tipo == 'graduacao':
-    titulo = 'Dossiê de Graduações'
-    filtro_sql = "tipo_curso IN ('Bacharelado', 'Licenciatura', 'Tecnologia')"
-  else:
-    titulo = 'Dossiê de Concursos'
-    filtro_sql = "tipo_curso IN ('Concurso Público', 'Concurso Privado')"
+  titulo = 'Dossiê de Graduações e Consultas'
 
   if request.method == 'POST':
     termo = request.form.get('termo', '')
     conn = get_db_connection()
     try:
+      # Busca geral de alunos cadastrados independentemente de curso, 
+      # visto que concursos foram eliminados da interface
       alunos = conn.execute(
-          f'''
+          '''
               SELECT * FROM alunos 
-              WHERE (nome LIKE ? OR cpf = ?) AND ({filtro_sql})
+              WHERE nome LIKE ? OR cpf = ?
           ''',
           ('%' + termo + '%', normalizar_cpf(termo)),
       ).fetchall()
@@ -783,7 +777,6 @@ def gerar_posse(id):
       p_ano=random.randint(2023, 2026),
   )
 
-# CORREÇÃO: Rota duplicada removida — mantida apenas esta versão
 @app.route('/gerar_exercicio/<int:id>')
 def gerar_exercicio(id):
   conn = get_db_connection()

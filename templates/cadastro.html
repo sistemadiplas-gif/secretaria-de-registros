@@ -11,7 +11,7 @@
     .select2-results__option { color: #333 !important; }
 </style>
 
-<h1 style="color: #0056b3;">Cadastro de Aluno / Candidato</h1>
+<h1 style="color: #0056b3;">Cadastro de Aluno</h1>
 
 <form method="POST" action="/cadastro" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -45,23 +45,19 @@
     <input type="text" name="filiacao" placeholder="Filiação (Nome dos Pais)" required>
     <input type="text" name="endereco" placeholder="Endereço Atual Completo (Rua, Nº, Bairro, Cidade/UF)" required>
 
-    <h3 style="color: #0056b3; border-bottom: 1px solid #ccc; width: 80%; text-align: left; margin-top: 20px;">Formação / Concurso</h3>
+    <h3 style="color: #0056b3; border-bottom: 1px solid #ccc; width: 80%; text-align: left; margin-top: 20px;">Formação Acadêmica</h3>
     
-    <select name="tipo_curso" id="tipo_curso" onchange="alternarCampos()" required>
-        <option value="" disabled selected>Selecione o Tipo de Categoria</option>
+    <select name="tipo_curso" required style="width: 60%; max-width: 500px;">
+        <option value="" disabled selected>Selecione a Categoria da Graduação</option>
         <option value="Bacharelado">Bacharelado</option>
         <option value="Licenciatura">Licenciatura</option>
         <option value="Tecnologia">Tecnologia</option>
-        <option value="Concurso Público">Concurso Público</option>
-        <option value="Concurso Privado">Concurso Privado</option>
     </select>
 
-    <input type="text" name="curso" placeholder="Nome do Curso ou Concurso..." required>
+    <input type="text" name="curso" placeholder="Nome do Curso..." required>
     
-    <!-- CAMPOS EXCLUSIVOS DE GRADUAÇÃO -->
-    <div id="secao_graduacao" style="width: 60%; max-width: 500px; display: none; flex-direction: column; gap: 15px;">
+    <div style="width: 60%; max-width: 500px; display: flex; flex-direction: column; gap: 15px;">
         
-        <!-- CAIXA DE SELEÇÃO DA FACULDADE -->
         <div style="text-align: left; background-color: #2a2a35; padding: 15px; border-radius: 5px; border: 1px solid #4da6ff;">
             <label style="color: #4da6ff; font-weight: bold; font-size: 15px;">Portal da Faculdade (Automação QR Code)</label>
             <p style="font-size: 11px; color: #aaa; margin: 5px 0 10px 0;">Selecione a faculdade para definir qual tela o QR Code irá abrir.</p>
@@ -84,12 +80,12 @@
             
             <div style="display: flex; flex-direction: column; gap: 3px;">
                 <label style="font-size: 12px; color: #ccc;">Diploma FRENTE:</label>
-                <input type="file" id="grad_frente_file" name="diploma_frente_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
+                <input type="file" name="diploma_frente_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 5px;">
                 <label style="font-size: 12px; color: #ccc;">Diploma VERSO:</label>
-                <input type="file" id="grad_verso_file" name="diploma_verso_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
+                <input type="file" name="diploma_verso_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 10px;">
@@ -128,60 +124,8 @@
         </div>
         <input type="text" name="carga_horaria" placeholder="Carga Horária (ex: 3600h)">
     </div>
-
-    <!-- CAMPOS EXCLUSIVOS DE CONCURSO -->
-    <div id="secao_concurso" style="width: 60%; max-width: 500px; display: none; flex-direction: column; gap: 15px;">
-        
-        <div style="text-align: left;">
-            <label style="font-size: 14px; color: #ccc;">Esfera do Concurso</label>
-            <select name="esfera_concurso" id="esfera_concurso" onchange="alternarEsfera()" style="width: 100%; margin-top: 5px; padding: 10px;">
-                <option value="Federal" selected>Federal</option>
-                <option value="Estadual">Estadual</option>
-                <option value="Municipal">Municipal</option>
-            </select>
-        </div>
-        
-        <div id="div_local_esfera" style="display: none; width: 100%;">
-            <input type="text" name="local_esfera" id="local_esfera" placeholder="Nome do Estado ou Município" style="width: 100%; box-sizing: border-box;">
-        </div>
-
-        <input type="text" name="edital_concurso" placeholder="Número ou Nome do Edital (ex: Edital nº 01/2026)">
-        
-        <div style="text-align: left;">
-            <label style="font-size: 14px; color: #ccc;">Data da Homologação</label>
-            <input type="date" name="data_homologacao" style="width: 100%; box-sizing: border-box;">
-        </div>
-
-        <input type="text" name="dados_nomeacao" placeholder="Link do Diário Oficial (DOU)">
-        
-        <div style="display: flex; gap: 10px;">
-            <div style="flex: 1; text-align: left;">
-                <label style="font-size: 14px; color: #ccc;">Data da Posse</label>
-                <input type="date" name="data_posse" style="width: 100%; box-sizing: border-box;">
-            </div>
-            <div style="flex: 1; text-align: left;">
-                <label style="font-size: 14px; color: #ccc;">Data de Início do Exercício</label>
-                <input type="date" name="data_exercicio" style="width: 100%; box-sizing: border-box;">
-            </div>
-        </div>
-
-        <div style="background-color: #2a2a35; padding: 15px; border-radius: 5px; border: 1px solid #444; display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-            <label style="color: #4da6ff; font-weight: bold; font-size: 14px;">Upload de Documentos Manuais (Opcional)</label>
-            <p style="font-size: 11px; color: #aaa; margin: -5px 0 5px 0;">Se não enviar arquivos, o sistema gerará os Termos automaticamente.</p>
-            
-            <div style="display: flex; flex-direction: column; gap: 3px;">
-                <label style="font-size: 12px; color: #ccc;">Termo de Posse Assinado:</label>
-                <input type="file" id="conc_posse_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 5px;">
-                <label style="font-size: 12px; color: #ccc;">Termo de Exercício Assinado:</label>
-                <input type="file" id="conc_exercicio_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
-            </div>
-        </div>
-    </div>
     
-    <input type="text" name="matricula" placeholder="Número da Matrícula ou Inscrição" required>
+    <input type="text" name="matricula" placeholder="Número da Matrícula" required>
 
     <h3 style="color: #0056b3; border-bottom: 1px solid #ccc; width: 80%; text-align: left; margin-top: 20px;">Registro Profissional (Conselhos)</h3>
     <div style="width: 60%; max-width: 500px; text-align: left; background-color: #2a2a35; padding: 15px; border-radius: 5px; border: 1px solid #4da6ff;">
@@ -201,60 +145,11 @@
 </form>
 
 <script>
-    function alternarEsfera() {
-        var esfera = document.getElementById('esfera_concurso').value;
-        var divLocal = document.getElementById('div_local_esfera');
-        var inputLocal = document.getElementById('local_esfera');
-
-        if (esfera === 'Estadual') {
-            divLocal.style.display = 'block';
-            inputLocal.placeholder = "Sigla do Estado (ex: GO, SP, MG)";
-            inputLocal.required = true;
-        } else if (esfera === 'Municipal') {
-            divLocal.style.display = 'block';
-            inputLocal.placeholder = "Nome do Município e UF (ex: Goiânia/GO)";
-            inputLocal.required = true;
-        } else {
-            divLocal.style.display = 'none';
-            inputLocal.value = "";
-            inputLocal.required = false;
-        }
-    }
-
-    function alternarCampos() {
-        var tipo = document.getElementById('tipo_curso').value;
-        var secaoGrad = document.getElementById('secao_graduacao');
-        var secaoConc = document.getElementById('secao_concurso');
-        
-        var gradFrente = document.getElementById('grad_frente_file');
-        var gradVerso = document.getElementById('grad_verso_file');
-        var concPosse = document.getElementById('conc_posse_file');
-        var concExercicio = document.getElementById('conc_exercicio_file');
-
-        if (tipo === 'Bacharelado' || tipo === 'Licenciatura' || tipo === 'Tecnologia') {
-            secaoGrad.style.display = 'flex'; secaoConc.style.display = 'none';
-            if (gradFrente) gradFrente.name = "diploma_frente_file";
-            if (gradVerso) gradVerso.name = "diploma_verso_file";
-            if (concPosse) concPosse.removeAttribute("name");
-            if (concExercicio) concExercicio.removeAttribute("name");
-        } else if (tipo === 'Concurso Público' || tipo === 'Concurso Privado') {
-            secaoGrad.style.display = 'none'; secaoConc.style.display = 'flex';
-            if (concPosse) concPosse.name = "diploma_frente_file";
-            if (concExercicio) concExercicio.name = "diploma_verso_file";
-            if (gradFrente) gradFrente.removeAttribute("name");
-            if (gradVerso) gradVerso.removeAttribute("name");
-        } else {
-            secaoGrad.style.display = 'none'; secaoConc.style.display = 'none';
-        }
-    }
-    
     $(document).ready(function() {
         $('#seletor_faculdade').select2({ placeholder: "Pesquise ou selecione a faculdade do aluno...", allowClear: true });
         $('#seletor_orgao').select2({ placeholder: "Pesquise o conselho...", allowClear: true });
-        alternarCampos();
-        alternarEsfera();
 
-        // CORREÇÃO: Normaliza o CPF antes de enviar (remove pontos, traços e espaços)
+        // Normaliza o CPF antes de enviar (remove pontos, traços e espaços)
         $('form').on('submit', function() {
             var campoCpf = $('input[name="cpf"]');
             campoCpf.val(campoCpf.val().replace(/\D/g, ''));
