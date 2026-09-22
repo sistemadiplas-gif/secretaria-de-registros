@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Permitir que o Google rastreie e indexe o sistema -->
+    <meta name="robots" content="index, follow">
+    
+    <!-- Definir a página canónica dinamicamente para evitar conflitos de domínios duplicados -->
+    <link rel="canonical" href="{{ request.base_url }}">
+    
     <title>SECRETARIA DE REGISTROS CNE|MEC</title>
     <style>
         body { 
