@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Permitir que o Google rastreie e indexe a página principal -->
+    <meta name="robots" content="index, follow">
+    
+    <!-- Definir a página canónica dinamicamente para evitar conflitos de domínios duplicados -->
+    <link rel="canonical" href="{{ request.base_url }}">
+    
     <title>Verificação de conformidade - Ministério da Educação</title>
     <link href="https://fonts.googleapis.com/css2?family=Rawline:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
