@@ -49,7 +49,7 @@ app.wsgi_app = ProxyFix(
     app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
 )
 
-UPLOAD_FOLDER = 'static/uploads'
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 if not os.path.exists(UPLOAD_FOLDER):
@@ -700,8 +700,9 @@ def imprensanacional_busca():
 
 @app.route('/download/<filename>')
 def download_file(filename):
+  baixar = request.args.get('baixar') == '1'
   return send_from_directory(
-      app.config['UPLOAD_FOLDER'], secure_filename(filename), as_attachment=True
+      app.config['UPLOAD_FOLDER'], secure_filename(filename), as_attachment=baixar
   )
 
 @app.route('/visualizar_documento/<int:aluno_id>/<tipo_doc>')
