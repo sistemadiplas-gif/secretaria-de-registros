@@ -585,7 +585,7 @@ def validacao_qr_code(faculdade_slug, cpf):
         f'portais/portal_{slug}.html',
         aluno=aluno,
         url_base=request.host_url,
-        logado_portal=False,
+        logado_portal=True,
         erro=None,
     )
   except Exception:
@@ -594,7 +594,7 @@ def validacao_qr_code(faculdade_slug, cpf):
           f'portais/{slug}.html',
           aluno=aluno,
           url_base=request.host_url,
-          logado_portal=False,
+          logado_portal=True,
           erro=None,
       )
     except:
