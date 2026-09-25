@@ -507,17 +507,17 @@ def painel_aluno(id):
 # ==========================================
 @app.route('/portal_aluno/<cpf>', methods=['GET', 'POST'])
 def portal_do_aluno_publico(cpf):
-  cpf = normalizar_cpf(cpf)
+  cpf_limpo = normalizar_cpf(cpf)
   conn = get_db_connection()
   try:
     aluno = conn.execute(
-        'SELECT * FROM alunos WHERE cpf = ?', (cpf,)
+        'SELECT * FROM alunos WHERE cpf = ? OR matricula = ?', (cpf_limpo, cpf)
     ).fetchone()
   finally:
     conn.close()
     
   if not aluno:
-    return 'Cadastro não encontrado. Verifique se o link possui o CPF correto.', 404
+    return 'Cadastro não encontrado. Verifique se o link possui o CPF ou matrícula correta.', 404
 
   faculdade_slug = (
       aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'unip'
@@ -561,19 +561,19 @@ def portal_do_aluno_publico(cpf):
           404,
       )
 
-# >>> ROTA DO QR CODE ATUALIZADA PARA PUC MINAS <<<
-@app.route('/validacao/<faculdade_slug>/<cpf>')
-def validacao_qr_code(faculdade_slug, cpf):
-  cpf = normalizar_cpf(cpf)
+# >>> ROTA PADRÃO DE VALIDAÇÃO DE QR CODE (IDÊNTICA ÀS OUTRAS FACULDADES) <<<
+@app.route('/validacao/<faculdade_slug>/<identificador>')
+def validacao_qr_code(faculdade_slug, identificador):
+  id_limpo = normalizar_cpf(identificador)
   conn = get_db_connection()
   try:
-    aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ?', (cpf,)).fetchone()
+    aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ? OR matricula = ?', (id_limpo, identificador)).fetchone()
   finally:
     conn.close()
     
   if not aluno:
     return (
-        'Aluno não encontrado. Verifique se o CPF existe no banco de dados.',
+        'Aluno não encontrado. Verifique se o CPF ou matrícula existe no banco de dados.',
         404,
     )
 
@@ -584,7 +584,7 @@ def validacao_qr_code(faculdade_slug, cpf):
         f'portais/portal_{slug}.html',
         aluno=aluno,
         url_base=request.host_url,
-        logado_portal=True, # Pula direto para a tela logada
+        logado_portal=True,
         erro=None,
     )
   except Exception:
