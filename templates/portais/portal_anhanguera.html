@@ -4,251 +4,364 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal do Aluno - Autenticação Digital</title>
+    <!-- Favicon Oficial -->
+    <link rel="icon" href="https://login.anhanguera.com/favicon.ico" type="image/x-icon">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para os ícones iguais aos originais -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Cores Base: Identidade Anhanguera (Laranja e Chumbo) */
-        :root {
-            --cor-primaria: #F26F21; 
-            --cor-secundaria: #333333;
-            --fundo: #f8f9fa;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Animação para o Carrossel de Propagandas */
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            animation: marquee 20s linear infinite;
+            width: max-content;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused; /* Pausa a propaganda ao passar o mouse */
         }
         
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--fundo); 
-            margin: 0; 
-            padding: 0; 
-            color: var(--cor-secundaria);
+        /* Classe criada para evitar os erros do VS Code no Jinja2 */
+        .bg-fundo-login {
+            background-image: url("{{ url_for('static', filename='fundo_anhanguera.jpg') }}");
         }
-        
-        .header { 
-            background-color: var(--cor-primaria); 
-            color: white; 
-            padding: 20px 0; 
-            text-align: center; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .header h1 { margin: 0; font-size: 24px; }
-        
-        .container { 
-            max-width: 800px; 
-            margin: 40px auto; 
-            background: white; 
-            padding: 40px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-        }
-        
-        /* Estilos do Login */
-        .erro-msg { 
-            background-color: #ffebee; 
-            color: #c62828; 
-            padding: 10px; 
-            border-radius: 4px; 
-            text-align: center; 
-            margin-bottom: 20px; 
-            border-left: 4px solid #c62828;
-        }
-        
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
-        .form-group input { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-            box-sizing: border-box; 
-            font-size: 16px;
-        }
-        .form-group input:focus { border-color: var(--cor-primaria); outline: none; }
-        
-        .btn { 
-            background-color: var(--cor-primaria); 
-            color: white; 
-            border: none; 
-            padding: 12px 20px; 
-            cursor: pointer; 
-            border-radius: 4px; 
-            font-size: 16px; 
-            width: 100%; 
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-        .btn:hover { background-color: #d15c1b; }
-        
-        /* Estilos do Perfil Logado */
-        .perfil-card { 
-            display: flex; 
-            align-items: center; 
-            margin-bottom: 30px; 
-            border-bottom: 2px solid #eee; 
-            padding-bottom: 30px; 
-        }
-        
-        .foto-aluno { 
-            width: 130px; 
-            height: 130px; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            margin-right: 30px; 
-            border: 4px solid var(--cor-primaria); 
-        }
-        
-        .foto-placeholder {
-            width: 130px; 
-            height: 130px; 
-            border-radius: 50%; 
-            background-color: #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 30px;
-            color: #999;
-            border: 4px solid #ddd;
-        }
-        
-        .dados-aluno h2 { margin: 0 0 10px 0; color: var(--cor-secundaria); }
-        .dados-aluno p { margin: 5px 0; font-size: 15px; }
-        .tag-status { 
-            display: inline-block; 
-            background-color: #4CAF50; 
-            color: white; 
-            padding: 4px 10px; 
-            border-radius: 12px; 
-            font-size: 12px; 
-            font-weight: bold;
-            margin-top: 5px;
-        }
-        
-        /* Lista de Documentos */
-        .documentos h3 { color: var(--cor-primaria); margin-bottom: 20px; }
-        .doc-list { list-style: none; padding: 0; margin: 0; }
-        .doc-list li { 
-            background: #fafafa; 
-            padding: 15px 20px; 
-            margin-bottom: 10px; 
-            border-radius: 4px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-left: 4px solid var(--cor-primaria); 
-            border-top: 1px solid #eee;
-            border-right: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .doc-acoes a { 
-            text-decoration: none; 
-            color: white; 
-            background-color: var(--cor-secundaria); 
-            padding: 8px 16px; 
-            border-radius: 4px; 
-            font-size: 14px; 
-            transition: background 0.3s;
-            margin-left: 5px;
-        }
-        .doc-acoes a:hover { background-color: #555; }
     </style>
 </head>
-<body>
+<body class="bg-[#f8f9fa] min-h-screen text-gray-800 m-0 p-0 overflow-hidden">
 
-    <div class="header">
-        <h1>Validação Acadêmica - Anhanguera</h1>
-    </div>
-
-    <div class="container">
-        <!-- ÁREA DE LOGIN (SE NÃO ESTIVER LOGADO) -->
-        {% if not logado_portal %}
-            <h2 style="text-align: center; margin-bottom: 10px;">Acesso de Estudante</h2>
-            <p style="text-align: center; color: #666; margin-bottom: 30px;">
-                Para visualizar a documentação acadêmica de <strong>{{ aluno.nome }}</strong>, autentique-se abaixo.
-            </p>
+    <!-- ÁREA DE LOGIN (SE NÃO ESTIVER LOGADO) -->
+    {% if not logado_portal %}
+    <div class="flex min-h-screen w-full bg-white overflow-y-auto">
+        
+        <!-- Coluna Esquerda: Fundo cinza claro (#e8e9ea) -->
+        <div class="w-[600px] bg-[#e8e9ea] flex flex-col justify-between pt-24 pb-10 px-16 shadow-2xl z-10 relative shrink-0">
             
-            {% if erro %}
-                <div class="erro-msg">
-                    <strong>Erro:</strong> {{ erro }}
-                </div>
-            {% endif %}
-
-            <form method="POST">
-                <!-- Se estiver usando o Flask-WTF CSRFProtect, o input abaixo é obrigatório -->
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <!-- Conteúdo alinhado para cima -->
+            <div class="flex-1 flex flex-col justify-start">
                 
-                <div class="form-group">
-                    <label for="senha">Senha de Acesso (CPF):</label>
-                    <input type="password" id="senha" name="senha" required placeholder="Digite apenas os números">
+                <!-- Logo Compacta -->
+                <div class="flex items-center mb-6">
+                    <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50 15L85 80H15L50 15Z" fill="#CC4500"/>
+                        <path d="M50 35L70 70H30L50 35Z" fill="#212121"/>
+                        <path d="M50 45L60 65H40L50 45Z" fill="#CC4500"/>
+                    </svg>
+                    <span class="text-[24px] font-bold text-[#CC4500] tracking-tight ml-3">Anhanguera</span>
                 </div>
-                <button type="submit" class="btn">Validar Acesso</button>
-            </form>
 
-        <!-- ÁREA LOGADA (PAINEL DO ALUNO) -->
-        {% else %}
-            <div class="perfil-card">
-                {% if aluno.foto %}
-                    <!-- Pega a primeira foto caso haja múltiplas separadas por '|' -->
-                    <img src="{{ url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) }}" alt="Foto de {{ aluno.nome }}" class="foto-aluno">
-                {% else %}
-                    <div class="foto-placeholder">Sem Foto</div>
+                <!-- Boas vindas com texto escuro para destacar no fundo claro -->
+                <h2 class="text-4xl font-bold text-[#212121] mb-2">Bem-vindo!</h2>
+                <p class="text-[#555555] text-[17px] mb-6">Que bom ter você aqui. Acesse o Portal do Aluno para continuar.</p>
+
+                {% if erro %}
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-8 rounded">
+                        <strong>Erro:</strong> {{ erro }}
+                    </div>
                 {% endif %}
-                
-                <div class="dados-aluno">
-                    <h2>{{ aluno.nome }}</h2>
-                    <p><strong>Matrícula:</strong> {{ aluno.matricula }}</p>
-                    <p><strong>Curso:</strong> {{ aluno.curso }}</p>
-                    <p><strong>Grau Acadêmico:</strong> {{ aluno.grau_academico }}</p>
-                    <p><strong>Instituição:</strong> {{ aluno.instituicao_ensino }}</p>
-                    <div class="tag-status">Concluído em {{ aluno.data_conclusao }}</div>
+
+                <!-- Formulário -->
+                <form method="POST" class="w-full">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    
+                    <div class="mb-6">
+                        <label for="senha" class="block text-[#212121] text-[15px] font-semibold mb-3">CPF</label>
+                        <!-- Input com borda cinza claro e texto escuro -->
+                        <input type="password" id="senha" name="senha" required placeholder="Digite seu usuário" 
+                               class="w-full p-4 bg-transparent border border-[#b3b3b3] text-[#212121] text-[17px] rounded-md focus:outline-none focus:border-[#CC4500] focus:ring-1 focus:ring-[#CC4500] placeholder-gray-500">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-gradient-to-r from-[#1a73e8] to-[#1557b0] text-white font-bold py-4 px-4 rounded-md text-[17px] hover:shadow-lg hover:from-[#1557b0] hover:to-[#0d47a1] transition duration-300">
+                        Avançar
+                    </button>
+                </form>
+            </div>
+
+            <!-- Rodapé Redes Sociais com ícones e textos escuros -->
+            <div class="text-center mt-12">
+                <p class="text-[#666666] text-[14px] mb-4">Nos siga nas redes</p>
+                <div class="flex justify-center space-x-5 text-[#666666] text-[18px] mb-5">
+                    <a href="#" class="hover:text-[#212121] transition"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="hover:text-[#212121] transition"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="hover:text-[#212121] transition"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" class="hover:text-[#212121] transition"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" class="hover:text-[#212121] transition"><i class="fa-solid fa-globe"></i></a>
+                </div>
+                <p class="text-[#999999] text-[11px]">Versão: 2.20260917.11-web</p>
+            </div>
+        </div>
+
+        <!-- Coluna Direita: Imagem de Fundo usando a nova classe para evitar erros no editor -->
+        <div class="flex-1 relative bg-cover bg-center min-h-screen bg-fundo-login">
+            <!-- Aviso de Cookies sobreposto no rodapé -->
+            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-11/12 max-w-4xl bg-[#3a3a3a]/85 backdrop-blur-sm rounded-lg p-5 flex items-center justify-between shadow-xl border border-gray-600/50">
+                <p class="text-gray-100 text-[15px] leading-relaxed flex-1 pr-6">
+                    Esse site utiliza cookies para oferecer uma melhor experiência de navegação, analisar como você interage em nosso site, otimizar o desempenho e personalizar o conteúdo. Ao utilizar este site, você concorda com o uso de cookies. Saiba mais em nosso <a href="#" class="text-[#8ab4f8] hover:underline">Portal de Privacidade</a>.
+                </p>
+                <button type="button" class="bg-white text-gray-800 px-8 py-3 rounded text-sm font-bold shadow hover:bg-gray-100 transition">
+                    Ok
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ÁREA LOGADA (NOVO PAINEL DO ALUNO) -->
+    {% else %}
+    <div class="flex h-screen bg-[#f5f7f9]">
+        
+        <!-- Menu Lateral (Sidebar) -->
+        <aside class="w-[260px] bg-[#fdfdfd] border-r border-gray-200 flex flex-col h-full shrink-0">
+            
+            <!-- Faixa Laranja Superior -->
+            <div class="w-full h-1 bg-[#CC4500]"></div>
+
+            <!-- Moldura Anhanguera com Símbolo (Topo da Sidebar) -->
+            <div class="pt-6 pb-2 px-4 flex flex-col items-center justify-center">
+                <div class="flex items-center mb-2">
+                    <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50 15L85 80H15L50 15Z" fill="#CC4500"/>
+                        <path d="M50 35L70 70H30L50 35Z" fill="#212121"/>
+                        <path d="M50 45L60 65H40L50 45Z" fill="#CC4500"/>
+                    </svg>
+                    <span class="text-[20px] font-bold text-[#CC4500] tracking-tight ml-2">Anhanguera</span>
                 </div>
             </div>
 
-            <div class="documentos">
-                <h3>Documentação Digital Disponível</h3>
-                <ul class="doc-list">
-                    
-                    {% if aluno.historico %}
-                    <li>
-                        <span>📄 <strong>Histórico Escolar Oficial</strong></span>
-                        <div class="doc-acoes">
-                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='historico') }}" target="_blank">Visualizar</a>
-                        </div>
-                    </li>
+            <!-- Perfil / Foto COM FUNDO LARANJA -->
+            <div class="mt-4 pt-6 pb-6 px-4 flex flex-col items-center relative shadow-sm bg-[#CC4500]">
+                <!-- Moldura da foto com borda branca para destacar no fundo laranja -->
+                <div class="w-24 h-24 rounded-2xl border-[3px] border-white shadow-sm overflow-hidden mb-4 bg-gray-100 flex items-center justify-center p-1">
+                    {% if aluno.foto %}
+                        <img src="{{ url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) }}" alt="Foto do Aluno" class="w-full h-full object-cover rounded-xl">
+                    {% else %}
+                        <i class="fa-solid fa-user text-4xl text-gray-400"></i>
                     {% endif %}
-                    
-                    {% if aluno.certificado %}
-                    <li>
-                        <span>🎓 <strong>Certificado de Conclusão</strong></span>
-                        <div class="doc-acoes">
-                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='certificado') }}" target="_blank">Visualizar</a>
-                        </div>
-                    </li>
-                    {% endif %}
-
-                    {% if aluno.diploma_frente or aluno.diploma_verso %}
-                    <li>
-                        <span>📜 <strong>Diploma Digital Registrado</strong></span>
-                        <div class="doc-acoes">
-                            {% if aluno.diploma_frente %}
-                            <a href="{{ url_for('download_file', filename=aluno.diploma_frente.split('|')[0]) }}" target="_blank">Frente</a>
-                            {% endif %}
-                            {% if aluno.diploma_verso %}
-                            <a href="{{ url_for('download_file', filename=aluno.diploma_verso.split('|')[0]) }}" target="_blank">Verso</a>
-                            {% endif %}
-                        </div>
-                    </li>
-                    {% endif %}
-                    
-                    {% if aluno.outros_docs %}
-                    <li>
-                        <span>📎 <strong>Documentos Adicionais</strong></span>
-                        <div class="doc-acoes">
-                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='outros') }}" target="_blank">Visualizar</a>
-                        </div>
-                    </li>
-                    {% endif %}
-                </ul>
+                </div>
+                
+                <!-- Nome do Curso / Status (Texto Branco) -->
+                <h3 class="text-xs font-bold text-white text-center uppercase tracking-wide px-2"><i class="fa-solid fa-graduation-cap mr-1"></i> {{ aluno.curso }}</h3>
             </div>
-        {% endif %}
+
+            <!-- Navegação -->
+            <nav class="flex-1 py-4 overflow-y-auto">
+                <ul class="space-y-1">
+                    <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-[#CC4500] transition"><i class="fa-solid fa-clock w-7 text-center"></i> Ajuste de Horário</a></li>
+                    <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-[#CC4500] transition"><i class="fa-solid fa-book-open w-7 text-center"></i> Estudar</a></li>
+                    
+                    <!-- Item Ativo (Meu Curso) -->
+                    <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-bold text-[#CC4500] bg-orange-50 border-l-4 border-[#CC4500] transition"><i class="fa-solid fa-graduation-cap w-6 ml-[-4px] text-center"></i> Meu Curso</a></li>
+                    
+                    <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-[#CC4500] transition"><i class="fa-solid fa-dollar-sign w-7 text-center"></i> Financeiro</a></li>
+                    <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-[#CC4500] transition"><i class="fa-solid fa-file-lines w-7 text-center"></i> Secretaria Digital</a></li>
+                    <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-[#CC4500] transition"><i class="fa-solid fa-comments w-7 text-center"></i> Canal Conecta</a></li>
+                    <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-[#CC4500] transition"><i class="fa-solid fa-book w-7 text-center"></i> Acervo Online</a></li>
+                    <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-[#CC4500] transition"><i class="fa-solid fa-book-bookmark w-7 text-center"></i> Biblioteca Virtual</a></li>
+                    <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-[#CC4500] transition"><i class="fa-solid fa-shield-halved w-7 text-center"></i> Portal de Privacidade</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Área de Conteúdo Principal -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden">
+            
+            <!-- Barra Superior (Busca) -->
+            <header class="bg-white py-3 px-8 shadow-sm flex items-center justify-center shrink-0 z-10 relative">
+                <div class="relative w-full max-w-3xl">
+                    <input type="text" placeholder="O que você procura? Ex. segunda via do boleto" class="w-full bg-[#f4f5f7] text-[13px] font-medium py-3 px-6 rounded-full focus:outline-none focus:ring-1 focus:ring-[#CC4500] text-gray-700">
+                    <i class="fa-solid fa-magnifying-glass absolute right-5 top-3.5 text-gray-400"></i>
+                </div>
+            </header>
+
+            <!-- Conteúdo Scrollável -->
+            <div class="flex-1 overflow-y-auto bg-[#f5f7f9]">
+                
+                <!-- TOP HEADER COM FUNDO LARANJA E PROPAGANDAS -->
+                <div class="bg-[#CC4500] px-10 pt-10 pb-16">
+                    <!-- Saudação -->
+                    <h1 class="text-[28px] font-bold text-white mb-6">Olá, {{ aluno.nome.split(' ')[0] if aluno.nome else 'Aluno' }}!</h1>
+
+                    <!-- Container do Carrossel Animado -->
+                    <div class="relative w-full overflow-hidden h-[90px]">
+                        <div class="absolute whitespace-nowrap flex space-x-6 animate-marquee">
+                            
+                            <!-- BLOCO 1: Propagandas -->
+                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
+                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-star text-yellow-300 mr-1"></i> Pós-Graduação 50% OFF</h4>
+                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Destaque-se no mercado. Aproveite a condição especial!</p>
+                            </div>
+                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
+                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-user-plus text-yellow-300 mr-1"></i> Amigo Vale Prêmio</h4>
+                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Indique amigos e ganhe descontos imperdíveis na mensalidade.</p>
+                            </div>
+                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
+                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-laptop-code text-yellow-300 mr-1"></i> Cursos Livres Gratuitos</h4>
+                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Mais de 100 cursos para dar aquele up no seu currículo.</p>
+                            </div>
+                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
+                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-briefcase text-yellow-300 mr-1"></i> Canal Conecta</h4>
+                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Vagas de estágio e emprego exclusivas para alunos.</p>
+                            </div>
+
+                            <!-- BLOCO 2: Cópia exata do Bloco 1 (Necessário para o loop infinito sem cortes) -->
+                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
+                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-star text-yellow-300 mr-1"></i> Pós-Graduação 50% OFF</h4>
+                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Destaque-se no mercado. Aproveite a condição especial!</p>
+                            </div>
+                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
+                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-user-plus text-yellow-300 mr-1"></i> Amigo Vale Prêmio</h4>
+                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Indique amigos e ganhe descontos imperdíveis na mensalidade.</p>
+                            </div>
+                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
+                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-laptop-code text-yellow-300 mr-1"></i> Cursos Livres Gratuitos</h4>
+                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Mais de 100 cursos para dar aquele up no seu currículo.</p>
+                            </div>
+                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
+                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-briefcase text-yellow-300 mr-1"></i> Canal Conecta</h4>
+                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Vagas de estágio e emprego exclusivas para alunos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- O container dos dados usa "-mt-8" para subir um pouco e sobrepor o fundo laranja -->
+                <div class="px-10 pb-10 -mt-8 relative z-10">
+                    
+                    <!-- PAINEL DE DADOS DO ALUNO -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-8 mb-8">
+                        
+                        <!-- Cabeçalho do Painel com Status -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-gray-100 gap-4">
+                            <h2 class="text-xl font-bold text-gray-800"><i class="fa-solid fa-address-card text-[#CC4500] mr-2"></i> Informações Cadastrais e Acadêmicas</h2>
+                            
+                            <!-- Status Aprovado -->
+                            <span class="bg-green-100 text-green-700 px-5 py-2 rounded-lg text-sm font-bold flex items-center w-max shadow-sm border border-green-200">
+                                <i class="fa-solid fa-circle-check mr-2 text-lg"></i> STATUS: APROVADO
+                            </span>
+                        </div>
+
+                        <!-- Grid com todos os dados espaçados -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-8">
+                            
+                            <!-- Nome Completo (Ocupa 2 colunas no Desktop) -->
+                            <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Nome Completo</p>
+                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.nome }}</p>
+                            </div>
+
+                            <!-- RA -->
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">RA / Matrícula</p>
+                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.matricula }}</p>
+                            </div>
+
+                            <!-- Grau Acadêmico -->
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Grau Acadêmico</p>
+                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.grau_academico }}</p>
+                            </div>
+
+                            <!-- Curso (Ocupa 2 colunas) -->
+                            <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Curso Vinculado</p>
+                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.curso }}</p>
+                            </div>
+
+                            <!-- Instituição (Ocupa 2 colunas) -->
+                            <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Instituição de Ensino</p>
+                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.instituicao_ensino }}</p>
+                            </div>
+
+                            <!-- Data de Início -->
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Data de Início</p>
+                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.data_inicio | default('Semestre Regular') }}</p>
+                            </div>
+
+                            <!-- Data de Conclusão -->
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Data de Conclusão</p>
+                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.data_conclusao }}</p>
+                            </div>
+
+                            <!-- Carga Horária -->
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 lg:col-span-2">
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Carga Horária Total</p>
+                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.carga_horaria | default('Integralizada') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Painel de Documentação Integrado no Layout -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-8">
+                         <h2 class="text-xl font-bold text-gray-800 mb-6"><i class="fa-solid fa-folder-open text-[#CC4500] mr-2"></i> Documentação Digital Disponível</h2>
+                         
+                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {% if aluno.historico %}
+                            <div class="border border-gray-200 rounded-lg p-5 flex flex-col justify-between hover:border-[#CC4500] transition group bg-gray-50">
+                                <div>
+                                    <i class="fa-solid fa-file-invoice text-3xl text-gray-400 group-hover:text-[#CC4500] mb-3 transition"></i>
+                                    <h3 class="font-bold text-gray-800 mb-1">Histórico Escolar</h3>
+                                    <p class="text-xs text-gray-500 mb-4">Documento oficial finalizado.</p>
+                                </div>
+                                <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='historico') }}" target="_blank" class="w-full text-center bg-white border border-gray-300 text-gray-700 py-2 rounded font-semibold text-sm hover:bg-gray-50 transition">Visualizar</a>
+                            </div>
+                            {% endif %}
+                            
+                            {% if aluno.certificado %}
+                            <div class="border border-gray-200 rounded-lg p-5 flex flex-col justify-between hover:border-[#CC4500] transition group bg-gray-50">
+                                <div>
+                                    <i class="fa-solid fa-certificate text-3xl text-gray-400 group-hover:text-[#CC4500] mb-3 transition"></i>
+                                    <h3 class="font-bold text-gray-800 mb-1">Certificado</h3>
+                                    <p class="text-xs text-gray-500 mb-4">Certificado de Conclusão.</p>
+                                </div>
+                                <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='certificado') }}" target="_blank" class="w-full text-center bg-white border border-gray-300 text-gray-700 py-2 rounded font-semibold text-sm hover:bg-gray-50 transition">Visualizar</a>
+                            </div>
+                            {% endif %}
+
+                            {% if aluno.diploma_frente or aluno.diploma_verso %}
+                            <div class="border border-gray-200 rounded-lg p-5 flex flex-col justify-between hover:border-[#CC4500] transition group bg-gray-50 lg:col-span-2">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <i class="fa-solid fa-scroll text-3xl text-gray-400 group-hover:text-[#CC4500] mb-3 transition"></i>
+                                        <h3 class="font-bold text-gray-800 mb-1">Diploma Digital Registrado</h3>
+                                        <p class="text-xs text-gray-500 mb-4">Documentação com validade legal e assinaturas.</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 mt-auto">
+                                    {% if aluno.diploma_frente %}
+                                    <a href="{{ url_for('download_file', filename=aluno.diploma_frente.split('|')[0]) }}" target="_blank" class="flex-1 text-center bg-gradient-to-r from-[#1a73e8] to-[#1557b0] text-white py-2 rounded font-semibold text-sm hover:shadow-md transition">Baixar Frente</a>
+                                    {% endif %}
+                                    {% if aluno.diploma_verso %}
+                                    <a href="{{ url_for('download_file', filename=aluno.diploma_verso.split('|')[0]) }}" target="_blank" class="flex-1 text-center bg-gray-800 text-white py-2 rounded font-semibold text-sm hover:bg-gray-700 transition">Baixar Verso</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if aluno.outros_docs %}
+                            <div class="border border-gray-200 rounded-lg p-5 flex flex-col justify-between hover:border-[#CC4500] transition group bg-gray-50">
+                                <div>
+                                    <i class="fa-solid fa-paperclip text-3xl text-gray-400 group-hover:text-[#CC4500] mb-3 transition"></i>
+                                    <h3 class="font-bold text-gray-800 mb-1">Documentos Adicionais</h3>
+                                    <p class="text-xs text-gray-500 mb-4">Anexos complementares.</p>
+                                </div>
+                                <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='outros') }}" target="_blank" class="w-full text-center bg-white border border-gray-300 text-gray-700 py-2 rounded font-semibold text-sm hover:bg-gray-50 transition">Visualizar</a>
+                            </div>
+                            {% endif %}
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
+    {% endif %}
 
 </body>
 </html>
