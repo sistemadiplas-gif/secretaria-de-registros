@@ -24,27 +24,24 @@
             width: max-content;
         }
         .animate-marquee:hover {
-            animation-play-state: paused; /* Pausa a propaganda ao passar o mouse */
+            animation-play-state: paused;
         }
         
-        /* Classe criada para evitar os erros do VS Code no Jinja2 */
         .bg-fundo-login {
             background-image: url("{{ url_for('static', filename='fundo_anhanguera.jpg') }}");
         }
     </style>
 </head>
-<body class="bg-[#f8f9fa] min-h-screen text-gray-800 m-0 p-0 overflow-hidden">
+<body class="bg-[#f8f9fa] min-h-screen text-gray-800 m-0 p-0 overflow-x-hidden">
 
     <!-- ÁREA DE LOGIN (SE NÃO ESTIVER LOGADO) -->
     {% if not logado_portal %}
-    <div class="flex min-h-screen w-full bg-white overflow-y-auto">
+    <div class="flex min-h-screen w-full bg-white">
         
-        <!-- Coluna Esquerda: Fundo cinza claro (#e8e9ea) -->
-        <div class="w-[600px] bg-[#e8e9ea] flex flex-col justify-between pt-24 pb-10 px-16 shadow-2xl z-10 relative shrink-0">
+        <!-- Coluna Esquerda: Ocupa 100% no mobile e 600px no Desktop -->
+        <div class="w-full lg:w-[600px] bg-[#e8e9ea] flex flex-col justify-between pt-16 lg:pt-24 pb-10 px-8 lg:px-16 shadow-2xl z-10 relative shrink-0 min-h-screen lg:min-h-0 overflow-y-auto">
             
-            <!-- Conteúdo alinhado para cima -->
             <div class="flex-1 flex flex-col justify-start">
-                
                 <!-- Logo Compacta -->
                 <div class="flex items-center mb-6">
                     <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -55,9 +52,8 @@
                     <span class="text-[24px] font-bold text-[#CC4500] tracking-tight ml-3">Anhanguera</span>
                 </div>
 
-                <!-- Boas vindas com texto escuro para destacar no fundo claro -->
-                <h2 class="text-4xl font-bold text-[#212121] mb-2">Bem-vindo!</h2>
-                <p class="text-[#555555] text-[17px] mb-6">Que bom ter você aqui. Acesse o Portal do Aluno para continuar.</p>
+                <h2 class="text-3xl lg:text-4xl font-bold text-[#212121] mb-2">Bem-vindo!</h2>
+                <p class="text-[#555555] text-[16px] lg:text-[17px] mb-8">Que bom ter você aqui. Acesse o Portal do Aluno para continuar.</p>
 
                 {% if erro %}
                     <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-8 rounded">
@@ -71,21 +67,20 @@
                     
                     <div class="mb-6">
                         <label for="senha" class="block text-[#212121] text-[15px] font-semibold mb-3">CPF</label>
-                        <!-- Input com borda cinza claro e texto escuro -->
                         <input type="password" id="senha" name="senha" required placeholder="Digite seu usuário" 
-                               class="w-full p-4 bg-transparent border border-[#b3b3b3] text-[#212121] text-[17px] rounded-md focus:outline-none focus:border-[#CC4500] focus:ring-1 focus:ring-[#CC4500] placeholder-gray-500">
+                               class="w-full p-4 bg-transparent border border-[#b3b3b3] text-[#212121] text-[16px] lg:text-[17px] rounded-md focus:outline-none focus:border-[#CC4500] focus:ring-1 focus:ring-[#CC4500] placeholder-gray-500">
                     </div>
                     
-                    <button type="submit" class="w-full bg-gradient-to-r from-[#1a73e8] to-[#1557b0] text-white font-bold py-4 px-4 rounded-md text-[17px] hover:shadow-lg hover:from-[#1557b0] hover:to-[#0d47a1] transition duration-300">
+                    <button type="submit" class="w-full bg-gradient-to-r from-[#1a73e8] to-[#1557b0] text-white font-bold py-4 px-4 rounded-md text-[16px] lg:text-[17px] hover:shadow-lg hover:from-[#1557b0] hover:to-[#0d47a1] transition duration-300 mt-2">
                         Avançar
                     </button>
                 </form>
             </div>
 
-            <!-- Rodapé Redes Sociais com ícones e textos escuros -->
-            <div class="text-center mt-12">
+            <!-- Rodapé Redes Sociais -->
+            <div class="text-center mt-12 shrink-0">
                 <p class="text-[#666666] text-[14px] mb-4">Nos siga nas redes</p>
-                <div class="flex justify-center space-x-5 text-[#666666] text-[18px] mb-5">
+                <div class="flex justify-center space-x-6 lg:space-x-5 text-[#666666] text-[20px] lg:text-[18px] mb-5">
                     <a href="#" class="hover:text-[#212121] transition"><i class="fa-brands fa-instagram"></i></a>
                     <a href="#" class="hover:text-[#212121] transition"><i class="fa-brands fa-facebook-f"></i></a>
                     <a href="#" class="hover:text-[#212121] transition"><i class="fa-brands fa-x-twitter"></i></a>
@@ -96,9 +91,8 @@
             </div>
         </div>
 
-        <!-- Coluna Direita: Imagem de Fundo usando a nova classe para evitar erros no editor -->
-        <div class="flex-1 relative bg-cover bg-center min-h-screen bg-fundo-login">
-            <!-- Aviso de Cookies sobreposto no rodapé -->
+        <!-- Coluna Direita: Imagem de Fundo (Escondida no Mobile) -->
+        <div class="hidden lg:block flex-1 relative bg-cover bg-center min-h-screen bg-fundo-login">
             <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-11/12 max-w-4xl bg-[#3a3a3a]/85 backdrop-blur-sm rounded-lg p-5 flex items-center justify-between shadow-xl border border-gray-600/50">
                 <p class="text-gray-100 text-[15px] leading-relaxed flex-1 pr-6">
                     Esse site utiliza cookies para oferecer uma melhor experiência de navegação, analisar como você interage em nosso site, otimizar o desempenho e personalizar o conteúdo. Ao utilizar este site, você concorda com o uso de cookies. Saiba mais em nosso <a href="#" class="text-[#8ab4f8] hover:underline">Portal de Privacidade</a>.
@@ -111,18 +105,21 @@
 
     </div>
 
-    <!-- ÁREA LOGADA (NOVO PAINEL DO ALUNO) -->
+    <!-- ÁREA LOGADA (NOVO PAINEL DO ALUNO RESPONSIVO) -->
     {% else %}
-    <div class="flex h-screen bg-[#f5f7f9]">
+    <div class="min-h-screen bg-[#f5f7f9] relative w-full flex">
         
-        <!-- Menu Lateral (Sidebar) -->
-        <aside class="w-[260px] bg-[#fdfdfd] border-r border-gray-200 flex flex-col h-full shrink-0">
+        <!-- Overlay Escuro para Mobile (fecha o menu ao clicar) -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden transition-opacity"></div>
+
+        <!-- Menu Lateral (Sidebar) Fixado -->
+        <aside id="sidebar" class="w-[260px] bg-[#fdfdfd] border-r border-gray-200 flex flex-col fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-2xl lg:shadow-none h-full overflow-hidden">
             
             <!-- Faixa Laranja Superior -->
-            <div class="w-full h-1 bg-[#CC4500]"></div>
+            <div class="w-full h-1 shrink-0 bg-[#CC4500]"></div>
 
-            <!-- Moldura Anhanguera com Símbolo (Topo da Sidebar) -->
-            <div class="pt-6 pb-2 px-4 flex flex-col items-center justify-center">
+            <!-- Moldura Anhanguera (Topo) -->
+            <div class="pt-6 pb-2 px-4 flex flex-col items-center justify-center shrink-0">
                 <div class="flex items-center mb-2">
                     <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M50 15L85 80H15L50 15Z" fill="#CC4500"/>
@@ -134,8 +131,7 @@
             </div>
 
             <!-- Perfil / Foto COM FUNDO LARANJA -->
-            <div class="mt-4 pt-6 pb-6 px-4 flex flex-col items-center relative shadow-sm bg-[#CC4500]">
-                <!-- Moldura da foto com borda branca para destacar no fundo laranja -->
+            <div class="mt-4 pt-6 pb-6 px-4 flex flex-col items-center relative shadow-sm shrink-0 bg-[#CC4500]">
                 <div class="w-24 h-24 rounded-2xl border-[3px] border-white shadow-sm overflow-hidden mb-4 bg-gray-100 flex items-center justify-center p-1">
                     {% if aluno.foto %}
                         <img src="{{ url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) }}" alt="Foto do Aluno" class="w-full h-full object-cover rounded-xl">
@@ -143,18 +139,16 @@
                         <i class="fa-solid fa-user text-4xl text-gray-400"></i>
                     {% endif %}
                 </div>
-                
-                <!-- Nome do Curso / Status (Texto Branco) -->
                 <h3 class="text-xs font-bold text-white text-center uppercase tracking-wide px-2"><i class="fa-solid fa-graduation-cap mr-1"></i> {{ aluno.curso }}</h3>
             </div>
 
-            <!-- Navegação -->
+            <!-- Navegação Scrollável -->
             <nav class="flex-1 py-4 overflow-y-auto">
                 <ul class="space-y-1">
                     <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-[#CC4500] transition"><i class="fa-solid fa-clock w-7 text-center"></i> Ajuste de Horário</a></li>
                     <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-[#CC4500] transition"><i class="fa-solid fa-book-open w-7 text-center"></i> Estudar</a></li>
                     
-                    <!-- Item Ativo (Meu Curso) -->
+                    <!-- Item Ativo -->
                     <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-bold text-[#CC4500] bg-orange-50 border-l-4 border-[#CC4500] transition"><i class="fa-solid fa-graduation-cap w-6 ml-[-4px] text-center"></i> Meu Curso</a></li>
                     
                     <li><a href="#" class="flex items-center px-6 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-[#CC4500] transition"><i class="fa-solid fa-dollar-sign w-7 text-center"></i> Financeiro</a></li>
@@ -167,140 +161,137 @@
             </nav>
         </aside>
 
-        <!-- Área de Conteúdo Principal -->
-        <main class="flex-1 flex flex-col h-full overflow-hidden">
+        <!-- Área de Conteúdo Principal (Abre espaço para a sidebar no Desktop com lg:pl-[260px]) -->
+        <main class="flex-1 flex flex-col min-h-screen w-full lg:pl-[260px] overflow-x-hidden">
             
-            <!-- Barra Superior (Busca) -->
-            <header class="bg-white py-3 px-8 shadow-sm flex items-center justify-center shrink-0 z-10 relative">
-                <div class="relative w-full max-w-3xl">
-                    <input type="text" placeholder="O que você procura? Ex. segunda via do boleto" class="w-full bg-[#f4f5f7] text-[13px] font-medium py-3 px-6 rounded-full focus:outline-none focus:ring-1 focus:ring-[#CC4500] text-gray-700">
-                    <i class="fa-solid fa-magnifying-glass absolute right-5 top-3.5 text-gray-400"></i>
+            <!-- Barra Superior (Busca e Menu Mobile) - Fixada no Topo -->
+            <header class="bg-white py-3 px-4 md:px-8 shadow-sm flex items-center justify-between shrink-0 sticky top-0 z-30">
+                <!-- Botão Hamburger (Apenas Mobile) -->
+                <button id="menu-toggle" class="lg:hidden text-gray-600 hover:text-[#CC4500] focus:outline-none transition p-2 mr-2 bg-gray-100 rounded-lg">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+
+                <!-- Barra de Busca -->
+                <div class="relative w-full max-w-3xl flex-1">
+                    <input type="text" placeholder="O que procura? Ex. boleto" class="w-full bg-[#f4f5f7] text-[13px] md:text-[14px] font-medium py-3 px-5 md:px-6 rounded-full focus:outline-none focus:ring-1 focus:ring-[#CC4500] text-gray-700">
+                    <i class="fa-solid fa-magnifying-glass absolute right-4 md:right-5 top-3.5 text-gray-400"></i>
                 </div>
             </header>
 
-            <!-- Conteúdo Scrollável -->
-            <div class="flex-1 overflow-y-auto bg-[#f5f7f9]">
+            <!-- Conteúdo Principal do Painel -->
+            <div class="flex-1 flex flex-col w-full">
                 
                 <!-- TOP HEADER COM FUNDO LARANJA E PROPAGANDAS -->
-                <div class="bg-[#CC4500] px-10 pt-10 pb-16">
-                    <!-- Saudação -->
-                    <h1 class="text-[28px] font-bold text-white mb-6">Olá, {{ aluno.nome.split(' ')[0] if aluno.nome else 'Aluno' }}!</h1>
+                <div class="bg-[#CC4500] px-4 md:px-10 pt-8 pb-14 md:pb-16 w-full shrink-0 overflow-hidden">
+                    <h1 class="text-[24px] md:text-[28px] font-bold text-white mb-6">Olá, {{ aluno.nome.split(' ')[0] if aluno.nome else 'Aluno' }}!</h1>
 
-                    <!-- Container do Carrossel Animado -->
+                    <!-- Container do Carrossel Animado (Oculta qualquer excesso horizontal) -->
                     <div class="relative w-full overflow-hidden h-[90px]">
-                        <div class="absolute whitespace-nowrap flex space-x-6 animate-marquee">
+                        <div class="absolute whitespace-nowrap flex space-x-4 md:space-x-6 animate-marquee">
                             
                             <!-- BLOCO 1: Propagandas -->
-                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
-                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-star text-yellow-300 mr-1"></i> Pós-Graduação 50% OFF</h4>
-                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Destaque-se no mercado. Aproveite a condição especial!</p>
+                            <div class="inline-flex flex-col justify-center w-[280px] md:w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition whitespace-normal">
+                                <h4 class="font-bold text-[14px] md:text-[15px] mb-1"><i class="fa-solid fa-star text-yellow-300 mr-1"></i> Pós-Graduação 50% OFF</h4>
+                                <p class="text-[11px] md:text-[12px] text-white/90 leading-tight">Destaque-se no mercado. Aproveite a condição especial!</p>
                             </div>
-                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
-                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-user-plus text-yellow-300 mr-1"></i> Amigo Vale Prêmio</h4>
-                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Indique amigos e ganhe descontos imperdíveis na mensalidade.</p>
+                            <div class="inline-flex flex-col justify-center w-[280px] md:w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition whitespace-normal">
+                                <h4 class="font-bold text-[14px] md:text-[15px] mb-1"><i class="fa-solid fa-user-plus text-yellow-300 mr-1"></i> Amigo Vale Prêmio</h4>
+                                <p class="text-[11px] md:text-[12px] text-white/90 leading-tight">Indique amigos e ganhe descontos imperdíveis na mensalidade.</p>
                             </div>
-                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
-                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-laptop-code text-yellow-300 mr-1"></i> Cursos Livres Gratuitos</h4>
-                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Mais de 100 cursos para dar aquele up no seu currículo.</p>
+                            <div class="inline-flex flex-col justify-center w-[280px] md:w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition whitespace-normal">
+                                <h4 class="font-bold text-[14px] md:text-[15px] mb-1"><i class="fa-solid fa-laptop-code text-yellow-300 mr-1"></i> Cursos Livres Gratuitos</h4>
+                                <p class="text-[11px] md:text-[12px] text-white/90 leading-tight">Mais de 100 cursos para dar aquele up no seu currículo.</p>
                             </div>
-                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
-                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-briefcase text-yellow-300 mr-1"></i> Canal Conecta</h4>
-                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Vagas de estágio e emprego exclusivas para alunos.</p>
+                            <div class="inline-flex flex-col justify-center w-[280px] md:w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition whitespace-normal">
+                                <h4 class="font-bold text-[14px] md:text-[15px] mb-1"><i class="fa-solid fa-briefcase text-yellow-300 mr-1"></i> Canal Conecta</h4>
+                                <p class="text-[11px] md:text-[12px] text-white/90 leading-tight">Vagas de estágio e emprego exclusivas para alunos.</p>
                             </div>
 
-                            <!-- BLOCO 2: Cópia exata do Bloco 1 (Necessário para o loop infinito sem cortes) -->
-                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
-                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-star text-yellow-300 mr-1"></i> Pós-Graduação 50% OFF</h4>
-                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Destaque-se no mercado. Aproveite a condição especial!</p>
+                            <!-- BLOCO 2 (Loop Infinito) -->
+                            <div class="inline-flex flex-col justify-center w-[280px] md:w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition whitespace-normal">
+                                <h4 class="font-bold text-[14px] md:text-[15px] mb-1"><i class="fa-solid fa-star text-yellow-300 mr-1"></i> Pós-Graduação 50% OFF</h4>
+                                <p class="text-[11px] md:text-[12px] text-white/90 leading-tight">Destaque-se no mercado. Aproveite a condição especial!</p>
                             </div>
-                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
-                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-user-plus text-yellow-300 mr-1"></i> Amigo Vale Prêmio</h4>
-                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Indique amigos e ganhe descontos imperdíveis na mensalidade.</p>
+                            <div class="inline-flex flex-col justify-center w-[280px] md:w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition whitespace-normal">
+                                <h4 class="font-bold text-[14px] md:text-[15px] mb-1"><i class="fa-solid fa-user-plus text-yellow-300 mr-1"></i> Amigo Vale Prêmio</h4>
+                                <p class="text-[11px] md:text-[12px] text-white/90 leading-tight">Indique amigos e ganhe descontos imperdíveis na mensalidade.</p>
                             </div>
-                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
-                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-laptop-code text-yellow-300 mr-1"></i> Cursos Livres Gratuitos</h4>
-                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Mais de 100 cursos para dar aquele up no seu currículo.</p>
+                            <div class="inline-flex flex-col justify-center w-[280px] md:w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition whitespace-normal">
+                                <h4 class="font-bold text-[14px] md:text-[15px] mb-1"><i class="fa-solid fa-laptop-code text-yellow-300 mr-1"></i> Cursos Livres Gratuitos</h4>
+                                <p class="text-[11px] md:text-[12px] text-white/90 leading-tight">Mais de 100 cursos para dar aquele up no seu currículo.</p>
                             </div>
-                            <div class="inline-flex flex-col justify-center w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition">
-                                <h4 class="font-bold text-[15px] mb-1"><i class="fa-solid fa-briefcase text-yellow-300 mr-1"></i> Canal Conecta</h4>
-                                <p class="text-[12px] text-white/90 whitespace-normal leading-tight">Vagas de estágio e emprego exclusivas para alunos.</p>
+                            <div class="inline-flex flex-col justify-center w-[280px] md:w-[300px] h-[85px] bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-lg p-4 shadow-sm cursor-pointer hover:bg-white/30 transition whitespace-normal">
+                                <h4 class="font-bold text-[14px] md:text-[15px] mb-1"><i class="fa-solid fa-briefcase text-yellow-300 mr-1"></i> Canal Conecta</h4>
+                                <p class="text-[11px] md:text-[12px] text-white/90 leading-tight">Vagas de estágio e emprego exclusivas para alunos.</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- O container dos dados usa "-mt-8" para subir um pouco e sobrepor o fundo laranja -->
-                <div class="px-10 pb-10 -mt-8 relative z-10">
+                <!-- DADOS DO ALUNO: Ocupam 100% da tela. -mt-6 sobe por cima do fundo laranja -->
+                <div class="px-4 md:px-10 pb-10 -mt-6 md:-mt-8 relative z-20 w-full">
                     
-                    <!-- PAINEL DE DADOS DO ALUNO -->
-                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-8 mb-8">
+                    <!-- CARTÃO 1: Informações Acadêmicas -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-5 md:p-8 mb-6 md:mb-8 w-full">
                         
-                        <!-- Cabeçalho do Painel com Status -->
-                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-gray-100 gap-4">
-                            <h2 class="text-xl font-bold text-gray-800"><i class="fa-solid fa-address-card text-[#CC4500] mr-2"></i> Informações Cadastrais e Acadêmicas</h2>
+                        <!-- Cabeçalho do Cartão -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 pb-4 md:pb-5 border-b border-gray-100 gap-3 md:gap-4">
+                            <h2 class="text-lg md:text-xl font-bold text-gray-800 leading-tight"><i class="fa-solid fa-address-card text-[#CC4500] mr-2"></i> Informações Cadastrais</h2>
                             
-                            <!-- Status Aprovado -->
-                            <span class="bg-green-100 text-green-700 px-5 py-2 rounded-lg text-sm font-bold flex items-center w-max shadow-sm border border-green-200">
-                                <i class="fa-solid fa-circle-check mr-2 text-lg"></i> STATUS: APROVADO
+                            <span class="bg-green-100 text-green-700 px-4 md:px-5 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center w-max shadow-sm border border-green-200">
+                                <i class="fa-solid fa-circle-check mr-2 text-base md:text-lg"></i> STATUS: APROVADO
                             </span>
                         </div>
 
-                        <!-- Grid com todos os dados espaçados -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-8">
+                        <!-- Grid Responsiva (1 coluna no Mobile, 2 no Tablet, 4 no Desktop) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-y-8 md:gap-x-8">
                             
-                            <!-- Nome Completo (Ocupa 2 colunas no Desktop) -->
-                            <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Nome Completo</p>
-                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.nome }}</p>
+                            <!-- Ocupa 2 colunas a partir do Tablet (md) -->
+                            <div class="col-span-1 md:col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Nome Completo</p>
+                                <p class="text-base md:text-lg text-gray-900 font-semibold">{{ aluno.nome }}</p>
                             </div>
 
-                            <!-- RA -->
-                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">RA / Matrícula</p>
-                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.matricula }}</p>
+                            <div class="col-span-1 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">RA / Matrícula</p>
+                                <p class="text-base md:text-lg text-gray-900 font-semibold">{{ aluno.matricula }}</p>
                             </div>
 
-                            <!-- Grau Acadêmico -->
-                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Grau Acadêmico</p>
-                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.grau_academico }}</p>
+                            <div class="col-span-1 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Grau Acadêmico</p>
+                                <p class="text-base md:text-lg text-gray-900 font-semibold">{{ aluno.grau_academico }}</p>
                             </div>
 
-                            <!-- Curso (Ocupa 2 colunas) -->
-                            <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Curso Vinculado</p>
-                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.curso }}</p>
+                            <div class="col-span-1 md:col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Curso Vinculado</p>
+                                <p class="text-base md:text-lg text-gray-900 font-semibold">{{ aluno.curso }}</p>
                             </div>
 
-                            <!-- Instituição (Ocupa 2 colunas) -->
-                            <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Instituição de Ensino</p>
-                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.instituicao_ensino }}</p>
+                            <div class="col-span-1 md:col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Instituição de Ensino</p>
+                                <p class="text-base md:text-lg text-gray-900 font-semibold">{{ aluno.instituicao_ensino }}</p>
                             </div>
 
-                            <!-- Data de Início -->
-                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Data de Início</p>
-                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.data_inicio | default('Semestre Regular') }}</p>
+                            <div class="col-span-1 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Data de Início</p>
+                                <p class="text-base md:text-lg text-gray-900 font-semibold">{{ aluno.data_inicio | default('Semestre Regular') }}</p>
                             </div>
 
-                            <!-- Data de Conclusão -->
-                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Data de Conclusão</p>
-                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.data_conclusao }}</p>
+                            <div class="col-span-1 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Data de Conclusão</p>
+                                <p class="text-base md:text-lg text-gray-900 font-semibold">{{ aluno.data_conclusao }}</p>
                             </div>
 
-                            <!-- Carga Horária -->
-                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 lg:col-span-2">
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Carga Horária Total</p>
-                                <p class="text-lg text-gray-900 font-semibold">{{ aluno.carga_horaria | default('Integralizada') }}</p>
+                            <div class="col-span-1 md:col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p class="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Carga Horária Total</p>
+                                <p class="text-base md:text-lg text-gray-900 font-semibold">{{ aluno.carga_horaria | default('Integralizada') }}</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Painel de Documentação Integrado no Layout -->
-                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-8">
-                         <h2 class="text-xl font-bold text-gray-800 mb-6"><i class="fa-solid fa-folder-open text-[#CC4500] mr-2"></i> Documentação Digital Disponível</h2>
+                    <!-- CARTÃO 2: Documentação -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-5 md:p-8 w-full">
+                         <h2 class="text-lg md:text-xl font-bold text-gray-800 mb-5 md:mb-6"><i class="fa-solid fa-folder-open text-[#CC4500] mr-2"></i> Documentação Digital</h2>
                          
                          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {% if aluno.historico %}
@@ -327,20 +318,20 @@
 
                             {% if aluno.diploma_frente or aluno.diploma_verso %}
                             <div class="border border-gray-200 rounded-lg p-5 flex flex-col justify-between hover:border-[#CC4500] transition group bg-gray-50 lg:col-span-2">
-                                <div class="flex items-start justify-between">
+                                <div class="flex flex-col md:flex-row md:items-start justify-between h-full">
                                     <div>
                                         <i class="fa-solid fa-scroll text-3xl text-gray-400 group-hover:text-[#CC4500] mb-3 transition"></i>
                                         <h3 class="font-bold text-gray-800 mb-1">Diploma Digital Registrado</h3>
                                         <p class="text-xs text-gray-500 mb-4">Documentação com validade legal e assinaturas.</p>
                                     </div>
-                                </div>
-                                <div class="flex gap-2 mt-auto">
-                                    {% if aluno.diploma_frente %}
-                                    <a href="{{ url_for('download_file', filename=aluno.diploma_frente.split('|')[0]) }}" target="_blank" class="flex-1 text-center bg-gradient-to-r from-[#1a73e8] to-[#1557b0] text-white py-2 rounded font-semibold text-sm hover:shadow-md transition">Baixar Frente</a>
-                                    {% endif %}
-                                    {% if aluno.diploma_verso %}
-                                    <a href="{{ url_for('download_file', filename=aluno.diploma_verso.split('|')[0]) }}" target="_blank" class="flex-1 text-center bg-gray-800 text-white py-2 rounded font-semibold text-sm hover:bg-gray-700 transition">Baixar Verso</a>
-                                    {% endif %}
+                                    <div class="flex flex-col gap-2 mt-4 md:mt-0 md:ml-4 w-full md:w-40">
+                                        {% if aluno.diploma_frente %}
+                                        <a href="{{ url_for('download_file', filename=aluno.diploma_frente.split('|')[0]) }}" target="_blank" class="w-full text-center bg-gradient-to-r from-[#1a73e8] to-[#1557b0] text-white py-2 rounded font-semibold text-sm hover:shadow-md transition">Baixar Frente</a>
+                                        {% endif %}
+                                        {% if aluno.diploma_verso %}
+                                        <a href="{{ url_for('download_file', filename=aluno.diploma_verso.split('|')[0]) }}" target="_blank" class="w-full text-center bg-gray-800 text-white py-2 rounded font-semibold text-sm hover:bg-gray-700 transition">Baixar Verso</a>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                             {% endif %}
@@ -363,5 +354,23 @@
     </div>
     {% endif %}
 
+    <!-- Script de Controlo do Menu Mobile -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if(menuToggle && sidebar && overlay) {
+                function toggleMenu() {
+                    sidebar.classList.toggle('-translate-x-full');
+                    overlay.classList.toggle('hidden');
+                }
+                
+                menuToggle.addEventListener('click', toggleMenu);
+                overlay.addEventListener('click', toggleMenu);
+            }
+        });
+    </script>
 </body>
 </html>
