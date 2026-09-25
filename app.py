@@ -463,8 +463,6 @@ def informacoes(tipo):
     termo = request.form.get('termo', '')
     conn = get_db_connection()
     try:
-      # Busca geral de alunos cadastrados independentemente de curso, 
-      # visto que concursos foram eliminados da interface
       alunos = conn.execute(
           '''
               SELECT * FROM alunos 
@@ -563,9 +561,7 @@ def portal_do_aluno_publico(cpf):
           404,
       )
 
-# >>> ESTA É A ROTA DO QR CODE <<<
-# É aqui que a mágica acontece. Repare que passamos "logado_portal=True" diretamente
-# para o template, forçando o HTML a esconder o formulário e abrir o painel direto!
+# >>> ROTA DO QR CODE ATUALIZADA PARA PUC MINAS <<<
 @app.route('/validacao/<faculdade_slug>/<cpf>')
 def validacao_qr_code(faculdade_slug, cpf):
   cpf = normalizar_cpf(cpf)
@@ -588,7 +584,7 @@ def validacao_qr_code(faculdade_slug, cpf):
         f'portais/portal_{slug}.html',
         aluno=aluno,
         url_base=request.host_url,
-        logado_portal=True, # <--- A MÁGICA ESTÁ AQUI: Diz ao HTML para pular o Login
+        logado_portal=True, # Pula direto para a tela logada
         erro=None,
     )
   except Exception:
@@ -597,7 +593,7 @@ def validacao_qr_code(faculdade_slug, cpf):
           f'portais/{slug}.html',
           aluno=aluno,
           url_base=request.host_url,
-          logado_portal=True, # <--- MÁGICA
+          logado_portal=True,
           erro=None,
       )
     except:
@@ -617,7 +613,6 @@ def visualizar_qrcode(cpf):
 
   slug = aluno['faculdade_slug'] if aluno['faculdade_slug'] else 'unip'
   dominio_alvo = obter_url_base_faculdade(slug)
-  # O sistema redireciona o link do QR Code para a rota /validacao (que já pula o login)
   return redirect(f'{dominio_alvo}/validacao/{slug}/{cpf}', code=301)
 
 @app.route('/consulta_xml', methods=['GET', 'POST'])

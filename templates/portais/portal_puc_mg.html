@@ -1,252 +1,446 @@
+{% set url_grafismo = url_for('static', filename='grafismo_puc_mg.jpg') %}
+{% set url_brasao = url_for('static', filename='brasao_puc_mg-removebg.png') %}
+{% set url_logo = url_for('static', filename='logo_sga_puc_mg.png') %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal do Aluno - PUC Minas</title>
+    <title>SGA - Portal do Aluno | PUC Minas</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* Cores Base: Identidade PUC Minas (Azul e Branco) */
-        :root {
-            --cor-primaria: #002855; 
-            --cor-secundaria: #333333;
-            --fundo: #f8f9fa;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;700&display=swap');
         
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--fundo); 
-            margin: 0; 
-            padding: 0; 
-            color: var(--cor-secundaria);
+            font-family: Arial, Helvetica, sans-serif; 
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .puc-select {
+            background-color: #ffffff;
+            border: 1px solid #a9a9a9;
+            border-radius: 2px;
+            padding: 6px;
+            font-size: 12px;
+            width: 100%;
+            color: #333;
+            outline: none;
         }
         
-        .header { 
-            background-color: var(--cor-primaria); 
-            color: white; 
-            padding: 20px 0; 
-            text-align: center; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        .puc-input {
+            background-color: #e8e8e8;
+            border: none;
+            border-radius: 2px;
+            padding: 8px 10px;
+            font-size: 13px;
+            width: 100%;
+            color: #333;
+            outline: none;
+        }
+        .puc-input:focus {
+            background-color: #e0e0e0;
         }
         
-        .header h1 { margin: 0; font-size: 24px; }
-        
-        .container { 
-            max-width: 800px; 
-            margin: 40px auto; 
-            background: white; 
-            padding: 40px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+        .puc-btn {
+            background-color: #e8e8e8;
+            border: none;
+            border-radius: 2px;
+            padding: 9px 10px;
+            font-size: 12px;
+            width: 100%;
+            color: #333;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
         }
-        
-        /* Estilos do Login */
-        .erro-msg { 
-            background-color: #ffebee; 
-            color: #c62828; 
-            padding: 10px; 
-            border-radius: 4px; 
-            text-align: center; 
-            margin-bottom: 20px; 
-            border-left: 4px solid #c62828;
+        .puc-btn:hover {
+            background-color: #d1d1d1;
         }
-        
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
-        .form-group input { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-            box-sizing: border-box; 
-            font-size: 16px;
+
+        /* Animação do Painel Logado */
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
-        .form-group input:focus { border-color: var(--cor-primaria); outline: none; }
-        
-        .btn { 
-            background-color: var(--cor-primaria); 
-            color: white; 
-            border: none; 
-            padding: 12px 20px; 
-            cursor: pointer; 
-            border-radius: 4px; 
-            font-size: 16px; 
-            width: 100%; 
-            font-weight: bold;
-            transition: background 0.3s;
+        .animate-marquee {
+            animation: marquee 20s linear infinite;
+            width: max-content;
         }
-        .btn:hover { background-color: #001a38; }
-        
-        /* Estilos do Perfil Logado */
-        .perfil-card { 
-            display: flex; 
-            align-items: center; 
-            margin-bottom: 30px; 
-            border-bottom: 2px solid #eee; 
-            padding-bottom: 30px; 
+        .animate-marquee:hover {
+            animation-play-state: paused;
         }
-        
-        .foto-aluno { 
-            width: 130px; 
-            height: 130px; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            margin-right: 30px; 
-            border: 4px solid var(--cor-primaria); 
-        }
-        
-        .foto-placeholder {
-            width: 130px; 
-            height: 130px; 
-            border-radius: 50%; 
-            background-color: #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 30px;
-            color: #999;
-            border: 4px solid #ddd;
-        }
-        
-        .dados-aluno h2 { margin: 0 0 10px 0; color: var(--cor-secundaria); }
-        .dados-aluno p { margin: 5px 0; font-size: 15px; }
-        .tag-status { 
-            display: inline-block; 
-            background-color: #4CAF50; 
-            color: white; 
-            padding: 4px 10px; 
-            border-radius: 12px; 
-            font-size: 12px; 
-            font-weight: bold;
-            margin-top: 5px;
-        }
-        
-        /* Lista de Documentos */
-        .documentos h3 { color: var(--cor-primaria); margin-bottom: 20px; }
-        .doc-list { list-style: none; padding: 0; margin: 0; }
-        .doc-list li { 
-            background: #fafafa; 
-            padding: 15px 20px; 
-            margin-bottom: 10px; 
-            border-radius: 4px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-left: 4px solid var(--cor-primaria); 
-            border-top: 1px solid #eee;
-            border-right: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .doc-acoes a { 
-            text-decoration: none; 
-            color: white; 
-            background-color: var(--cor-secundaria); 
-            padding: 8px 16px; 
-            border-radius: 4px; 
-            font-size: 14px; 
-            transition: background 0.3s;
-            margin-left: 5px;
-        }
-        .doc-acoes a:hover { background-color: #555; }
     </style>
 </head>
-<body>
+<body class="min-h-screen text-gray-800 m-0 p-0 overflow-x-hidden">
 
-    <div class="header">
-        <h1>Pontifícia Universidade Católica de Minas Gerais - PUC Minas</h1>
-    </div>
+    <!-- ÁREA DE LOGIN -->
+    {% if not logado_portal %}
+    
+    <div class="min-h-[120vh] w-full bg-[#f5f5f5] relative flex justify-center items-start pt-6 pb-20">
+        
+        <!-- Grafismo lateral com transição suave -->
+        <div class="absolute inset-0 w-full h-full pointer-events-none opacity-20 md:opacity-100" 
+             style="background-image: url('{{ url_grafismo }}'); background-position: top left; background-repeat: no-repeat; background-size: auto 78%; -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 75%); mask-image: linear-gradient(to right, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 75%);">
+        </div>
+        
+        <!-- Ícone Superior Direito de Ajuda -->
+        <div class="absolute top-6 right-8 text-[#002b5c] cursor-pointer hover:opacity-80 z-20">
+            <i class="fa-solid fa-circle-question text-xl"></i>
+        </div>
 
-    <div class="container">
-        <!-- ÁREA DE LOGIN (SE NÃO ESTIVER LOGADO) -->
-        {% if not logado_portal %}
-            <h2 style="text-align: center; margin-bottom: 10px;">Autenticação Acadêmica</h2>
-            <p style="text-align: center; color: #666; margin-bottom: 30px;">
-                Para visualizar os dados de <strong>{{ aluno.nome }}</strong>, confirme o CPF cadastrado.
-            </p>
+        <!-- Brasão Maior e Encostado no Canto Inferior Direito -->
+        <div class="absolute bottom-6 right-6 w-[150px] h-[170px] bg-no-repeat bg-contain bg-center pointer-events-none hidden md:block z-20"
+             style="background-image: url('{{ url_brasao }}');">
+        </div>
+
+        <!-- Bloco Principal Centralizado -->
+        <div class="w-full max-w-[360px] px-6 md:px-0 z-10 flex flex-col relative md:bg-transparent p-0 rounded-none">
             
-            {% if erro %}
-                <div class="erro-msg">
-                    <strong>Erro:</strong> {{ erro }}
-                </div>
-            {% endif %}
+            <!-- Logotipo SGA -->
+            <div class="flex items-center mb-0 w-full justify-start">
+                <img src="{{ url_logo }}" alt="Logo SGA" class="w-[425px] max-w-none ml-[-15px] object-contain" style="filter: brightness(1.15);">
+            </div>
 
-            <form method="POST">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                
-                <div class="form-group">
-                    <label for="senha">Senha de Acesso (CPF do Aluno):</label>
-                    <input type="password" id="senha" name="senha" required placeholder="Digite apenas os números">
-                </div>
-                <button type="submit" class="btn">Acessar Portal</button>
-            </form>
+            <!-- Texto Instrucional e Formulário colados na logo (-mt-6) -->
+            <div class="-mt-6 w-full">
+                <p class="text-[13px] text-[#333333] leading-snug mb-5 pr-2">
+                    Escolha sua origem para acessar o sistema e, em seguida, insira suas credenciais.
+                </p>
 
-        <!-- ÁREA LOGADA (PAINEL DO ALUNO) -->
-        {% else %}
-            <div class="perfil-card">
-                {% if aluno.foto %}
-                    <img src="{{ url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) }}" alt="Foto de {{ aluno.nome }}" class="foto-aluno">
-                {% else %}
-                    <div class="foto-placeholder">Sem Foto</div>
+                {% if erro %}
+                    <div class="w-full bg-red-50 border border-red-200 text-red-600 px-3 py-2 text-[12px] rounded-[2px] mb-4 text-center">
+                        {{ erro }}
+                    </div>
                 {% endif %}
-                
-                <div class="dados-aluno">
-                    <h2>{{ aluno.nome }}</h2>
-                    <p><strong>Matrícula:</strong> {{ aluno.matricula }}</p>
-                    <p><strong>Curso:</strong> {{ aluno.curso }}</p>
-                    <p><strong>Grau Acadêmico:</strong> {{ aluno.grau_academico }}</p>
-                    <p><strong>Instituição:</strong> {{ aluno.instituicao_ensino }}</p>
-                    <div class="tag-status">Conclusão em {{ aluno.data_conclusao }}</div>
+
+                <form method="POST" class="w-full">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label class="block text-[12px] text-[#666666] mb-[2px]">Origem</label>
+                        <select name="origem_falsa" class="puc-select">
+                            <option value="9" selected>Graduação</option>
+                            <option value="0"> </option>
+                            <option value="1">Ensino à Distância</option>
+                            <option value="2">Especialização Arcos</option>
+                            <option value="3">Especialização Betim</option>
+                            <option value="4">Especialização Poços</option>
+                            <option value="5">Especialização São Gabriel</option>
+                            <option value="6">Faculdade de Odontologia</option>
+                            <option value="7">Funcionário</option>
+                            <option value="8">Seqüencial</option>
+                            <option value="10">ICBS</option>
+                            <option value="11">IEC</option>
+                            <option value="12">IEC - Seqüencial</option>
+                            <option value="13">IFTDJ</option>
+                            <option value="14">Instituto de Informática</option>
+                            <option value="15">NPJ</option>
+                            <option value="16">Oficina Teatro</option>
+                            <option value="17">PREPES</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="block text-[12px] text-[#666666] mb-[2px]">Matricula</label>
+                        <input type="text" name="matricula_falsa" value="{{ aluno.matricula if aluno else '' }}" class="puc-input">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-[12px] text-[#666666] mb-[2px]">Senha</label>
+                        <input type="password" name="senha" placeholder="Digite seu CPF" required class="puc-input">
+                    </div>
+
+                    <button type="submit" class="puc-btn mb-5">
+                        Entrar
+                    </button>
+
+                    <div class="flex items-center w-full mb-5">
+                        <div class="flex-grow border-t border-[#e0e0e0]"></div>
+                        <span class="px-2 text-[11px] text-[#777777]">Acessar com</span>
+                        <div class="flex-grow border-t border-[#e0e0e0]"></div>
+                    </div>
+
+                    <button type="button" class="puc-btn mb-6">
+                        Microsoft 365 / @pucminas.edu.br
+                    </button>
+                </form>
+
+                <div class="text-center w-full">
+                    <a href="#" class="text-[11px] text-[#555555] hover:underline">Redefinir senha de acesso aos sistemas</a>
+                    <span class="text-[#cccccc] text-[11px] mx-1">|</span>
+                    <a href="#" class="text-[11px] text-[#555555] hover:underline">Fale Conosco</a>
                 </div>
             </div>
-
-            <div class="documentos">
-                <h3>Documentação Digital Disponível</h3>
-                <ul class="doc-list">
-                    
-                    {% if aluno.historico %}
-                    <li>
-                        <span>📄 <strong>Histórico Escolar Oficial</strong></span>
-                        <div class="doc-acoes">
-                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='historico') }}" target="_blank">Visualizar</a>
-                        </div>
-                    </li>
-                    {% endif %}
-                    
-                    {% if aluno.certificado %}
-                    <li>
-                        <span>🎓 <strong>Certificado de Conclusão</strong></span>
-                        <div class="doc-acoes">
-                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='certificado') }}" target="_blank">Visualizar</a>
-                        </div>
-                    </li>
-                    {% endif %}
-
-                    {% if aluno.diploma_frente or aluno.diploma_verso %}
-                    <li>
-                        <span>📜 <strong>Diploma Digital Registrado</strong></span>
-                        <div class="doc-acoes">
-                            {% if aluno.diploma_frente %}
-                            <a href="{{ url_for('download_file', filename=aluno.diploma_frente.split('|')[0]) }}" target="_blank">Frente</a>
-                            {% endif %}
-                            {% if aluno.diploma_verso %}
-                            <a href="{{ url_for('download_file', filename=aluno.diploma_verso.split('|')[0]) }}" target="_blank">Verso</a>
-                            {% endif %}
-                        </div>
-                    </li>
-                    {% endif %}
-                    
-                    {% if aluno.outros_docs %}
-                    <li>
-                        <span>📎 <strong>Documentos Adicionais</strong></span>
-                        <div class="doc-acoes">
-                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='outros') }}" target="_blank">Visualizar</a>
-                        </div>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-        {% endif %}
+        </div>
     </div>
 
+
+    <!-- ÁREA LOGADA (PAINEL DO ALUNO - RESPONSIVO MOBILE / QR CODE) -->
+    {% else %}
+    <div class="min-h-screen bg-[#f5f5f5] relative w-full flex flex-col font-sans">
+        
+        <!-- Overlay para mobile quando abrir o menu lateral -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden transition-opacity"></div>
+
+        <!-- Header Superior Institucional PUC Minas -->
+        <header class="bg-[#002b5c] text-white shadow-md z-30 sticky top-0">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <button id="menu-toggle" class="lg:hidden text-white focus:outline-none p-1.5 bg-white/10 rounded">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    <!-- Logotipo SGA Maior no Header -->
+                    <div class="bg-white px-3.5 py-2 rounded shadow-sm flex items-center">
+                        <img src="{{ url_logo }}" class="h-10 object-contain" alt="SGA PUC Minas">
+                    </div>
+                    <span class="hidden md:inline-block text-xs uppercase tracking-wider text-blue-200 border-l border-blue-400/40 pl-4 font-bold">Pontifícia Universidade Católica de Minas Gerais</span>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-xs font-bold leading-tight">{{ aluno.nome }}</p>
+                        <p class="text-[10px] text-blue-200">Matrícula: {{ aluno.matricula }}</p>
+                    </div>
+                    <div class="w-9 h-9 rounded-full bg-white/20 border border-white/30 overflow-hidden flex items-center justify-center shrink-0">
+                        {% if aluno.foto %}
+                            {% set foto_path = url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) %}
+                            <img src="{{ foto_path }}" alt="Foto" class="w-full h-full object-cover">
+                        {% else %}
+                            <i class="fa-solid fa-user text-sm text-white"></i>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-barra de Navegação Oficial PUC -->
+            <div class="bg-[#001f42] text-xs py-2 px-4 shadow-inner overflow-x-auto">
+                <div class="max-w-7xl mx-auto flex items-center justify-between text-blue-200 whitespace-nowrap">
+                    <div class="flex items-center space-x-6">
+                        <a href="#" class="hover:text-white font-bold flex items-center gap-1.5"><i class="fa-solid fa-house"></i> Início</a>
+                        <a href="#" class="hover:text-white font-bold flex items-center gap-1.5 text-white underline"><i class="fa-solid fa-address-card"></i> Meus Dados</a>
+                        <a href="#" class="hover:text-white flex items-center gap-1.5"><i class="fa-solid fa-book-open"></i> Notas e Faltas</a>
+                        <a href="#" class="hover:text-white flex items-center gap-1.5"><i class="fa-solid fa-dollar-sign"></i> Financeiro</a>
+                        <a href="#" class="hover:text-white flex items-center gap-1.5"><i class="fa-solid fa-file-lines"></i> Requerimentos</a>
+                    </div>
+                    <div class="pl-4">
+                        <a href="?logout=true" class="text-red-300 hover:text-red-100 font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-power-off"></i> Sair
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Conteúdo Principal do Portal -->
+        <div class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8">
+            
+            <!-- Banner de Saudação com STATUS: APROVADO -->
+            <div class="bg-white border-l-4 border-[#002b5c] p-4 md:p-5 shadow-sm rounded-r-lg mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-base md:text-xl font-bold text-[#002b5c]">Portal Acadêmico — Secretaria de Registros Acadêmicos</h1>
+                    <p class="text-xs text-gray-600 mt-1">Olá, <strong class="text-gray-900">{{ aluno.nome }}</strong>. Acompanhe abaixo os dados do seu registro acadêmico e documentação comprobatória.</p>
+                </div>
+                <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-3 py-1.5 rounded flex items-center shadow-2xs shrink-0">
+                    <i class="fa-solid fa-circle-check mr-2 text-base text-emerald-600"></i> STATUS: APROVADO
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Coluna Esquerda: Perfil Rápido do Aluno -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5 text-center">
+                        <div class="w-28 h-28 mx-auto rounded-xl border-2 border-[#002b5c] p-1 bg-gray-50 shadow-inner overflow-hidden mb-4 flex items-center justify-center">
+                            {% if aluno.foto %}
+                                {% set foto_path2 = url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) %}
+                                <img src="{{ foto_path2 }}" alt="Foto" class="w-full h-full object-cover rounded-lg">
+                            {% else %}
+                                <i class="fa-solid fa-user text-5xl text-gray-300"></i>
+                            {% endif %}
+                        </div>
+                        <h2 class="font-bold text-sm text-[#002b5c] mb-1">{{ aluno.nome }}</h2>
+                        <p class="text-xs text-gray-500 mb-3">{{ aluno.curso }}</p>
+                        <div class="border-t border-gray-100 pt-3 text-left text-xs space-y-2 text-gray-600">
+                            <div class="flex justify-between"><span class="font-bold text-gray-500">Matrícula:</span> <span class="font-semibold text-gray-800">{{ aluno.matricula }}</span></div>
+                            <div class="flex justify-between"><span class="font-bold text-gray-500">Grau:</span> <span class="font-semibold text-gray-800">{{ aluno.grau_academico }}</span></div>
+                            <div class="flex justify-between"><span class="font-bold text-gray-500">Turno/Unidade:</span> <span class="font-semibold text-gray-800">Presencial / Coração Eucarístico</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Avisos Institucionais PUC -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+                        <h3 class="font-bold text-xs uppercase tracking-wider text-[#002b5c] mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
+                            <i class="fa-solid fa-bullhorn text-amber-500"></i> Avisos da Secretaria
+                        </h3>
+                        <ul class="space-y-3 text-xs text-gray-600">
+                            <li class="pb-2 border-b border-gray-50">
+                                <span class="font-bold text-gray-800 block mb-0.5">Período de Rematrícula</span>
+                                O prazo para requerimento de renovação de matrícula encontra-se aberto nos canais oficiais do SGA.
+                            </li>
+                            <li>
+                                <span class="font-bold text-gray-800 block mb-0.5">Disponibilidade de Diplomas</span>
+                                Os registros digitais oficiais encontram-se assinados e validados digitalmente conforme portaria MEC.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Coluna Direita: Dados Cadastrais e Repositório Digital -->
+                <div class="lg:col-span-2 space-y-6">
+                    
+                    <!-- Card de Informações Cadastrais -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5 md:p-6">
+                        <div class="flex items-center justify-between pb-3 mb-5 border-b border-gray-100">
+                            <h3 class="font-bold text-xs uppercase tracking-wider text-[#002b5c] flex items-center gap-2">
+                                <i class="fa-solid fa-address-card text-base"></i> Informações Cadastrais Oficiais
+                            </h3>
+                            <span class="text-[11px] text-gray-400">Atualizado em tempo real</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-gray-50/80 p-3.5 rounded border border-gray-200/60">
+                                <span class="block text-gray-400 uppercase text-[10px] font-bold mb-1">Nome Completo do Aluno</span>
+                                <span class="font-bold text-[#002b5c] text-sm">{{ aluno.nome }}</span>
+                            </div>
+                            <div class="bg-gray-50/80 p-3.5 rounded border border-gray-200/60">
+                                <span class="block text-gray-400 uppercase text-[10px] font-bold mb-1">Registro Acadêmico (RA / Matrícula)</span>
+                                <span class="font-bold text-gray-800 text-sm">{{ aluno.matricula }}</span>
+                            </div>
+                            <div class="bg-gray-50/80 p-3.5 rounded border border-gray-200/60">
+                                <span class="block text-gray-400 uppercase text-[10px] font-bold mb-1">Curso Vinculado</span>
+                                <span class="font-bold text-gray-800">{{ aluno.curso }}</span>
+                            </div>
+                            <div class="bg-gray-50/80 p-3.5 rounded border border-gray-200/60">
+                                <span class="block text-gray-400 uppercase text-[10px] font-bold mb-1">Grau Acadêmico</span>
+                                <span class="font-bold text-gray-800">{{ aluno.grau_academico }}</span>
+                            </div>
+                            <div class="bg-gray-50/80 p-3.5 rounded border border-gray-200/60">
+                                <span class="block text-gray-400 uppercase text-[10px] font-bold mb-1">Instituição de Ensino</span>
+                                <span class="font-bold text-gray-800">{{ aluno.instituicao_ensino }}</span>
+                            </div>
+                            <div class="bg-gray-50/80 p-3.5 rounded border border-gray-200/60">
+                                <span class="block text-gray-400 uppercase text-[10px] font-bold mb-1">Carga Horária Total</span>
+                                <span class="font-bold text-gray-800">{{ aluno.carga_horaria | default('Integralizada') }}</span>
+                            </div>
+                            <div class="bg-gray-50/80 p-3.5 rounded border border-gray-200/60">
+                                <span class="block text-gray-400 uppercase text-[10px] font-bold mb-1">Início do Ciclo Letivo</span>
+                                <span class="font-bold text-gray-800">{{ aluno.data_inicio | default('Semestre Regular') }}</span>
+                            </div>
+                            <div class="bg-gray-50/80 p-3.5 rounded border border-gray-200/60">
+                                <span class="block text-gray-400 uppercase text-[10px] font-bold mb-1">Data de Conclusão</span>
+                                <span class="font-bold text-gray-800">{{ aluno.data_conclusao }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card de Documentação Digital -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5 md:p-6">
+                        <div class="flex items-center justify-between pb-3 mb-5 border-b border-gray-100">
+                            <h3 class="font-bold text-xs uppercase tracking-wider text-[#002b5c] flex items-center gap-2">
+                                <i class="fa-solid fa-folder-open text-base"></i> Documentação Digital Registrada
+                            </h3>
+                            <span class="text-[11px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Validade Jurídica Garantida</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {% if aluno.historico %}
+                            <div class="border border-gray-200 rounded-lg p-4 flex flex-col justify-between hover:border-[#002b5c] transition bg-white shadow-2xs group">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <i class="fa-solid fa-file-invoice text-2xl text-[#002b5c]"></i>
+                                        <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold">Oficial</span>
+                                    </div>
+                                    <h4 class="font-bold text-xs text-gray-800 mb-1">Histórico Escolar</h4>
+                                    <p class="text-[11px] text-gray-500 mb-4">Demonstrativo oficial de desempenho.</p>
+                                </div>
+                                <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='historico') }}" target="_blank" class="w-full text-center bg-gray-100 hover:bg-[#002b5c] hover:text-white text-gray-700 py-2 rounded text-xs font-bold transition">Visualizar Documento</a>
+                            </div>
+                            {% endif %}
+                            
+                            {% if aluno.certificado %}
+                            <div class="border border-gray-200 rounded-lg p-4 flex flex-col justify-between hover:border-[#002b5c] transition bg-white shadow-2xs group">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <i class="fa-solid fa-certificate text-2xl text-[#002b5c]"></i>
+                                        <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold">Válido</span>
+                                    </div>
+                                    <h4 class="font-bold text-xs text-gray-800 mb-1">Certificado de Conclusão</h4>
+                                    <p class="text-[11px] text-gray-500 mb-4">Certificação acadêmica emitida.</p>
+                                </div>
+                                <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='certificado') }}" target="_blank" class="w-full text-center bg-gray-100 hover:bg-[#002b5c] hover:text-white text-gray-700 py-2 rounded text-xs font-bold transition">Visualizar Documento</a>
+                            </div>
+                            {% endif %}
+
+                            {% if aluno.diploma_frente or aluno.diploma_verso %}
+                            <div class="border border-gray-200 rounded-lg p-4 flex flex-col justify-between hover:border-[#002b5c] transition bg-white shadow-2xs group sm:col-span-2">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                                    <div>
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <i class="fa-solid fa-scroll text-xl text-[#002b5c]"></i>
+                                            <h4 class="font-bold text-xs text-gray-800">Diploma Digital Registrado</h4>
+                                        </div>
+                                        <p class="text-[11px] text-gray-500">Documento assinado digitalmente com padrão ICP-Brasil.</p>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-3 sm:mt-0">
+                                        {% if aluno.diploma_frente %}
+                                            {% set f_path = url_for('download_file', filename=aluno.diploma_frente.split('|')[0]) %}
+                                            <a href="{{ f_path }}" target="_blank" class="px-4 py-2 bg-[#002b5c] hover:bg-blue-900 text-white rounded text-xs font-bold transition">Baixar Frente</a>
+                                        {% endif %}
+                                        {% if aluno.diploma_verso %}
+                                            {% set v_path = url_for('download_file', filename=aluno.diploma_verso.split('|')[0]) %}
+                                            <a href="{{ v_path }}" target="_blank" class="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded text-xs font-bold transition">Baixar Verso</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if aluno.outros_docs %}
+                            <div class="border border-gray-200 rounded-lg p-4 flex flex-col justify-between hover:border-[#002b5c] transition bg-white shadow-2xs group sm:col-span-2">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fa-solid fa-paperclip text-lg text-[#002b5c]"></i>
+                                        <h4 class="font-bold text-xs text-gray-800">Documentação Adicional / Anexos</h4>
+                                    </div>
+                                    <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='outros') }}" target="_blank" class="px-4 py-2 bg-gray-100 hover:bg-[#002b5c] hover:text-white text-gray-700 rounded text-xs font-bold transition">Visualizar Documento</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Rodapé Institucional PUC Minas -->
+        <footer class="bg-[#001f42] text-blue-200 text-xs py-6 mt-12 border-t border-blue-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-2">
+                <p class="font-bold">Pontifícia Universidade Católica de Minas Gerais — SGA (Sistema de Gestão Acadêmica)</p>
+                <p class="text-[11px] text-blue-300">Secretaria de Registros Acadêmicos | Suporte Técnico Institucional</p>
+            </div>
+        </footer>
+    </div>
+    {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menu-toggle');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if(menuToggle && overlay) {
+                menuToggle.addEventListener('click', function() {
+                    // Script mobile otimizado
+                });
+            }
+        });
+    </script>
 </body>
 </html>
