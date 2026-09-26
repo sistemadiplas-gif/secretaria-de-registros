@@ -6,47 +6,195 @@
 <!-- Biblioteca qrcode.js para desenhar o QR Code limpo nativamente -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<div style="background-color: #2a2a35; padding: 40px; border-radius: 12px; margin-bottom: 40px; border-left: 8px solid #0056b3; text-align: left; box-shadow: 0 6px 10px rgba(0,0,0,0.15);">
-    <h1 style="color: #fff; margin: 0; font-size: 46px; text-transform: uppercase; letter-spacing: 2px;">{{ aluno['nome'] }}</h1>
-    <p style="color: #aaa; font-size: 22px; margin: 15px 0 0 0;">
-        <span style="color: #fff; font-weight: bold;">CPF:</span> {{ aluno['cpf'] }} &nbsp;|&nbsp; 
-        <span style="color: #fff; font-weight: bold;">Matrícula:</span> {{ aluno['matricula'] }} &nbsp;|&nbsp;
-        <span style="color: #fff; font-weight: bold;">Formação:</span> {{ aluno['curso'] }}
-    </p>
+<style>
+    /* Estilos Premium para dar vida ao painel */
+    .dashboard-card {
+        background: linear-gradient(145deg, #252532, #1b1b24);
+        border: 1px solid #383848;
+        border-radius: 16px;
+        padding: 40px;
+        margin-bottom: 40px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        text-align: left;
+    }
+    .header-card {
+        border-left: 8px solid #00d2ff;
+        background: linear-gradient(90deg, rgba(37,37,50,1) 0%, rgba(27,27,36,1) 100%);
+    }
+    .section-title {
+        color: #fff;
+        margin-top: 0;
+        font-size: 26px;
+        font-weight: 700;
+        border-bottom: 2px solid rgba(255,255,255,0.05);
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .link-row {
+        background-color: #1a1a21;
+        border: 1px solid #30303e;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .link-row:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,210,255,0.1);
+        border-color: #4a4a5e;
+    }
+    .tech-input {
+        flex: 1; 
+        background-color: #121217; 
+        color: #00d2ff; 
+        border: 1px solid #2a2a35; 
+        font-family: 'Courier New', monospace;
+        font-size: 16px; 
+        padding: 15px; 
+        border-radius: 8px;
+        letter-spacing: 0.5px;
+    }
+    .tech-input:focus {
+        outline: none;
+        border-color: #00d2ff;
+    }
+    .btn-action {
+        border: none; 
+        border-radius: 8px; 
+        padding: 0 25px; 
+        cursor: pointer; 
+        font-size: 15px; 
+        font-weight: bold;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+    .btn-copy { background: #3a3a48; color: #fff; }
+    .btn-copy:hover { background: #4f4f62; }
+    
+    .btn-open { background: linear-gradient(135deg, #0072ff, #00c6ff); color: white; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.3); }
+    .btn-open:hover { filter: brightness(1.1); box-shadow: 0 6px 20px rgba(0, 114, 255, 0.5); }
+    
+    .btn-download { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3); }
+    .btn-download:hover { filter: brightness(1.1); box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5); }
+
+    .btn-xml { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: #00d2ff; border: 1px solid #00d2ff;}
+    .btn-xml:hover { background: #00d2ff; color: #000; }
+
+    .doc-card {
+        background-color: #1a1a21; 
+        border: 1px solid #30303e; 
+        border-radius: 12px; 
+        padding: 25px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+    .doc-card:hover { border-color: #00d2ff; }
+</style>
+
+<!-- HEADER DO ALUNO -->
+<div class="dashboard-card header-card">
+    <h1 style="color: #fff; margin: 0; font-size: 42px; text-transform: uppercase; letter-spacing: 2px;">{{ aluno['nome'] }}</h1>
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+        <span style="background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 6px; color: #ccc; font-size: 15px;">
+            <strong style="color: #fff;">CPF:</strong> {{ aluno['cpf'] }}
+        </span>
+        <span style="background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 6px; color: #ccc; font-size: 15px;">
+            <strong style="color: #fff;">Matrícula:</strong> {{ aluno['matricula'] }}
+        </span>
+        <span style="background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 6px; color: #ccc; font-size: 15px; border-left: 3px solid #00d2ff;">
+            <strong style="color: #fff;">Formação:</strong> {{ aluno['curso'] }}
+        </span>
+    </div>
 </div>
 
 <!-- ========================================== -->
-<!-- 1. BLOCO DE LINKS RÁPIDOS DE CONSULTA      -->
+<!-- 1. BLOCO UNIFICADO: CONSULTAS E VALIDAÇÕES -->
 <!-- ========================================== -->
-<div style="background-color: #2a2a35; padding: 40px; border-radius: 12px; margin-bottom: 40px; text-align: left; box-shadow: 0 6px 10px rgba(0,0,0,0.15);">
-    <h3 style="color: #0056b3; margin-top: 0; font-size: 28px; border-bottom: 2px solid #3a3a45; padding-bottom: 15px;">Links de Acesso Direto</h3>
+<div class="dashboard-card">
+    <h3 class="section-title">
+        <span style="font-size: 24px;">🌐</span> Consultas e Validações
+    </h3>
     
-    <div style="margin-bottom: 30px;">
-        <label style="color: #ccc; font-size: 18px; font-weight: bold;">Publicação no Diário Oficial da União (DOU):</label>
-        <div style="display: flex; gap: 15px; margin-top: 10px;">
-            <input type="text" id="link_dou" value="{{ url_base['dou'] }}imprensanacional/consulta/{{ aluno['cpf'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 18px; padding: 15px; border-radius: 8px;">
-            <button onclick="copiarLink('link_dou')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 25px; cursor: pointer; font-size: 16px; font-weight: bold;">📋 Copiar</button>
-            <a href="{{ url_base['dou'] }}imprensanacional/consulta/{{ aluno['cpf'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 15px 25px; font-size: 16px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
+    <!-- Consulta DOU -->
+    <div class="link-row">
+        <label style="color: #fff; font-size: 16px; font-weight: bold; display: block; margin-bottom: 10px;">
+            📰 Publicação no Diário Oficial da União (DOU):
+        </label>
+        <div style="display: flex; gap: 12px;">
+            <input type="text" id="link_dou" class="tech-input" value="{{ url_base['dou'] }}imprensanacional/consulta/{{ aluno['cpf'] }}" readonly>
+            <button onclick="copiarLink('link_dou')" class="btn-action btn-copy">📋 Copiar</button>
+            <a href="{{ url_base['dou'] }}imprensanacional/consulta/{{ aluno['cpf'] }}" target="_blank" class="btn-action btn-open">↗️ Abrir DOU</a>
         </div>
     </div>
 
-    <div style="margin-bottom: 30px;">
-        <label style="color: #ccc; font-size: 18px; font-weight: bold;">Consulta XML (MEC):</label>
-        {% set link_da_xml = "https://http-verficadordiplomadigitalmecgovbr.com/consulta/xml/" ~ aluno['cpf'] %}
-        <div style="display: flex; gap: 15px; margin-top: 10px;">
-            <input type="text" id="link_xml" value="{{ link_da_xml }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 18px; padding: 15px; border-radius: 8px;">
-            <button onclick="copiarLink('link_xml')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 25px; cursor: pointer; font-size: 16px; font-weight: bold;">📋 Copiar</button>
-            <a href="{{ link_da_xml }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 15px 25px; font-size: 16px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
+    <!-- Consulta XML (Aponta para o Motor de Validação) -->
+    <div class="link-row" style="border-left: 4px solid #00d2ff;">
+        <label style="color: #fff; font-size: 16px; font-weight: bold; display: block; margin-bottom: 10px;">
+            🔐 Consulta XML (Verificador Digital MEC):
+        </label>
+        {% set link_da_xml = "https://http-verficadordiplomadigitalmecgovbr.com/validar_xml/" ~ aluno['cpf'] %}
+        <div style="display: flex; gap: 12px;">
+            <input type="text" id="link_xml" class="tech-input" value="{{ link_da_xml }}" readonly>
+            <button onclick="copiarLink('link_xml')" class="btn-action btn-copy">📋 Copiar</button>
+            <a href="{{ link_da_xml }}" target="_blank" class="btn-action btn-open">↗️ Abrir XML</a>
         </div>
     </div>
 
-    <div>
-        <label style="color: #ccc; font-size: 18px; font-weight: bold;">Portal do Aluno:</label>
-        <div style="display: flex; gap: 15px; margin-top: 10px;">
-            <input type="text" id="link_portal" value="{{ url_base['portal'] }}portal_aluno/{{ aluno['cpf'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 18px; padding: 15px; border-radius: 8px;">
-            <button onclick="copiarLink('link_portal')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 25px; cursor: pointer; font-size: 16px; font-weight: bold;">📋 Copiar</button>
-            <a href="{{ url_base['portal'] }}portal_aluno/{{ aluno['cpf'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 15px 25px; font-size: 16px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
-        </div>
+    <!-- Portal do Aluno (COM LÓGICA DE OCULTAÇÃO) -->
+    <div class="link-row">
+        {% if aluno['faculdade_slug'] and aluno['faculdade_slug']|trim != '' and aluno['faculdade_slug']|lower != 'nenhuma' %}
+            <label style="color: #fff; font-size: 16px; font-weight: bold; display: block; margin-bottom: 10px;">
+                🎓 Portal do Aluno:
+            </label>
+            <div style="display: flex; gap: 12px;">
+                <input type="text" id="link_portal" class="tech-input" value="{{ url_base['portal'] }}portal_aluno/{{ aluno['cpf'] }}" readonly>
+                <button onclick="copiarLink('link_portal')" class="btn-action btn-copy">📋 Copiar</button>
+                <a href="{{ url_base['portal'] }}portal_aluno/{{ aluno['cpf'] }}" target="_blank" class="btn-action btn-open">↗️ Abrir Portal</a>
+            </div>
+        {% else %}
+            <label style="color: #ccc; font-size: 16px; font-weight: bold; display: block;">
+                🎓 Portal do Aluno:
+            </label>
+            <p style="color: #ff4757; font-size: 15px; margin: 10px 0 0 0; background: rgba(255,71,87,0.1); padding: 12px; border-radius: 8px; display: inline-block;">
+                ⚠️ Aluno não possui faculdade/universidade vinculada no cadastro. Link indisponível.
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- Registro Institucional (CNA / CONFEA) UNIFICADO NESTE BLOCO -->
+    <div class="link-row">
+        {% if aluno['orgao'] %}
+            <label style="color: #fff; font-size: 16px; font-weight: bold; display: block; margin-bottom: 10px;">
+                🏛️ Registro Institucional de Classe ({{ aluno['orgao'] | upper }}):
+            </label>
+            <div style="display: flex; gap: 12px;">
+                {% if aluno['orgao'] == 'confea' %}
+                    <input type="text" id="link_registro" class="tech-input" value="{{ url_base['confea'] }}conselho_confea/{{ aluno['id'] }}" readonly>
+                    <button onclick="copiarLink('link_registro')" class="btn-action btn-copy">📋 Copiar</button>
+                    <a href="{{ url_base['confea'] }}conselho_confea/{{ aluno['id'] }}" target="_blank" class="btn-action btn-open">↗️ Abrir Conselho</a>
+                {% else %}
+                    <input type="text" id="link_registro" class="tech-input" value="{{ url_base['cna'] }}conselho_oab/{{ aluno['id'] }}" readonly>
+                    <button onclick="copiarLink('link_registro')" class="btn-action btn-copy">📋 Copiar</button>
+                    <a href="{{ url_base['cna'] }}conselho_oab/{{ aluno['id'] }}" target="_blank" class="btn-action btn-open">↗️ Abrir Conselho</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <label style="color: #ccc; font-size: 16px; font-weight: bold; display: block;">
+                🏛️ Registro Institucional de Classe:
+            </label>
+            <p style="color: #ff4757; font-size: 15px; margin: 10px 0 0 0; background: rgba(255,71,87,0.1); padding: 12px; border-radius: 8px; display: inline-block;">
+                ⚠️ Aluno não possui conselho ou registro de classe vinculado no cadastro.
+            </p>
+        {% endif %}
     </div>
 </div>
 
@@ -54,21 +202,24 @@
 <!-- 2. BLOCO EXCLUSIVO: SELOS E QR CODES       -->
 <!-- ========================================== -->
 {% if aluno['gerar_qrcode'] == 'Sim' %}
-<div style="background-color: #2a2a35; padding: 40px; border-radius: 12px; margin-bottom: 40px; text-align: left; box-shadow: 0 6px 10px rgba(0,0,0,0.15);">
-    <h3 style="color: #0056b3; margin-top: 0; font-size: 28px; border-bottom: 2px solid #3a3a45; padding-bottom: 15px; margin-bottom: 30px;">Emissão de Selos de Autenticidade (QR Code)</h3>
+<div class="dashboard-card">
+    <h3 class="section-title">
+        <span style="font-size: 24px;">🔲</span> Emissão de Selos de Autenticidade (QR Code)
+    </h3>
     
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 40px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 40px; justify-items: center;">
         
-        <!-- CARD 1: QR CODE PORTAL DO ALUNO -->
-        <div style="background-color: #1e1e24; border: 2px solid #3a3a45; border-radius: 12px; padding: 30px; display: flex; flex-direction: column; align-items: center;">
-            <h4 style="color: #0056b3; font-size: 20px; text-transform: uppercase; margin-top: 0; margin-bottom: 20px; letter-spacing: 1px;">Selo Oficial: Portal do Aluno</h4>
+        <!-- CARD 1: QR CODE PORTAL DO ALUNO (SÓ APARECE SE TIVER FACULDADE) -->
+        {% if aluno['faculdade_slug'] and aluno['faculdade_slug']|trim != '' and aluno['faculdade_slug']|lower != 'nenhuma' %}
+        <div style="background-color: #1a1a21; border: 1px solid #30303e; border-radius: 16px; padding: 35px; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 480px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <h4 style="color: #00d2ff; font-size: 18px; text-transform: uppercase; margin-top: 0; margin-bottom: 25px; letter-spacing: 1.5px;">Selo Oficial: Portal do Aluno</h4>
             
             {% set link_da_pasta = url_base['validacao'] ~ aluno['cpf'] %}
             
-            <div id="selo-autenticidade" style="width: 400px; background: #ffffff; border: 2px solid #000; padding: 20px; position: relative; font-family: Arial, sans-serif; box-sizing: border-box; text-align: center; color: #000; margin-bottom: 25px;">
-                <div style="position: absolute; left: 15px; top: 40px; width: 110px; height: 110px;">
+            <div id="selo-autenticidade" style="width: 380px; background: #ffffff; border: 2px solid #000; padding: 25px 20px; position: relative; font-family: Arial, sans-serif; box-sizing: border-box; text-align: center; color: #000; margin-bottom: 30px;">
+                <div style="position: absolute; left: 15px; top: 40px; width: 105px; height: 105px;">
                     <svg viewBox="0 0 120 120" style="width: 100%; height: 100%;">
-                        <circle cx="60" cy="60" r="54" fill="none" stroke="#0033cc" stroke-width="2"/>
+                        <circle cx="60" cy="60" r="54" fill="none" stroke="#0033cc" stroke-width="2.5"/>
                         <path id="curve-portal" fill="none" d="M 12,60 A 48,48 0 1,1 108,60" />
                         <text font-size="8.5" font-weight="bold" fill="#0033cc" letter-spacing="1px">
                             <textPath href="#curve-portal" startOffset="50%" text-anchor="middle">SECRETARIA DE EDUCAÇÃO</textPath>
@@ -81,44 +232,45 @@
                 <div style="font-size: 10px; font-weight: bold; margin-bottom: 4px; letter-spacing: 0.5px;">CONSULTE A AUTENTICIDADE DESTE DOCUMENTO</div>
                 <div style="font-size: 13px; margin-bottom: 12px; color: #222;">&nbsp;</div>
 
-                <div style="margin: 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; width: 135px; height: 135px;" id="qrcode-render-portal"></div>
+                <div style="margin: 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; width: 140px; height: 140px;" id="qrcode-render-portal"></div>
 
-                <div style="font-size: 10px; color: #333; margin-top: 8px; word-break: break-all;">
+                <div style="font-size: 9.5px; color: #555; margin-top: 10px; word-break: break-all; font-family: monospace;">
                     {{ link_da_pasta }}
                 </div>
             </div>
 
-            <button onclick="baixarSeloPortal()" style="width: 100%; background-color: #0056b3; color: white; border: none; border-radius: 8px; padding: 15px; cursor: pointer; font-size: 18px; font-weight: bold; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#004494'" onmouseout="this.style.backgroundColor='#0056b3'">⬇️ Baixar Selo (Portal)</button>
+            <button onclick="baixarSeloPortal()" class="btn-action btn-open" style="width: 100%; padding: 18px; font-size: 16px;">⬇️ Baixar Selo (Portal)</button>
         </div>
+        {% endif %}
 
-        <!-- CARD 2: QR CODE CONSULTA XML -->
-        <div style="background-color: #1e1e24; border: 2px solid #3a3a45; border-radius: 12px; padding: 30px; display: flex; flex-direction: column; align-items: center;">
-            <h4 style="color: #17a2b8; font-size: 20px; text-transform: uppercase; margin-top: 0; margin-bottom: 20px; letter-spacing: 1px;">Selo Digital: Consulta XML</h4>
+        <!-- CARD 2: QR CODE CONSULTA XML (APARECE SEMPRE) -->
+        <div style="background-color: #1a1a21; border: 1px solid #30303e; border-radius: 16px; padding: 35px; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 480px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <h4 style="color: #38ef7d; font-size: 18px; text-transform: uppercase; margin-top: 0; margin-bottom: 25px; letter-spacing: 1.5px;">Selo Digital: Consulta XML</h4>
             
-            <div id="selo-xml" style="width: 400px; background: #ffffff; border: 2px solid #000; padding: 20px; position: relative; font-family: Arial, sans-serif; box-sizing: border-box; text-align: center; color: #000; margin-bottom: 25px;">
-                <div style="position: absolute; left: 15px; top: 40px; width: 110px; height: 110px;">
+            <div id="selo-xml" style="width: 380px; background: #ffffff; border: 2px solid #000; padding: 25px 20px; position: relative; font-family: Arial, sans-serif; box-sizing: border-box; text-align: center; color: #000; margin-bottom: 30px;">
+                <div style="position: absolute; left: 15px; top: 40px; width: 105px; height: 105px;">
                     <svg viewBox="0 0 120 120" style="width: 100%; height: 100%;">
-                        <circle cx="60" cy="60" r="54" fill="none" stroke="#17a2b8" stroke-width="2"/>
+                        <circle cx="60" cy="60" r="54" fill="none" stroke="#11998e" stroke-width="2.5"/>
                         <path id="curve-xml" fill="none" d="M 12,60 A 48,48 0 1,1 108,60" />
-                        <text font-size="8.5" font-weight="bold" fill="#17a2b8" letter-spacing="1px">
+                        <text font-size="8.5" font-weight="bold" fill="#11998e" letter-spacing="1px">
                             <textPath href="#curve-xml" startOffset="50%" text-anchor="middle">VERIFICADOR DE DIPLOMA</textPath>
                         </text>
-                        <text x="60" y="65" font-size="11" font-weight="bold" fill="#17a2b8" text-anchor="middle">XML MEC</text>
-                        <text x="60" y="98" font-size="9" font-weight="bold" fill="#17a2b8" text-anchor="middle" letter-spacing="2px">- BRASIL -</text>
+                        <text x="60" y="65" font-size="11" font-weight="bold" fill="#11998e" text-anchor="middle">XML MEC</text>
+                        <text x="60" y="98" font-size="9" font-weight="bold" fill="#11998e" text-anchor="middle" letter-spacing="2px">- BRASIL -</text>
                     </svg>
                 </div>
 
                 <div style="font-size: 10px; font-weight: bold; margin-bottom: 4px; letter-spacing: 0.5px;">CONSULTE A AUTENTICIDADE DESTE ARQUIVO XML</div>
                 <div style="font-size: 13px; margin-bottom: 12px; color: #222;">&nbsp;</div>
 
-                <div style="margin: 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; width: 135px; height: 135px;" id="qrcode-render-xml"></div>
+                <div style="margin: 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; width: 140px; height: 140px;" id="qrcode-render-xml"></div>
 
-                <div style="font-size: 10px; color: #333; margin-top: 8px; word-break: break-all;">
+                <div style="font-size: 9.5px; color: #555; margin-top: 10px; word-break: break-all; font-family: monospace;">
                     {{ link_da_xml }}
                 </div>
             </div>
 
-            <button onclick="baixarSeloXml()" style="width: 100%; background-color: #17a2b8; color: white; border: none; border-radius: 8px; padding: 15px; cursor: pointer; font-size: 18px; font-weight: bold; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#138496'" onmouseout="this.style.backgroundColor='#17a2b8'">⬇️ Baixar Selo (XML)</button>
+            <button onclick="baixarSeloXml()" class="btn-action btn-download" style="width: 100%; padding: 18px; font-size: 16px;">⬇️ Baixar Selo (XML)</button>
         </div>
 
     </div>
@@ -126,85 +278,57 @@
 {% endif %}
 
 <!-- ========================================== -->
-<!-- 3. BLOCO: REGISTRO INSTITUCIONAL           -->
+<!-- 3. BLOCO: DOCUMENTAÇÃO DE GRADUAÇÃO        -->
 <!-- ========================================== -->
-<div style="background-color: #2a2a35; padding: 40px; border-radius: 12px; margin-bottom: 40px; text-align: left; box-shadow: 0 6px 10px rgba(0,0,0,0.15);">
-    <h3 style="color: #0056b3; margin-top: 0; font-size: 28px; border-bottom: 2px solid #3a3a45; padding-bottom: 15px;">Registro de Classe</h3>
+<div class="dashboard-card">
+    <h3 class="section-title">
+        <span style="font-size: 24px;">📁</span> Emissão e Download de Documentos
+    </h3>
     
-    {% if aluno['orgao'] %}
-    <div>
-        <label style="color: #ccc; font-size: 18px; font-weight: bold;">Consulta no Conselho Institucional ({{ aluno['orgao'] | upper }}):</label>
-        <div style="display: flex; gap: 15px; margin-top: 10px;">
-            {% if aluno['orgao'] == 'confea' %}
-                <input type="text" id="link_registro" value="{{ url_base['confea'] }}conselho_confea/{{ aluno['id'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 18px; padding: 15px; border-radius: 8px;">
-                <button onclick="copiarLink('link_registro')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 25px; cursor: pointer; font-size: 16px; font-weight: bold;">📋 Copiar</button>
-                <a href="{{ url_base['confea'] }}conselho_confea/{{ aluno['id'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 15px 25px; font-size: 16px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
-            {% else %}
-                <input type="text" id="link_registro" value="{{ url_base['cna'] }}conselho_oab/{{ aluno['id'] }}" readonly style="flex: 1; background-color: #1e1e24; color: #fff; border: 2px solid #3a3a45; font-size: 18px; padding: 15px; border-radius: 8px;">
-                <button onclick="copiarLink('link_registro')" style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 0 25px; cursor: pointer; font-size: 16px; font-weight: bold;">📋 Copiar</button>
-                <a href="{{ url_base['cna'] }}conselho_oab/{{ aluno['id'] }}" target="_blank" style="background-color: #0056b3; color: white; text-decoration: none; border-radius: 8px; padding: 15px 25px; font-size: 16px; font-weight: bold; display: flex; align-items: center;">↗️ Abrir</a>
-            {% endif %}
-        </div>
-    </div>
-    {% else %}
-    <div>
-        <p style="color: #dc3545; font-size: 18px; margin: 0; font-weight: bold;">⚠️ Aluno não possui conselho/registro vinculado no cadastro.</p>
-    </div>
-    {% endif %}
-</div>
-
-<!-- ========================================== -->
-<!-- 4. BLOCO: DOCUMENTAÇÃO DE GRADUAÇÃO        -->
-<!-- ========================================== -->
-<div style="background-color: #2a2a35; padding: 40px; border-radius: 12px; text-align: left; box-shadow: 0 6px 10px rgba(0,0,0,0.15);">
-    <h3 style="color: #0056b3; margin-top: 0; font-size: 28px; border-bottom: 2px solid #3a3a45; padding-bottom: 15px; margin-bottom: 30px;">Emissão e Download de Documentos</h3>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 25px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 20px;">
         
-        <div style="background-color: #1e1e24; border: 2px solid #3a3a45; border-radius: 10px; padding: 25px; display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 32px;">📜</span><span style="color: #fff; font-weight: bold; font-size: 22px;">Diploma (Frente)</span></div>
-            <div style="display: flex; gap: 12px;">
+        <div class="doc-card">
+            <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 28px;">📜</span><span style="color: #fff; font-weight: bold; font-size: 18px;">Diploma (Frente)</span></div>
+            <div style="display: flex; gap: 10px;">
                 {% if aluno['diploma_frente'] %}
-                    <a href="{{ url_base['painel'] }}static/uploads/{{ aluno['diploma_frente'] }}" target="_blank" style="background-color: #0056b3; color: white; border: none; padding: 14px 22px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block;">👁️ Visualizar</a>
-                    <a href="{{ url_base['painel'] }}download/{{ aluno['diploma_frente'] }}" style="background-color: #28a745; color: white; border: none; padding: 14px 22px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block;">⬇️ Baixar</a>
+                    <a href="{{ url_base['painel'] }}static/uploads/{{ aluno['diploma_frente'] }}" target="_blank" class="btn-action btn-xml" style="padding: 12px 18px;">👁️ Ver</a>
+                    <a href="{{ url_base['painel'] }}download/{{ aluno['diploma_frente'] }}" class="btn-action btn-download" style="padding: 12px 18px;">⬇️ Baixar</a>
                 {% else %}
-                    <button style="background-color: #444; color: #888; border: none; padding: 14px 22px; border-radius: 6px; cursor: not-allowed; font-size: 16px; font-weight: bold;" disabled>👁️ Visualizar</button>
-                    <button style="background-color: #444; color: #888; border: none; padding: 14px 22px; border-radius: 6px; cursor: not-allowed; font-size: 16px; font-weight: bold;" disabled>⬇️ Baixar</button>
+                    <span style="color: #666; font-size: 14px; font-style: italic;">Pendente</span>
                 {% endif %}
             </div>
         </div>
         
-        <div style="background-color: #1e1e24; border: 2px solid #3a3a45; border-radius: 10px; padding: 25px; display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 32px;">📜</span><span style="color: #fff; font-weight: bold; font-size: 22px;">Diploma (Verso)</span></div>
-            <div style="display: flex; gap: 12px;">
+        <div class="doc-card">
+            <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 28px;">📜</span><span style="color: #fff; font-weight: bold; font-size: 18px;">Diploma (Verso)</span></div>
+            <div style="display: flex; gap: 10px;">
                 {% if aluno['diploma_verso'] %}
-                    <a href="{{ url_base['painel'] }}static/uploads/{{ aluno['diploma_verso'] }}" target="_blank" style="background-color: #0056b3; color: white; border: none; padding: 14px 22px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block;">👁️ Visualizar</a>
-                    <a href="{{ url_base['painel'] }}download/{{ aluno['diploma_verso'] }}" style="background-color: #28a745; color: white; border: none; padding: 14px 22px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block;">⬇️ Baixar</a>
+                    <a href="{{ url_base['painel'] }}static/uploads/{{ aluno['diploma_verso'] }}" target="_blank" class="btn-action btn-xml" style="padding: 12px 18px;">👁️ Ver</a>
+                    <a href="{{ url_base['painel'] }}download/{{ aluno['diploma_verso'] }}" class="btn-action btn-download" style="padding: 12px 18px;">⬇️ Baixar</a>
                 {% else %}
-                    <button style="background-color: #444; color: #888; border: none; padding: 14px 22px; border-radius: 6px; cursor: not-allowed; font-size: 16px; font-weight: bold;" disabled>👁️ Visualizar</button>
-                    <button style="background-color: #444; color: #888; border: none; padding: 14px 22px; border-radius: 6px; cursor: not-allowed; font-size: 16px; font-weight: bold;" disabled>⬇️ Baixar</button>
+                    <span style="color: #666; font-size: 14px; font-style: italic;">Pendente</span>
                 {% endif %}
             </div>
         </div>
         
-        <div style="background-color: #1e1e24; border: 2px solid #3a3a45; border-radius: 10px; padding: 25px; display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 32px;">🎓</span><span style="color: #fff; font-weight: bold; font-size: 22px;">Certificado de Conclusão</span></div>
-            <div style="display: flex; gap: 12px;">
-                <a href="{{ url_base['painel'] }}visualizar_documento/{{ aluno['id'] }}/certificado" target="_blank" style="background-color: #0056b3; color: white; border: none; padding: 14px 22px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block;">👁️ Visualizar</a>
+        <div class="doc-card">
+            <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 28px;">🎓</span><span style="color: #fff; font-weight: bold; font-size: 18px;">Certificado de Conclusão</span></div>
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ url_base['painel'] }}visualizar_documento/{{ aluno['id'] }}/certificado" target="_blank" class="btn-action btn-open" style="padding: 12px 18px;">👁️ Acessar Documento</a>
             </div>
         </div>
         
-        <div style="background-color: #1e1e24; border: 2px solid #3a3a45; border-radius: 10px; padding: 25px; display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 32px;">📑</span><span style="color: #fff; font-weight: bold; font-size: 22px;">Histórico Escolar</span></div>
-            <div style="display: flex; gap: 12px;">
-                <a href="{{ url_base['painel'] }}visualizar_documento/{{ aluno['id'] }}/historico" target="_blank" style="background-color: #0056b3; color: white; border: none; padding: 14px 22px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block;">👁️ Visualizar</a>
+        <div class="doc-card">
+            <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 28px;">📑</span><span style="color: #fff; font-weight: bold; font-size: 18px;">Histórico Escolar</span></div>
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ url_base['painel'] }}visualizar_documento/{{ aluno['id'] }}/historico" target="_blank" class="btn-action btn-open" style="padding: 12px 18px;">👁️ Acessar Documento</a>
             </div>
         </div>
         
-        <div style="background-color: #1e1e24; border: 2px solid #3a3a45; border-radius: 10px; padding: 25px; display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 32px;">📁</span><span style="color: #fff; font-weight: bold; font-size: 22px;">Outros Documentos</span></div>
-            <div style="display: flex; gap: 12px;">
-                <a href="{{ url_base['painel'] }}visualizar_documento/{{ aluno['id'] }}/outros" target="_blank" style="background-color: #0056b3; color: white; border: none; padding: 14px 22px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block;">👁️ Visualizar</a>
+        <div class="doc-card">
+            <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 28px;">📎</span><span style="color: #fff; font-weight: bold; font-size: 18px;">Outros Documentos</span></div>
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ url_base['painel'] }}visualizar_documento/{{ aluno['id'] }}/outros" target="_blank" class="btn-action btn-open" style="padding: 12px 18px;">👁️ Acessar Documento</a>
             </div>
         </div>
     </div>
@@ -213,13 +337,13 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
-        // 1. Gerador do QR Code do Portal do Aluno
+        // 1. Gerador do QR Code do Portal do Aluno (Só executa se a div existir)
         const renderDivPortal = document.getElementById("qrcode-render-portal");
         if (renderDivPortal) {
             new QRCode(renderDivPortal, {
                 text: "{{ link_da_pasta }}",
-                width: 135,
-                height: 135,
+                width: 140,
+                height: 140,
                 colorDark: "#000000",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
@@ -231,8 +355,8 @@
         if (renderDivXml) {
             new QRCode(renderDivXml, {
                 text: "{{ link_da_xml }}",
-                width: 135,
-                height: 135,
+                width: 140,
+                height: 140,
                 colorDark: "#000000",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
@@ -245,29 +369,43 @@
         copyText.select();
         copyText.setSelectionRange(0, 99999); 
         navigator.clipboard.writeText(copyText.value);
-        alert("Link copiado com sucesso: " + copyText.value);
+        
+        // Troca o texto do botão temporariamente para dar feedback visual
+        var btn = event.target;
+        var textoOriginal = btn.innerHTML;
+        btn.innerHTML = "✅ Copiado!";
+        btn.style.background = "#28a745";
+        
+        setTimeout(function() {
+            btn.innerHTML = textoOriginal;
+            btn.style.background = ""; // Volta à classe CSS original
+        }, 2000);
     }
 
     // Função para capturar e baixar o Selo do Portal
     function baixarSeloPortal() {
         const seloElement = document.getElementById('selo-autenticidade');
-        html2canvas(seloElement, { scale: 3, useCORS: true }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'Selo_Portal_{{ aluno["cpf"] }}.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        });
+        if(seloElement) {
+            html2canvas(seloElement, { scale: 3, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Selo_Portal_{{ aluno["cpf"] }}.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
     }
 
     // Função para capturar e baixar o Selo do XML
     function baixarSeloXml() {
         const seloElement = document.getElementById('selo-xml');
-        html2canvas(seloElement, { scale: 3, useCORS: true }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'Selo_XML_{{ aluno["cpf"] }}.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        });
+        if(seloElement) {
+            html2canvas(seloElement, { scale: 3, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Selo_XML_{{ aluno["cpf"] }}.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
     }
 </script>
 {% endblock %}
