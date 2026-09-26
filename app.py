@@ -213,7 +213,6 @@ def travar_dominios_e_autenticacao():
 
   host = request.host.lower()
   
-  # NOVA REGRA: Define se o acesso está a ser feito através do domínio principal ou de testes locais
   is_painel = 'secretariaregistrosgovbr' in host or 'localhost' in host or '127.0.0.1' in host or 'onrender' in host
 
   try:
@@ -224,19 +223,15 @@ def travar_dominios_e_autenticacao():
           
           if row:
               novo_status = row['status']
-              if usuario_atual == 'Administrador' or row['usuario'] == 'Administrador':
-                  novo_status = 'ativo'
-
-              # A regra de bloqueio aplica-se a todos os domínios
-              if novo_status == 'bloqueado' and usuario_atual != 'Administrador':
+              
+              # NOVA REGRA ABSOLUTA: Qualquer IP bloqueado recebe erro 403, mesmo que a sessão seja do Administrador.
+              if novo_status == 'bloqueado':
                   return "ACESSO NEGADO. O seu endereço de IP foi bloqueado permanentemente por atividade suspeita.", 403
                   
-              # O IP só é atualizado na lista visual se estiver a aceder ao painel
               if is_painel:
                   conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ?, usuario = ?, status = ? WHERE ip = ?', 
                               (agora, request.endpoint or 'desconhecido', usuario_atual, novo_status, ip_visitante))
           else:
-              # Se o IP não existe, SÓ O GRAVA se estiver a tentar aceder ao painel
               if is_painel:
                   conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint, usuario) VALUES (?, ?, ?, ?, ?)', 
                               (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido', usuario_atual))
@@ -299,12 +294,9 @@ def somente_admn(f):
 def bloquear_ip(ip):
     conn = get_db_connection()
     try:
-        row = conn.execute("SELECT usuario FROM ip_tracking WHERE ip = ?", (ip,)).fetchone()
-        if row and row['usuario'] == 'Administrador':
-            pass
-        else:
-            conn.execute("UPDATE ip_tracking SET status = 'bloqueado' WHERE ip = ?", (ip,))
-            conn.commit()
+        # Removida imunidade na base de dados: bloqueia sem perguntar quem é.
+        conn.execute("UPDATE ip_tracking SET status = 'bloqueado' WHERE ip = ?", (ip,))
+        conn.commit()
     except Exception:
         pass
     finally:

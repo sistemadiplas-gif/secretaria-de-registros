@@ -120,7 +120,7 @@
     <h3 style="margin-top: 0; color: #fff; display: flex; align-items: center; gap: 12px; font-size: 19px;">
         🛡️ Firewall Interno: Monitoramento de IP
     </h3>
-    <p style="color: #999; font-size: 14px; margin-bottom: 20px;">Registro em tempo real das conexões de rede. Como Administrador, você está automaticamente protegido contra bloqueios.</p>
+    <p style="color: #999; font-size: 14px; margin-bottom: 20px;">Registro em tempo real das conexões de rede direcionadas ao painel de administração principal.</p>
     
     <div style="overflow-x: auto;">
         <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; color: #ccc;">
@@ -157,25 +157,21 @@
                         {% endif %}
                     </td>
                     <td style="padding: 14px; text-align: right;">
-                        {% if monitor.usuario == 'Administrador' %}
-                            <span style="color: #555; font-size: 12px; font-style: italic;">Não bloqueável</span>
-                        {% else %}
-                            {% if monitor.status == 'bloqueado' %}
-                            <form method="POST" action="{{ url_for('desbloquear_ip', ip=monitor.ip) }}" style="margin: 0; display: inline;">
+                        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                            <form method="POST" action="{{ url_for('desbloquear_ip', ip=monitor.ip) }}" style="margin: 0;">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" style="background-color: #28a745; color: white; padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; border: none; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'">
-                                    ✓ Liberar Acesso
+                                    ✓ Liberar
                                 </button>
                             </form>
-                            {% else %}
-                            <form method="POST" action="{{ url_for('bloquear_ip', ip=monitor.ip) }}" style="margin: 0; display: inline;">
+                            
+                            <form method="POST" action="{{ url_for('bloquear_ip', ip=monitor.ip) }}" style="margin: 0;">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" style="background-color: #dc3545; color: white; padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; border: none; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#c82333'" onmouseout="this.style.backgroundColor='#dc3545'" onclick="return confirm('Atenção: Bloquear este IP impedirá o acesso às rotas do sistema. Prosseguir?')">
-                                    ✕ Bloquear IP
+                                <button type="submit" style="background-color: #dc3545; color: white; padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; border: none; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#c82333'" onmouseout="this.style.backgroundColor='#dc3545'" onclick="return confirm('Atenção: Bloquear este IP impedirá o acesso. Prosseguir?')">
+                                    ✕ Bloquear
                                 </button>
                             </form>
-                            {% endif %}
-                        {% endif %}
+                        </div>
                     </td>
                 </tr>
                 {% else %}
