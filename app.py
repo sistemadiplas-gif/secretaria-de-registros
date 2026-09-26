@@ -242,7 +242,6 @@ def travar_dominios_e_autenticacao():
   except Exception:
       pass
 
-  # ADICIONAMOS 'validar_xml' À LISTA DE ROTAS PERMITIDAS NESTE DOMÍNIO
   if 'http-verficadordiplomadigitalmecgovbr' in host:
     rotas_xml = ['consulta_xml', 'consulta_xml_direta', 'validar_xml']
     if request.endpoint not in rotas_xml:
@@ -270,7 +269,6 @@ def travar_dominios_e_autenticacao():
       return "Acesso restrito ao portal do aluno. Utilize o link oficial do seu QR Code ou Matrícula.", 403
 
   else:
-    # ADICIONAMOS 'validar_xml' PARA QUE VISITANTES PÚBLICOS POSSAM ACESSÁ-LA SEM LOGIN
     rotas_livres = [
         'auth.login', 'auth.solicitar_acesso', 'portal_do_aluno_publico', 'validacao_qr_code', 
         'consulta_xml', 'consulta_xml_direta', 'validar_xml', 'imprensanacional_consulta', 'imprensanacional_busca', 
@@ -800,65 +798,12 @@ def visualizar_qrcode(cpf):
 
 
 # ==========================================
-# NOVO: MOTOR DE VALIDAÇÃO (TELA DE CARREGAMENTO)
+# MOTOR XML: REDIRECIONAMENTO DIRETO
 # ==========================================
 @app.route('/validar_xml/<cpf>')
 def validar_xml(cpf):
     cpf_limpo = normalizar_cpf(cpf)
-    conn = get_db_connection()
-    aluno = None
-    try:
-        aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ?', (cpf_limpo,)).fetchone()
-    except Exception:
-        pass
-    finally:
-        conn.close()
-        
-    if not aluno:
-        return 'Cadastro não encontrado.', 404
-        
-    # HTML INLINE: Simulação visual do motor validando as assinaturas ICP-Brasil
-    html_motor = '''
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Processando Validação XML...</title>
-        <!-- Redirecionamento automático após 3.5 segundos para a página de resultados -->
-        <meta http-equiv="refresh" content="3.5;url=/consulta/xml/{{ cpf }}">
-        <style>
-            body { background-color: #f4f6f9; font-family: 'Segoe UI', Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #333; }
-            .container { text-align: center; background: #fff; padding: 50px 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-top: 6px solid #17a2b8; max-width: 500px; width: 90%; }
-            .spinner { width: 60px; height: 60px; border: 6px solid #e9ecef; border-top: 6px solid #17a2b8; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 25px auto; }
-            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-            h2 { font-size: 24px; color: #2c3e50; margin: 0 0 15px 0; }
-            p { font-size: 16px; color: #6c757d; line-height: 1.5; margin: 0 0 10px 0; }
-            .logs { background: #1e1e24; color: #28a745; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 13px; text-align: left; margin-top: 25px; height: 95px; overflow: hidden; position: relative; }
-            .log-line { margin: 6px 0; opacity: 0; animation: fadein 0.5s forwards; }
-            .log-1 { animation-delay: 0.4s; }
-            .log-2 { animation-delay: 1.2s; }
-            .log-3 { animation-delay: 2.0s; }
-            .log-4 { animation-delay: 2.8s; }
-            @keyframes fadein { to { opacity: 1; } }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="spinner"></div>
-            <h2>Analisando Cadeia de Certificados XML</h2>
-            <p>Por favor, aguarde. O sistema está verificando a autenticidade e integridade das assinaturas digitais...</p>
-            <div class="logs">
-                <div class="log-line log-1">>> Conectando ao motor de validação... [OK]</div>
-                <div class="log-line log-2">>> Extraindo chaves públicas ICP-Brasil... [OK]</div>
-                <div class="log-line log-3">>> Validando hash do diploma (SHA-256)... [OK]</div>
-                <div class="log-line log-4">>> Redirecionando para o dossiê oficial...</div>
-            </div>
-        </div>
-    </body>
-    </html>
-    '''
-    return render_template_string(html_motor, cpf=cpf_limpo)
+    return redirect(url_for('consulta_xml_direta', cpf=cpf_limpo))
 
 
 @app.route('/consulta_xml', methods=['GET', 'POST'])
