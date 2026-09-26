@@ -4,173 +4,448 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro Nacional - OAB Nacional</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', Arial, sans-serif; }
         body { background-color: #f4f5f7; display: flex; flex-direction: column; min-height: 100vh; }
 
-        /* HEADER AZUL OFICIAL DA OAB */
-        .header { background-color: #0c2340; color: white; display: flex; justify-content: space-between; align-items: center; padding: 18px 45px; }
-        .logos { display: flex; align-items: center; gap: 24px; }
-        
-        .logo-cna { display: flex; align-items: center; gap: 14px; border-right: 1px solid #203a5f; padding-right: 24px; }
-        .logo-cna-icon { width: 38px; height: 38px; border: 2px solid white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; }
-        .logo-cna-text { display: flex; flex-direction: column; line-height: 1.1; }
-        .logo-cna-text strong { font-size: 26px; font-weight: 700; letter-spacing: 0.5px; }
-        .logo-cna-text span { font-size: 7px; color: #a1b5c9; letter-spacing: 0.5px; text-transform: uppercase; }
-
-        .logo-oab { font-size: 32px; font-weight: 900; letter-spacing: -1px; display: flex; align-items: baseline; gap: 6px; }
-        .logo-oab span { font-size: 11px; font-weight: 500; color: #a1b5c9; letter-spacing: 0.5px; }
-        
-        .header-menu { display: flex; gap: 30px; font-size: 14px; font-weight: 500; color: #d0dbe5; }
-        .header-menu a { color: inherit; text-decoration: none; cursor: pointer; }
-        .header-menu a:hover { color: white; }
+        /* =========================================================
+           CABEÇALHO GERAL (AZUL)
+           ========================================================= */
+        #header-azul { width: 100%; display: block; }
+        #header-azul img { width: 100%; height: 85px; object-fit: cover; object-position: center; display: block; }
 
         /* CONTAINER PRINCIPAL */
-        .main-container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 60px 20px 40px 20px; }
+        .main-container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
         
-        .title-section { text-align: center; margin-bottom: 35px; width: 100%; max-width: 600px; }
-        .title-section h1 { font-size: 28px; color: #111; font-weight: 700; margin-bottom: 8px; }
-        .title-section p { font-size: 13px; color: #555; line-height: 1.4; }
+        /* TÍTULO INICIAL */
+        .title-section { text-align: center; margin-bottom: 25px; width: 100%; max-width: 600px; }
+        .title-section h1 { font-size: 28px; color: #7f8a94; font-weight: 500; margin-bottom: 8px; }
+        .title-section p { font-size: 14px; color: #666; line-height: 1.5; }
 
-        /* FORMULÁRIO DE PESQUISA */
-        .search-form { width: 100%; max-width: 580px; display: flex; flex-direction: column; gap: 14px; }
-        
-        .form-input { width: 100%; padding: 15px 16px; border: 1px solid #ced4da; border-radius: 4px; background-color: #e9ecef; font-size: 14px; color: #495057; outline: none; }
-        .form-select { width: 100%; padding: 15px 16px; border: 1px solid #ced4da; border-radius: 4px; background-color: #e9ecef; font-size: 14px; color: #495057; outline: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23495057%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 10px auto; }
-        
-        .btn-pesquisar { width: 100%; padding: 15px; border: none; border-radius: 4px; background-color: #cbd3da; color: #6c757d; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s; text-align: center; }
-        .btn-pesquisar:hover { background-color: #0c2340; color: white; }
+        /* FORMULÁRIO COMPACTO (TELA 1) */
+        .search-form { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 14px; }
+        .form-input, .form-select { width: 100%; padding: 15px 18px; border: 1px solid #ced4da; border-radius: 4px; background-color: #f8f9fa; font-size: 16px; color: #495057; outline: none; }
+        .form-input::placeholder { color: #88929b; }
+        .form-select { color: #495057; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23495057%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 18px top 50%; background-size: 12px auto; cursor: pointer; }
+        .btn-pesquisar { width: 100%; padding: 16px; border: none; border-radius: 4px; background-color: #ced4da; color: #6c757d; font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s; text-align: center; margin-top: 4px; }
+        .btn-pesquisar:hover { background-color: #1b437c; color: white; }
 
-        /* SESSÃO DE APPS */
-        .apps-section { margin-top: 45px; text-align: center; }
-        .apps-section p { font-size: 11px; color: #6c757d; margin-bottom: 8px; }
+        /* SESSÃO DE APPS GERAL */
+        .apps-section { margin-top: 40px; text-align: center; }
+        .apps-section p { font-size: 12px; color: #88929b; margin-bottom: 10px; }
         .apps-badges { display: flex; gap: 10px; justify-content: center; }
-        
-        .app-btn { background-color: #000; color: white; border-radius: 6px; padding: 6px 14px; display: flex; align-items: center; gap: 8px; text-decoration: none; border: 1px solid #222; }
-        .app-btn-icon { font-size: 20px; line-height: 1; }
+        .app-btn { background-color: #111; color: white; border-radius: 6px; padding: 7px 14px; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .app-btn-icon { font-size: 22px; line-height: 1; }
         .app-btn-text { text-align: left; display: flex; flex-direction: column; }
-        .app-btn-text small { font-size: 7px; color: #cccccc; text-transform: uppercase; font-weight: 400; }
-        .app-btn-text span { font-size: 13px; font-weight: bold; line-height: 1.1; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .app-btn-text small { font-size: 8px; color: #cccccc; text-transform: uppercase; font-weight: 400; }
+        .app-btn-text span { font-size: 14px; font-weight: bold; line-height: 1.1; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
 
-        /* RESULTADO DA CONSULTA */
-        #resultado-consulta { display: none; width: 100%; max-width: 750px; margin-top: 30px; background: white; border: 1px solid #dee2e6; border-radius: 6px; padding: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .resultado-header { font-size: 16px; font-weight: bold; color: #0c2340; border-bottom: 1px solid #e9ecef; padding-bottom: 12px; margin-bottom: 20px; }
-        .resultado-card { display: flex; gap: 25px; align-items: flex-start; }
-        .resultado-foto { width: 110px; height: 145px; border: 1px solid #ced4da; object-fit: cover; border-radius: 3px; }
-        .resultado-dados { flex: 1; }
-        .resultado-nome { font-size: 18px; font-weight: bold; color: #212529; margin-bottom: 15px; text-transform: uppercase; }
+        /* =========================================================
+           LAYOUT COMPARTILHADO (TELA 2 E 3) - GRANDÃO (1150px)
+           ========================================================= */
+        .tela-conteudo-wrapper { display: none; width: 100%; max-width: 1150px; font-family: Arial, sans-serif; }
+        .layout-duas-colunas { display: flex; gap: 30px; align-items: flex-start; }
+        .coluna-principal { flex: 1; }
         
-        .dados-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .dado-item label { display: block; font-size: 10px; color: #6c757d; text-transform: uppercase; margin-bottom: 2px; }
-        .dado-item span { font-size: 14px; color: #212529; font-weight: 500; }
-        .badge-regular { background-color: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; display: inline-block; }
+        /* SIDEBAR DIREITA */
+        .coluna-sidebar { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px; }
+        .sidebar-box { border: 1px solid #c9c9c9; background: #fff; border-radius: 3px; }
+        .sidebar-header { background-color: #d4d4d4; padding: 14px; font-weight: bold; font-size: 15px; border-bottom: 1px solid #c9c9c9; color: #222; }
+        .sidebar-link { display: block; padding: 14px 18px; border-bottom: 1px solid #eee; font-size: 15px; color: #1c4b82; cursor: pointer; text-decoration: none; }
+        .sidebar-link:last-child { border-bottom: none; }
+        .sidebar-link:hover { background-color: #f1f1f1; }
 
-        /* FOOTER */
-        .footer { background-color: #e9ecef; border-top: 1px solid #dee2e6; padding: 15px 45px; display: flex; justify-content: space-between; font-size: 10px; color: #6c757d; }
-        .footer-left strong { color: #495057; display: block; margin-bottom: 2px; font-size: 11px; }
+        /* =========================================================
+           TELA 2: TABELA DE RESULTADOS
+           ========================================================= */
+        .tela2-titulo { font-size: 28px; color: #111; margin-bottom: 20px; font-weight: 500; }
+        .tela2-resumo { background-color: #e5e5e5; border: 1px solid #c9c9c9; padding: 18px; border-radius: 4px; font-size: 16px; color: #333; margin-bottom: 25px; }
+        
+        .tela2-tabela { width: 100%; border-collapse: collapse; font-size: 15px; border: 1px solid #c9c9c9; }
+        .tela2-tabela th { background-color: #e2e2e2; padding: 14px; text-align: left; border: 1px solid #c9c9c9; color: #222; font-weight: bold; }
+        .tela2-tabela td { padding: 14px; border: 1px solid #c9c9c9; color: #333; }
+        .tela2-tabela tbody tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .btn-ver-detalhes { background-color: #1c4b82; color: #fff; border: none; padding: 8px 12px; border-radius: 3px; cursor: pointer; font-size: 14px; font-weight: 500; }
+        .btn-ver-detalhes:hover { background-color: #12335c; }
+        
+        .tela2-paginacao { display: flex; justify-content: flex-end; align-items: center; gap: 5px; margin-top: 15px; }
+        .pag-btn { padding: 8px 12px; border: 1px solid #c9c9c9; background: #f1f1f1; color: #555; cursor: pointer; font-size: 14px; border-radius: 2px; }
+        .pag-btn.active { background-color: #1c4b82; color: #fff; border-color: #1c4b82; }
+
+        .btn-pdf { background-color: #1c4b82; color: white; padding: 12px 18px; border: none; border-radius: 3px; margin-top: 20px; float: right; cursor: pointer; font-size: 15px; }
+
+        /* =========================================================
+           TELA 3: FICHA DE DETALHES GRANDONA E EDITÁVEL (FOTO 12)
+           ========================================================= */
+        .detalhes-titulo-main { font-size: 32px; color: #111; margin-bottom: 25px; font-weight: bold; font-family: Arial, sans-serif; letter-spacing: -0.5px; }
+        
+        .perfil-box { display: flex; align-items: center; gap: 25px; background-color: #d1d1d1; padding: 15px; border: 1px solid #c0c0c0; border-radius: 3px; margin-bottom: 25px; }
+        .perfil-foto { width: 95px; height: 120px; border: 1px solid #999; background: #fff; padding: 3px; flex-shrink: 0; }
+        .perfil-foto img { width: 100%; height: 100%; object-fit: cover; }
+        .perfil-nome { font-size: 30px; font-weight: 500; color: #111; letter-spacing: -0.5px; }
+
+        .secao-detalhes { border: 1px solid #c0c0c0; border-radius: 3px; margin-bottom: 20px; background-color: #eaeaea; overflow: hidden; }
+        .secao-header-title { background-color: #cfcfcf; padding: 12px 16px; font-size: 14px; font-weight: bold; color: #222; border-bottom: 1px solid #c0c0c0; text-transform: uppercase; }
+        
+        .secao-row { display: flex; border-bottom: 1px solid #c0c0c0; background-color: #e3e3e3; }
+        .secao-row:last-child { border-bottom: none; }
+        .secao-col { flex: 1; padding: 16px; border-right: 1px solid #c0c0c0; display: flex; flex-direction: column; justify-content: center; }
+        .secao-col:last-child { border-right: none; }
+        
+        .label-min { font-size: 13px; color: #555; margin-bottom: 6px; }
+        .val-min { font-size: 16px; color: #222; }
+        .val-large { font-size: 20px; font-weight: bold; color: #111; }
+        .text-success { color: #2e7d32; font-weight: bold; display: flex; align-items: center; gap: 6px; font-size: 16px; }
+
+        /* Campos Editáveis da Seção 3 (Design Transparente/Invisível) */
+        .secao-col-inline { display: flex; align-items: center; padding: 16px; border-right: 1px solid #c0c0c0; }
+        .secao-col-inline:last-child { border-right: none; }
+        
+        .label-inline { font-size: 15px; color: #555; margin-right: 8px; white-space: nowrap; }
+        
+        .input-inline {
+            flex: 1;
+            padding: 4px 6px;
+            font-size: 15px;
+            color: #222;
+            background-color: transparent;
+            border: 1px solid transparent;
+            font-family: Arial, sans-serif;
+            transition: 0.2s;
+            min-width: 0; /* evita quebra de layout */
+        }
+        .input-inline:hover { border-color: #b0b0b0; background-color: #fff; border-radius: 3px; }
+        .input-inline:focus { border-color: #356094; background-color: #fff; outline: none; border-radius: 3px; box-shadow: 0 0 4px rgba(53,96,148,0.3); }
+
+        .botoes-acao-footer { display: flex; justify-content: space-between; margin-top: 20px; align-items: center; padding-bottom: 30px; }
+        .btn-cinza { background: #dcdcdc; border: 1px solid #a9a9a9; padding: 12px 20px; color: #333; cursor: pointer; font-size: 15px; border-radius: 3px; font-weight: 500; transition: 0.2s; }
+        .btn-cinza:hover { background: #cecece; }
+        .btn-azul { background: #356094; border: 1px solid #284c7a; padding: 12px 20px; color: #fff; cursor: pointer; font-size: 15px; border-radius: 3px; font-weight: bold; transition: 0.2s; }
+        .btn-azul:hover { background: #2a4c77; }
+
+        /* FOOTER PRINCIPAL */
+        .footer { background-color: #e9ecef; border-top: 1px solid #dee2e6; padding: 25px 60px; display: flex; justify-content: space-between; font-size: 13px; color: #6c757d; margin-top: auto; }
+        .footer-left strong { color: #495057; display: block; margin-bottom: 4px; font-size: 14px; }
         .footer-link { color: #0056b3; text-decoration: none; }
     </style>
 </head>
 <body>
 
-    <!-- HEADER IDÊNTICO AO PORTAL OFICIAL -->
-    <header class="header">
-        <div class="logos">
-            <div class="logo-cna">
-                <div class="logo-cna-icon">👤</div>
-                <div class="logo-cna-text">
-                    <strong>CNA</strong>
-                    <span>Cadastro Nacional dos Advogados</span>
-                </div>
-            </div>
-            <div class="logo-oab">OAB <span>NACIONAL</span></div>
-        </div>
-        <div class="header-menu">
-            <a>Cadastro Nacional</a>
-            <a>Sobre o CNA</a>
-            <a>Provimentos</a>
-            <a>Perguntas Frequentes</a>
-        </div>
+    <header id="header-azul">
+        <img src="{{ url_for('static', filename='barra_superior_oab.jpg') }}" alt="Cabeçalho OAB Nacional">
     </header>
 
-    <!-- ÁREA CENTRAL -->
     <main class="main-container">
         
-        <div class="title-section" id="titulo-pesquisa">
-            <h1>Cadastro Nacional dos Advogados</h1>
-            <p>Preencha corretamente os campos abaixo e clique em pesquisar para realizar a consulta.</p>
-        </div>
+        <!-- ==========================================
+             ETAPA 1: FORMULÁRIO DE PESQUISA
+             ========================================== -->
+        <div id="bloco-pesquisa" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <div class="title-section">
+                <h1>Cadastro Nacional dos Advogados</h1>
+                <p>Preencha corretamente os campos abaixo e clique em pesquisar para realizar a consulta.</p>
+            </div>
 
-        <div class="search-form" id="box-pesquisa">
-            <input type="text" class="form-input" value="{{ aluno['nome'] }}" readonly>
-            <input type="text" class="form-input" value="{{ aluno['numero_registro'] }}" readonly>
-            <select class="form-select">
-                <option>Seccional do {{ aluno['uf_registro'] }}</option>
-            </select>
-            <select class="form-select">
-                <option>Todos tipos de inscrições</option>
-            </select>
-            <button class="btn-pesquisar" onclick="mostrarResultado()">Pesquisar</button>
-        </div>
-
-        <div id="resultado-consulta">
-            <div class="resultado-header">Resultado da Pesquisa</div>
-            <div class="resultado-card">
-                {% if aluno['foto'] %}
-                    <img src="{{ url_for('static', filename='uploads/' + aluno['foto']) }}" class="resultado-foto">
-                {% else %}
-                    <div class="resultado-foto" style="background:#eee; display:flex; align-items:center; justify-content:center; color:#999; font-size:11px;">Sem Foto</div>
-                {% endif %}
+            <div class="search-form">
+                <input type="text" class="form-input" placeholder="Nome" value="{{ aluno['nome'] }}" readonly>
+                <input type="text" class="form-input" id="input-inscricao" placeholder="Nº da inscrição" value="{{ aluno['numero_registro'] }}" readonly>
                 
-                <div class="resultado-dados">
-                    <div class="resultado-nome">{{ aluno['nome'] }}</div>
+                <select class="form-select" id="select-seccional">
+                    <option value="">Todas seccionais</option>
+                    <option value="Acre">Conselho Seccional - Acre</option>
+                    <option value="Alagoas">Conselho Seccional - Alagoas</option>
+                    <option value="Amapá">Conselho Seccional - Amapá</option>
+                    <option value="Amazonas">Conselho Seccional - Amazonas</option>
+                    <option value="Bahia">Conselho Seccional - Bahia</option>
+                    <option value="Ceará">Conselho Seccional - Ceará</option>
+                    <option value="Distrito Federal">Conselho Seccional - Distrito Federal</option>
+                    <option value="Espírito Santo">Conselho Seccional - Espírito Santo</option>
+                    <option value="Goiás">Conselho Seccional - Goiás</option>
+                    <option value="Maranhão">Conselho Seccional - Maranhão</option>
+                    <option value="Mato Grosso">Conselho Seccional - Mato Grosso</option>
+                    <option value="Mato Grosso do Sul">Conselho Seccional - Mato Grosso do Sul</option>
+                    <option value="Minas Gerais">Conselho Seccional - Minas Gerais</option>
+                    <option value="Pará">Conselho Seccional - Pará</option>
+                    <option value="Paraíba">Conselho Seccional - Paraíba</option>
+                    <option value="Paraná">Conselho Seccional - Paraná</option>
+                    <option value="Pernambuco">Conselho Seccional - Pernambuco</option>
+                    <option value="Piauí">Conselho Seccional - Piauí</option>
+                    <option value="Rio de Janeiro">Conselho Seccional - Rio de Janeiro</option>
+                    <option value="Rio Grande do Norte">Conselho Seccional - Rio Grande do Norte</option>
+                    <option value="Rio Grande do Sul">Conselho Seccional - Rio Grande do Sul</option>
+                    <option value="Rondônia">Conselho Seccional - Rondônia</option>
+                    <option value="Roraima">Conselho Seccional - Roraima</option>
+                    <option value="Santa Catarina">Conselho Seccional - Santa Catarina</option>
+                    <option value="São Paulo">Conselho Seccional - São Paulo</option>
+                    <option value="Sergipe">Conselho Seccional - Sergipe</option>
+                    <option value="Tocantins">Conselho Seccional - Tocantins</option>
+                </select>
+                
+                <select class="form-select" id="select-tipo">
+                    <option value="">Todos tipos de inscrições</option>
+                    <option value="Advogado" selected>Advogado</option>
+                    <option value="Estagiário">Estagiário</option>
+                    <option value="Suplementar">Suplementar</option>
+                </select>
+                
+                <button class="btn-pesquisar" onclick="irParaResultados()">Pesquisar</button>
+            </div>
+            
+            <div class="apps-section" id="box-apps-rodape">
+                <p>Baixe o App CNA</p>
+                <div class="apps-badges">
+                    <div class="app-btn"><div class="app-btn-icon"></div><div class="app-btn-text"><small>Baixar na</small><span>App Store</span></div></div>
+                    <div class="app-btn"><div class="app-btn-icon" style="color: #00ffcc;">▶️</div><div class="app-btn-text"><small>DISPONÍVEL NO</small><span>Google Play</span></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             ETAPA 2: TABELA DE RESULTADOS (GRANDONA)
+             ========================================== -->
+        <div id="bloco-tabela" class="tela-conteudo-wrapper">
+            
+            <h2 class="tela2-titulo">Resultados da Pesquisa: Cadastro Nacional dos Advogados</h2>
+            
+            <div class="tela2-resumo">
+                Foram encontrados 125 resultados para sua pesquisa por "<span id="resumo-nome" style="text-transform: capitalize;"></span>", "<span id="resumo-uf"></span>", "Advogado".
+            </div>
+
+            <div class="layout-duas-colunas">
+                <div class="coluna-principal">
+                    <table class="tela2-tabela">
+                        <thead>
+                            <tr>
+                                <th>Nome Completo</th>
+                                <th>Inscrição</th>
+                                <th>Seccional</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                                <th>Detalhes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>João Pereira da Silva</td>
+                                <td>123456</td>
+                                <td>SP</td>
+                                <td>Advogado</td>
+                                <td>Ativo</td>
+                                <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
+                            </tr>
+                            <tr>
+                                <td>Maria Helena Silva Souza</td>
+                                <td>789012</td>
+                                <td>SP</td>
+                                <td>Advogado</td>
+                                <td>Ativo</td>
+                                <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
+                            </tr>
+                            
+                            <!-- SEU ALUNO REAL -->
+                            <tr style="background-color: #f4f8ff;">
+                                <td style="text-transform: capitalize; font-weight: bold;">{{ aluno['nome'] }}</td>
+                                <td id="td-inscricao">{{ aluno['numero_registro'] }}</td>
+                                <td id="td-seccional-aluno">{{ aluno['uf_registro'] }}</td>
+                                <td>Advogado</td>
+                                <td>Ativo</td>
+                                <td><button class="btn-ver-detalhes" onclick="irParaDetalhes()">Ver Detalhes</button></td>
+                            </tr>
+                            
+                            <tr>
+                                <td>José Roberto Silva Santos</td>
+                                <td>345678</td>
+                                <td>MG</td>
+                                <td>Advogado Suplementar</td>
+                                <td>Ativo</td>
+                                <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
+                            </tr>
+                            <tr>
+                                <td>Ana Lúcia Ferreira Silva</td>
+                                <td>901234</td>
+                                <td>DF</td>
+                                <td>Advogado</td>
+                                <td>Ativo</td>
+                                <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
                     
-                    <div class="dados-grid">
-                        <div class="dado-item">
-                            <label>Inscrição</label>
-                            <span>{{ aluno['numero_registro'] }}</span>
-                        </div>
-                        <div class="dado-item">
-                            <label>Tipo de Inscrição</label>
-                            <span>Advogado</span>
-                        </div>
-                        <div class="dado-item">
-                            <label>Seccional</label>
-                            <span>OAB / {{ aluno['uf_registro'] }}</span>
-                        </div>
-                        <div class="dado-item">
-                            <label>Situação</label>
-                            <span class="badge-regular">Regular</span>
+                    <div class="tela2-paginacao">
+                        <span class="pag-btn" style="color: #aaa;">Anterior</span>
+                        <span class="pag-btn active">1</span>
+                        <span class="pag-btn">2</span>
+                        <span class="pag-btn">3</span>
+                        <span class="pag-dots">...</span>
+                        <span class="pag-btn">Seguinte</span>
+                    </div>
+
+                    <button class="btn-pdf">Baixar Resultados (PDF)</button>
+                </div>
+                
+                <div class="coluna-sidebar">
+                    <div class="sidebar-box">
+                        <div class="sidebar-header">Ações Adicionais</div>
+                        <a class="sidebar-link" onclick="voltarParaPesquisa()">Nova Pesquisa</a>
+                        <a class="sidebar-link">Relatórios</a>
+                    </div>
+                    
+                    <div class="sidebar-apps">
+                        <p>Baixe o App CNA</p>
+                        <div class="apps-badges">
+                            <div class="app-btn" style="width: 100%; justify-content: flex-start;"><div class="app-btn-icon"></div><div class="app-btn-text"><small>Baixar na</small><span>App Store</span></div></div>
+                            <div class="app-btn" style="width: 100%; justify-content: flex-start;"><div class="app-btn-icon" style="color: #00ffcc;">▶️</div><div class="app-btn-text"><small>DISPONÍVEL NO</small><span>Google Play</span></div></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="apps-section" id="box-apps">
-            <p>Baixe o App CNA</p>
-            <div class="apps-badges">
-                <div class="app-btn">
-                    <div class="app-btn-icon"></div>
-                    <div class="app-btn-text">
-                        <small>Baixar na</small>
-                        <span>App Store</span>
+        <!-- ==========================================
+             ETAPA 3: FICHA GRANDONA E EDITÁVEL (FOTO 12)
+             ========================================== -->
+        <div id="bloco-detalhes" class="tela-conteudo-wrapper">
+            
+            <div class="layout-duas-colunas">
+                
+                <!-- COLUNA PRINCIPAL DA FICHA -->
+                <div class="coluna-principal">
+                    <h2 class="detalhes-titulo-main">CNA - Detalhes do Advogado</h2>
+                    
+                    <!-- PERFIL -->
+                    <div class="perfil-box">
+                        <div class="perfil-foto">
+                            {% if aluno['foto'] %}
+                                <img src="{{ url_for('static', filename='uploads/' + aluno['foto']) }}" alt="Foto">
+                            {% else %}
+                                <div style="font-size:11px;text-align:center;color:#999;margin-top:40px;font-weight:bold;">SEM FOTO</div>
+                            {% endif %}
+                        </div>
+                        <div class="perfil-nome" style="text-transform: capitalize;">{{ aluno['nome'] }}</div>
+                    </div>
+
+                    <!-- SEÇÃO 1: DADOS DE IDENTIFICAÇÃO -->
+                    <div class="secao-detalhes">
+                        <div class="secao-header-title">SEÇÃO 1: DADOS DE IDENTIFICAÇÃO</div>
+                        <div class="secao-row">
+                            <div class="secao-col" style="flex: 1.8;">
+                                <div class="label-min">Nome Completo</div>
+                                <div class="val-min" style="text-transform: capitalize;">{{ aluno['nome'] }} (<span id="span-sigla-tela3"></span>)</div>
+                            </div>
+                            <div class="secao-col" style="flex: 1.1;">
+                                <div class="label-min">Número de Inscrição</div>
+                                <div class="val-large" id="detalhe-inscricao-1"></div>
+                            </div>
+                            <div class="secao-col" style="flex: 1.2; background-color: #fdf5d3;"> 
+                                <div class="label-min">Tipo de Inscrição</div>
+                                <div class="val-large" style="font-size: 18px;">Advogado</div>
+                            </div>
+                            <div class="secao-col" style="flex: 1.1;">
+                                <div class="label-min">Seccional</div>
+                                <div class="val-min" id="span-seccional-tela3">{{ aluno['uf_registro'] }}</div>
+                            </div>
+                            <div class="secao-col" style="flex: 1.1;">
+                                <div class="label-min">Data de Inscrição</div>
+                                <div class="val-min">15/05/2010</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEÇÃO 2: STATUS E REGULARIDADE -->
+                    <div class="secao-detalhes">
+                        <div class="secao-header-title">SEÇÃO 2: STATUS E REGULARIDADE</div>
+                        <div class="secao-row">
+                            <div class="secao-col">
+                                <div class="label-min">Status Atual</div>
+                                <div class="text-success">✔ Ativo</div>
+                            </div>
+                            <div class="secao-col">
+                                <div class="label-min">Situação Financeira</div>
+                                <div class="val-min">Regular</div>
+                            </div>
+                            <div class="secao-col" style="flex: 1.5;">
+                                <div class="label-min">Penalidades Éticas</div>
+                                <div class="text-success">✔ Nenhuma penalidade registrada</div>
+                            </div>
+                        </div>
+                        <div class="secao-row">
+                            <div class="secao-col" style="flex: 1;">
+                                <div class="label-min">Nome de Financeiras: <span style="font-weight: normal;">Erpiformiado</span></div>
+                            </div>
+                            <div class="secao-col" style="flex: 1.3;">
+                                <div class="label-min">Prazo de Validade da Inscrição: <span style="font-weight: normal;">Indeterminado</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEÇÃO 3: INFORMAÇÕES PROFISSIONAIS (TRUQUE EDITÁVEL INVISÍVEL) -->
+                    <div class="secao-detalhes">
+                        <div class="secao-header-title">SEÇÃO 3: INFORMAÇÕES PROFISSIONAIS</div>
+                        
+                        <div class="secao-row">
+                            <div class="secao-col-inline" style="flex: 1.5;">
+                                <span class="label-inline">Sociedade de Advogados:</span>
+                                <input type="text" class="input-inline" value="Santos & Silva Associados">
+                            </div>
+                            <div class="secao-col-inline" style="flex: 1;">
+                                <span class="label-inline">CNPJ da Sociedade:</span>
+                                <input type="text" class="input-inline" value="12.345.678/0001-90">
+                            </div>
+                        </div>
+                        
+                        <div class="secao-row">
+                            <div class="secao-col-inline" style="flex: 1;">
+                                <span class="label-inline">Endereço Profissional:</span>
+                                <input type="text" class="input-inline" value="Rua Espírito Santo, nº 1234, Bairro Lourdes, Belo Horizonte - MG, CEP: 30160-032">
+                            </div>
+                        </div>
+                        
+                        <div class="secao-row">
+                            <div class="secao-col-inline" style="flex: 1.2;">
+                                <span class="label-inline">Telefones Profissionais:</span>
+                                <input type="text" class="input-inline" value="(31) 32XX-XXXX | (31) 99XXX-XXXX">
+                            </div>
+                            <div class="secao-col-inline" style="flex: 1;">
+                                <span class="label-inline">E-mail Profissional:</span>
+                                <input type="text" class="input-inline" value="j.roberto@santossilva.adv.br">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTOES DE AÇÃO -->
+                    <div class="botoes-acao-footer">
+                        <button class="btn-cinza" onclick="voltarParaTabela()">Voltar para Pesquisa</button>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-cinza">Imprimir Certidão de Regularidade (PDF)</button>
+                            <button class="btn-azul">Gerar Cartão de Identidade CNA</button>
+                        </div>
                     </div>
                 </div>
-                <div class="app-btn">
-                    <div class="app-btn-icon" style="color: #00ffcc;">▶️</div>
-                    <div class="app-btn-text">
-                        <small>DISPONÍVEL NO</small>
-                        <span>Google Play</span>
+                
+                <!-- SIDEBAR DIREITA -->
+                <div class="coluna-sidebar">
+                    <div class="sidebar-box">
+                        <div class="sidebar-header">Ações Adicionais</div>
+                        <a class="sidebar-link" onclick="voltarParaPesquisa()">Nova Pesquisa</a>
+                        <a class="sidebar-link">Relatórios</a>
+                    </div>
+                    
+                    <div class="sidebar-apps">
+                        <p>Baixe o App CNA</p>
+                        <div class="apps-badges">
+                            <div class="app-btn" style="width: 100%; justify-content: flex-start;"><div class="app-btn-icon"></div><div class="app-btn-text"><small>Baixar na</small><span>App Store</span></div></div>
+                            <div class="app-btn" style="width: 100%; justify-content: flex-start;"><div class="app-btn-icon" style="color: #00ffcc;">▶️</div><div class="app-btn-text"><small>DISPONÍVEL NO</small><span>Google Play</span></div></div>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
     </main>
 
-    <!-- FOOTER -->
     <footer class="footer">
         <div class="footer-left">
             <strong>Conselho Federal da Ordem dos Advogados do Brasil</strong>
@@ -185,12 +460,109 @@
         </div>
     </footer>
 
+    <!-- SCRIPT DE INTERAÇÕES -->
     <script>
-        function mostrarResultado() {
-            document.getElementById('titulo-pesquisa').style.display = 'none';
-            document.getElementById('box-pesquisa').style.display = 'none';
-            document.getElementById('box-apps').style.display = 'none';
-            document.getElementById('resultado-consulta').style.display = 'block';
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            const ufAluno = "{{ aluno['uf_registro'] }}"; 
+            const nomeAluno = "{{ aluno['nome'] }}";
+            const selectSeccional = document.getElementById("select-seccional");
+
+            if (ufAluno && ufAluno.trim() !== "") {
+                for (let i = 0; i < selectSeccional.options.length; i++) {
+                    let optionText = selectSeccional.options[i].text.toLowerCase();
+                    if (optionText.includes(ufAluno.toLowerCase())) {
+                        selectSeccional.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            if (nomeAluno) {
+                document.getElementById("resumo-nome").innerText = nomeAluno.split(" ")[0];
+            }
+
+            const inputInscricao = document.getElementById("input-inscricao");
+            const tdInscricao = document.getElementById("td-inscricao");
+            const detalheInscricao1 = document.getElementById("detalhe-inscricao-1");
+            let inscricaoAtual = inputInscricao.value.trim();
+
+            if (!inscricaoAtual || inscricaoAtual === "None" || inscricaoAtual === "") {
+                let hash = 0;
+                if (nomeAluno && nomeAluno !== "None" && nomeAluno !== "") {
+                    for (let i = 0; i < nomeAluno.length; i++) {
+                        hash = nomeAluno.charCodeAt(i) + ((hash << 5) - hash);
+                    }
+                } else {
+                    hash = 123456; 
+                }
+                
+                let numeroGerado = Math.abs(hash % 900000) + 100000;
+                inputInscricao.value = numeroGerado;
+                tdInscricao.innerText = numeroGerado;
+                detalheInscricao1.innerText = numeroGerado;
+            } else {
+                tdInscricao.innerText = inscricaoAtual;
+                detalheInscricao1.innerText = inscricaoAtual;
+            }
+        });
+
+        function irParaResultados() {
+            const selectSec = document.getElementById("select-seccional");
+            let valSelecionado = selectSec.value;
+            let valTexto = selectSec.options[selectSec.selectedIndex].text;
+            
+            // Tratamento da Sigla para a Tabela e Detalhes
+            let sigla = "BR";
+            if (valSelecionado) {
+                // Tenta extrair o final da string "Conselho Seccional - Acre" -> "Acre"
+                let partes = valTexto.split("- ");
+                let estadoNome = partes.length > 1 ? partes[1] : valSelecionado;
+                
+                // Mapeamento simples de Siglas
+                const mapaSiglas = {
+                    "Acre": "AC", "Alagoas": "AL", "Amapá": "AP", "Amazonas": "AM", "Bahia": "BA", "Ceará": "CE", "Distrito Federal": "DF",
+                    "Espírito Santo": "ES", "Goiás": "GO", "Maranhão": "MA", "Mato Grosso": "MT", "Mato Grosso do Sul": "MS", "Minas Gerais": "MG",
+                    "Pará": "PA", "Paraíba": "PB", "Paraná": "PR", "Pernambuco": "PE", "Piauí": "PI", "Rio de Janeiro": "RJ", "Rio Grande do Norte": "RN",
+                    "Rio Grande do Sul": "RS", "Rondônia": "RO", "Roraima": "RR", "Santa Catarina": "SC", "São Paulo": "SP", "Sergipe": "SE", "Tocantins": "TO"
+                };
+                
+                sigla = mapaSiglas[estadoNome] || valSelecionado.substring(0, 2).toUpperCase();
+                
+                document.getElementById("resumo-uf").innerText = estadoNome;
+                document.getElementById("span-seccional-tela3").innerText = estadoNome;
+                document.getElementById("span-sigla-tela3").innerText = sigla;
+            } else {
+                document.getElementById("resumo-uf").innerText = "Todos os Estados";
+                document.getElementById("span-seccional-tela3").innerText = "Não informada";
+                document.getElementById("span-sigla-tela3").innerText = "BR";
+            }
+            
+            document.getElementById("td-seccional-aluno").innerText = sigla;
+
+            document.getElementById('bloco-pesquisa').style.display = 'none';
+            document.getElementById('bloco-detalhes').style.display = 'none';
+            document.getElementById('bloco-tabela').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function irParaDetalhes() {
+            document.getElementById('bloco-tabela').style.display = 'none';
+            document.getElementById('bloco-detalhes').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function voltarParaTabela() {
+            document.getElementById('bloco-detalhes').style.display = 'none';
+            document.getElementById('bloco-tabela').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function voltarParaPesquisa() {
+            document.getElementById('bloco-tabela').style.display = 'none';
+            document.getElementById('bloco-detalhes').style.display = 'none';
+            document.getElementById('bloco-pesquisa').style.display = 'flex';
+            window.scrollTo(0, 0);
         }
     </script>
 </body>
