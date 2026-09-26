@@ -135,41 +135,33 @@ init_db()
 def criar_tabela_firewall_se_nao_existir():
     conn = get_db_connection()
     try:
-        # Primeiro garantimos que a tabela existe
         conn.execute('''
             CREATE TABLE IF NOT EXISTS ip_tracking (
                 ip TEXT PRIMARY KEY,
                 last_access DATETIME,
                 status TEXT,
-                endpoint TEXT
+                endpoint TEXT,
+                usuario TEXT
             )
         ''')
         conn.commit()
-
-        # Depois usamos PRAGMA (Maneira 100% segura de ler as colunas sem gerar erro fatal)
-        cursor = conn.execute("PRAGMA table_info(ip_tracking)")
-        colunas = [coluna['name'] for coluna in cursor.fetchall()]
-
-        # Se a coluna 'usuario' não estiver lá, apagamos e recriamos a tabela completinha
-        if 'usuario' not in colunas:
-            conn.execute("DROP TABLE ip_tracking")
-            conn.execute('''
-                CREATE TABLE ip_tracking (
-                    ip TEXT PRIMARY KEY,
-                    last_access DATETIME,
-                    status TEXT,
-                    endpoint TEXT,
-                    usuario TEXT
-                )
-            ''')
-            conn.commit()
-
-    except Exception as e:
-        print(f"Erro ao forçar tabela firewall: {e}")
+    except Exception:
+        pass
     finally:
         conn.close()
 
 criar_tabela_firewall_se_nao_existir()
+
+# Função auxiliar unificada para detetar o IP real
+def obter_ip_cliente():
+    ip = request.headers.get('CF-Connecting-IP')
+    if not ip:
+        ip = request.headers.get('X-Forwarded-For')
+    if not ip:
+        ip = request.remote_addr
+    if ip and ',' in ip:
+        ip = ip.split(',')[0].strip()
+    return ip or "IP-Desconhecido"
 
 # ==========================================
 # FUNÇÕES DE UPLOAD E VALIDAÇÃO DE EXTENSÃO
@@ -210,25 +202,8 @@ def travar_dominios_e_autenticacao():
   if request.endpoint == 'static':
     return
 
-  # CAPTURA DE IP MAIS INTELIGENTE PARA CLOUDFLARE/RENDER
-  ip_visitante = request.headers.get('CF-Connecting-IP')
-  if not ip_visitante:
-      ip_visitante = request.headers.get('X-Forwarded-For')
-  if not ip_visitante:
-      ip_visitante = request.remote_addr
-  
-  if ip_visitante and ',' in ip_visitante:
-      ip_visitante = ip_visitante.split(',')[0].strip()
-
-  if not ip_visitante:
-      ip_visitante = "IP-Oculto"
-
-  usuario_atual = 'Visitante Público'
-  if session.get('logado'):
-      if session.get('cargo') == 'admn':
-          usuario_atual = 'Administrador'
-      else:
-          usuario_atual = 'Equipe (Logado)'
+  ip_visitante = obter_ip_cliente()
+  usuario_atual = 'Administrador' if session.get('cargo') == 'admn' else ('Equipe (Logado)' if session.get('logado') else 'Visitante Público')
 
   try:
       conn = get_db_connection()
@@ -238,11 +213,9 @@ def travar_dominios_e_autenticacao():
           
           if row:
               novo_status = row['status']
-              # O Administrador está blindado. O Status dele é sempre Ativo.
               if usuario_atual == 'Administrador' or row['usuario'] == 'Administrador':
                   novo_status = 'ativo'
 
-              # Se for bloqueado e não for o Admin, mostramos o ecrã de acesso negado
               if novo_status == 'bloqueado' and usuario_atual != 'Administrador':
                   return "ACESSO NEGADO. O seu endereço de IP foi bloqueado permanentemente por atividade suspeita.", 403
                   
@@ -348,6 +321,23 @@ def index():
   equipe_pendente = []
   ips_monitorados = []
   
+  # FORÇA O REGISTO DO IP DIRETAMENTE NA ROTA PRINCIPAL (GARANTIA TOTAL)
+  try:
+      ip_atual = obter_ip_cliente()
+      agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+      usuario_atual = 'Administrador' if session.get('cargo') == 'admn' else 'Equipe (Logado)'
+      
+      row = conn.execute('SELECT status FROM ip_tracking WHERE ip = ?', (ip_atual,)).fetchone()
+      if row:
+          conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ?, usuario = ?, status = ? WHERE ip = ?', 
+                      (agora, 'index', usuario_atual, 'ativo', ip_atual))
+      else:
+          conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint, usuario) VALUES (?, ?, ?, ?, ?)', 
+                      (ip_atual, agora, 'ativo', 'index', usuario_atual))
+      conn.commit()
+  except Exception:
+      pass
+
   try:
       resultado = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()
       if resultado:
@@ -366,7 +356,6 @@ def index():
       pass
 
   try:
-      # Exibe os 50 IPs mais recentes no painel
       ips_monitorados = conn.execute("SELECT * FROM ip_tracking ORDER BY last_access DESC LIMIT 50").fetchall()
   except Exception:
       pass
