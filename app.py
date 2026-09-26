@@ -135,23 +135,35 @@ init_db()
 def criar_tabela_firewall_se_nao_existir():
     conn = get_db_connection()
     try:
-        # Se a tabela não tiver a coluna usuario, dá erro no SELECT e cai no except
-        try:
-            conn.execute('SELECT usuario FROM ip_tracking LIMIT 1')
-        except Exception:
-            # Apaga a tabela velha para recriar com a estrutura 100% correta
-            conn.execute("DROP TABLE IF EXISTS ip_tracking")
-            
+        # Primeiro garantimos que a tabela existe
         conn.execute('''
             CREATE TABLE IF NOT EXISTS ip_tracking (
                 ip TEXT PRIMARY KEY,
                 last_access DATETIME,
                 status TEXT,
-                endpoint TEXT,
-                usuario TEXT
+                endpoint TEXT
             )
         ''')
         conn.commit()
+
+        # Depois usamos PRAGMA (Maneira 100% segura de ler as colunas sem gerar erro fatal)
+        cursor = conn.execute("PRAGMA table_info(ip_tracking)")
+        colunas = [coluna['name'] for coluna in cursor.fetchall()]
+
+        # Se a coluna 'usuario' não estiver lá, apagamos e recriamos a tabela completinha
+        if 'usuario' not in colunas:
+            conn.execute("DROP TABLE ip_tracking")
+            conn.execute('''
+                CREATE TABLE ip_tracking (
+                    ip TEXT PRIMARY KEY,
+                    last_access DATETIME,
+                    status TEXT,
+                    endpoint TEXT,
+                    usuario TEXT
+                )
+            ''')
+            conn.commit()
+
     except Exception as e:
         print(f"Erro ao forçar tabela firewall: {e}")
     finally:
@@ -198,48 +210,54 @@ def travar_dominios_e_autenticacao():
   if request.endpoint == 'static':
     return
 
-  # CAPTURA DE IP E IDENTIFICAÇÃO DE SESSÃO
+  # CAPTURA DE IP MAIS INTELIGENTE PARA CLOUDFLARE/RENDER
   ip_visitante = request.headers.get('CF-Connecting-IP')
   if not ip_visitante:
-      ip_visitante = request.headers.get('X-Forwarded-For', request.remote_addr)
+      ip_visitante = request.headers.get('X-Forwarded-For')
+  if not ip_visitante:
+      ip_visitante = request.remote_addr
   
   if ip_visitante and ',' in ip_visitante:
       ip_visitante = ip_visitante.split(',')[0].strip()
 
-  usuario_atual = 'Visitante'
+  if not ip_visitante:
+      ip_visitante = "IP-Oculto"
+
+  usuario_atual = 'Visitante Público'
   if session.get('logado'):
       if session.get('cargo') == 'admn':
           usuario_atual = 'Administrador'
       else:
           usuario_atual = 'Equipe (Logado)'
 
-  if ip_visitante:
+  try:
+      conn = get_db_connection()
       try:
-          conn = get_db_connection()
-          try:
-              agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-              row = conn.execute('SELECT status, usuario FROM ip_tracking WHERE ip = ?', (ip_visitante,)).fetchone()
-              
-              if row:
-                  novo_status = row['status']
-                  if usuario_atual == 'Administrador' or row['usuario'] == 'Administrador':
-                      novo_status = 'ativo'
+          agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+          row = conn.execute('SELECT status, usuario FROM ip_tracking WHERE ip = ?', (ip_visitante,)).fetchone()
+          
+          if row:
+              novo_status = row['status']
+              # O Administrador está blindado. O Status dele é sempre Ativo.
+              if usuario_atual == 'Administrador' or row['usuario'] == 'Administrador':
+                  novo_status = 'ativo'
 
-                  if novo_status == 'bloqueado' and usuario_atual != 'Administrador':
-                      return "ACESSO NEGADO. O seu endereço de IP foi bloqueado permanentemente por atividade suspeita.", 403
-                      
-                  conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ?, usuario = ?, status = ? WHERE ip = ?', 
-                              (agora, request.endpoint or 'desconhecido', usuario_atual, novo_status, ip_visitante))
-              else:
-                  conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint, usuario) VALUES (?, ?, ?, ?, ?)', 
-                              (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido', usuario_atual))
-              conn.commit()
-          except Exception:
-              pass
-          finally:
-              conn.close()
+              # Se for bloqueado e não for o Admin, mostramos o ecrã de acesso negado
+              if novo_status == 'bloqueado' and usuario_atual != 'Administrador':
+                  return "ACESSO NEGADO. O seu endereço de IP foi bloqueado permanentemente por atividade suspeita.", 403
+                  
+              conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ?, usuario = ?, status = ? WHERE ip = ?', 
+                          (agora, request.endpoint or 'desconhecido', usuario_atual, novo_status, ip_visitante))
+          else:
+              conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint, usuario) VALUES (?, ?, ?, ?, ?)', 
+                          (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido', usuario_atual))
+          conn.commit()
       except Exception:
           pass
+      finally:
+          conn.close()
+  except Exception:
+      pass
 
   host = request.host.lower()
 
@@ -348,6 +366,7 @@ def index():
       pass
 
   try:
+      # Exibe os 50 IPs mais recentes no painel
       ips_monitorados = conn.execute("SELECT * FROM ip_tracking ORDER BY last_access DESC LIMIT 50").fetchall()
   except Exception:
       pass
