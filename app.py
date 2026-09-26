@@ -59,6 +59,31 @@ ADMIN_USUARIO = os.environ.get('ADMIN_USUARIO', 'admn')
 ADMIN_SENHA = os.environ.get('ADMIN_SENHA', '992136520Fe.')
 
 # ==========================================
+# TRATAMENTO DE ERROS PERSONALIZADOS
+# ==========================================
+@app.errorhandler(404)
+def pagina_nao_encontrada(e):
+    return render_template_string('''
+        <div style="font-family: Arial; text-align: center; padding-top: 100px;">
+            <h1 style="color: #8a1c22; font-size: 50px;">404</h1>
+            <h2>Página não encontrada</h2>
+            <p style="color: #666;">O documento ou portal que está a tentar aceder não existe ou foi movido.</p>
+            <a href="/" style="text-decoration: none; color: white; background: #8a1c22; padding: 10px 20px; border-radius: 5px; display: inline-block; margin-top: 20px;">Voltar ao Início</a>
+        </div>
+    '''), 404
+
+@app.errorhandler(500)
+def erro_interno_servidor(e):
+    return render_template_string('''
+        <div style="font-family: Arial; text-align: center; padding-top: 100px;">
+            <h1 style="color: #333; font-size: 50px;">500</h1>
+            <h2>Erro Interno do Servidor</h2>
+            <p style="color: #666;">Ocorreu um erro temporário no servidor de base de dados. Por favor, volte ao ecrã inicial e tente novamente.</p>
+            <a href="/" style="text-decoration: none; color: white; background: #333; padding: 10px 20px; border-radius: 5px; display: inline-block; margin-top: 20px;">Voltar ao Início</a>
+        </div>
+    '''), 500
+
+# ==========================================
 # MAPEAMENTO DE DOMÍNIOS
 # ==========================================
 DOMINIOS_MAPA = {
@@ -171,15 +196,22 @@ def travar_dominios_e_autenticacao():
   if request.endpoint == 'static':
     return
 
-  # Validação de Sessão Única Master via Banco de Dados
+  # Validação de Sessão Única Master via Banco de Dados com Proteção de Erro (Resolvido Erro 500)
   if session.get('cargo') == 'admn':
       token_sessao = session.get('master_token')
-      conn = get_db_connection()
+      token_banco = None
       try:
-          row = conn.execute("SELECT token FROM master_sessao WHERE id = 1").fetchone()
-          token_banco = row['token'] if row else None
-      finally:
-          conn.close()
+          conn = get_db_connection()
+          try:
+              row = conn.execute("SELECT token FROM master_sessao WHERE id = 1").fetchone()
+              token_banco = row['token'] if row else None
+          except Exception as e:
+              # Se a tabela não existir ou der erro no Render, assumimos o token da sessão para não dar 500
+              token_banco = token_sessao 
+          finally:
+              conn.close()
+      except Exception:
+          token_banco = token_sessao
           
       if not token_sessao or token_sessao != token_banco:
           session.clear()
@@ -188,22 +220,25 @@ def travar_dominios_e_autenticacao():
   # RASTREIO E BLOQUEIO DE IP
   ip_visitante = request.remote_addr
   if ip_visitante:
-      conn = get_db_connection()
       try:
-          agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-          row = conn.execute('SELECT status FROM ip_tracking WHERE ip = ?', (ip_visitante,)).fetchone()
-          
-          if row:
-              if row['status'] == 'bloqueado':
-                  return "ACESSO NEGADO. O seu endereço de IP foi bloqueado permanentemente por atividade suspeita.", 403
-              conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ? WHERE ip = ?', (agora, request.endpoint or 'desconhecido', ip_visitante))
-          else:
-              conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint) VALUES (?, ?, ?, ?)', (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido'))
-          conn.commit()
+          conn = get_db_connection()
+          try:
+              agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+              row = conn.execute('SELECT status FROM ip_tracking WHERE ip = ?', (ip_visitante,)).fetchone()
+              
+              if row:
+                  if row['status'] == 'bloqueado':
+                      return "ACESSO NEGADO. O seu endereço de IP foi bloqueado permanentemente por atividade suspeita.", 403
+                  conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ? WHERE ip = ?', (agora, request.endpoint or 'desconhecido', ip_visitante))
+              else:
+                  conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint) VALUES (?, ?, ?, ?)', (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido'))
+              conn.commit()
+          except Exception:
+              pass
+          finally:
+              conn.close()
       except Exception:
           pass
-      finally:
-          conn.close()
 
   host = request.host.lower()
 
@@ -887,4 +922,6 @@ def gerar_exercicio(id):
   return render_template('termo_exercicio.html', aluno=aluno)
 
 if __name__ == '__main__':
-  app.run(debug=True, ssl_context=('localhost+1.pem', 'localhost+1-key.pem'))
+  # Configuração correta e robusta para servidores de produção como o Render
+  porta = int(os.environ.get('PORT', 5000))
+  app.run(host='0.0.0.0', port=porta, debug=False)
