@@ -129,6 +129,7 @@ def aplicar_headers_seguranca(response):
 
 init_db()
 
+# GESTÃO INTELIGENTE DE CRIAÇÃO/ATUALIZAÇÃO DE TABELAS
 def criar_tabela_firewall_se_nao_existir():
     conn = get_db_connection()
     try:
@@ -137,18 +138,37 @@ def criar_tabela_firewall_se_nao_existir():
                 ip TEXT PRIMARY KEY,
                 last_access DATETIME,
                 status TEXT,
-                endpoint TEXT,
-                usuario TEXT
+                endpoint TEXT
             )
         ''')
-        # Tenta adicionar a coluna caso a tabela seja antiga e não tenha "usuario"
-        try:
-            conn.execute("ALTER TABLE ip_tracking ADD COLUMN usuario TEXT DEFAULT 'Visitante'")
-        except Exception:
-            pass
         conn.commit()
     except Exception:
         pass
+        
+    try:
+        # Testa se a coluna 'usuario' existe
+        conn.execute('SELECT usuario FROM ip_tracking LIMIT 1')
+    except Exception:
+        # Se não existe, tenta atualizar o schema
+        try:
+            conn.execute("ALTER TABLE ip_tracking ADD COLUMN usuario TEXT DEFAULT 'Visitante'")
+            conn.commit()
+        except Exception:
+            # Em último caso, recria a tabela para garantir funcionamento 100%
+            try:
+                conn.execute("DROP TABLE IF EXISTS ip_tracking")
+                conn.execute('''
+                    CREATE TABLE ip_tracking (
+                        ip TEXT PRIMARY KEY,
+                        last_access DATETIME,
+                        status TEXT,
+                        endpoint TEXT,
+                        usuario TEXT
+                    )
+                ''')
+                conn.commit()
+            except Exception:
+                pass
     finally:
         conn.close()
 
@@ -193,7 +213,7 @@ def travar_dominios_e_autenticacao():
   if request.endpoint == 'static':
     return
 
-  # NOVO FIREWALL: Capta o IP real por trás do Cloudflare/Render
+  # CAPTURA DE IP E IDENTIFICAÇÃO DE SESSÃO
   ip_visitante = request.headers.get('CF-Connecting-IP')
   if not ip_visitante:
       ip_visitante = request.headers.get('X-Forwarded-For', request.remote_addr)
@@ -201,7 +221,6 @@ def travar_dominios_e_autenticacao():
   if ip_visitante and ',' in ip_visitante:
       ip_visitante = ip_visitante.split(',')[0].strip()
 
-  # Identifica quem está a usar este IP agora
   usuario_atual = 'Visitante'
   if session.get('logado'):
       if session.get('cargo') == 'admn':
@@ -217,7 +236,6 @@ def travar_dominios_e_autenticacao():
               row = conn.execute('SELECT status, usuario FROM ip_tracking WHERE ip = ?', (ip_visitante,)).fetchone()
               
               if row:
-                  # Força o status ativo se for Administrador (Impede bloqueio do Admin)
                   novo_status = row['status']
                   if usuario_atual == 'Administrador' or row['usuario'] == 'Administrador':
                       novo_status = 'ativo'
@@ -291,7 +309,6 @@ def somente_admn(f):
 def bloquear_ip(ip):
     conn = get_db_connection()
     try:
-        # Se tentar bloquear um Admin, ignora o comando
         row = conn.execute("SELECT usuario FROM ip_tracking WHERE ip = ?", (ip,)).fetchone()
         if row and row['usuario'] == 'Administrador':
             pass
@@ -328,19 +345,30 @@ def index():
   equipe_pendente = []
   ips_monitorados = []
   
+  # BLOCOS INDEPENDENTES E BLINDADOS
   try:
-    resultado = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()
-    if resultado:
-        total_alunos = resultado[0]
-        
-    equipe_ativa = conn.execute("SELECT * FROM equipe WHERE status_acesso = 'Ativo'").fetchall()
-    equipe_pendente = conn.execute("SELECT * FROM equipe WHERE status_acesso = 'Pendente'").fetchall()
-    
-    ips_monitorados = conn.execute("SELECT * FROM ip_tracking ORDER BY last_access DESC LIMIT 50").fetchall()
-  except Exception as e:
-    print(f"Alerta Banco (Index): {e}")
-  finally:
-    conn.close()
+      resultado = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()
+      if resultado:
+          total_alunos = resultado[0]
+  except Exception:
+      pass
+
+  try:
+      equipe_ativa = conn.execute("SELECT * FROM equipe WHERE status_acesso = 'Ativo'").fetchall()
+  except Exception:
+      pass
+
+  try:
+      equipe_pendente = conn.execute("SELECT * FROM equipe WHERE status_acesso = 'Pendente'").fetchall()
+  except Exception:
+      pass
+
+  try:
+      ips_monitorados = conn.execute("SELECT * FROM ip_tracking ORDER BY last_access DESC LIMIT 50").fetchall()
+  except Exception:
+      pass
+
+  conn.close()
     
   return render_template(
       'index.html', 
@@ -355,9 +383,7 @@ def index():
 def aprovar_equipe(id):
   conn = get_db_connection()
   try:
-    conn.execute(
-        "UPDATE equipe SET status_acesso = 'Ativo' WHERE id = ?", (id,)
-    )
+    conn.execute("UPDATE equipe SET status_acesso = 'Ativo' WHERE id = ?", (id,))
     conn.commit()
   except Exception:
       pass
@@ -400,10 +426,7 @@ def cadastro():
 
     conn = get_db_connection()
     try:
-      duplicado = conn.execute(
-          'SELECT nome FROM alunos WHERE cpf = ?', 
-          (cpf,)
-      ).fetchone()
+      duplicado = conn.execute('SELECT nome FROM alunos WHERE cpf = ?', (cpf,)).fetchone()
       
       if duplicado:
           return f"Erro: O CPF digitado já está cadastrado para o aluno(a) {duplicado['nome']}. Volte a página e verifique os dados.", 400
