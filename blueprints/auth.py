@@ -24,25 +24,36 @@ def login():
       novo_token = str(uuid.uuid4())
       session['master_token'] = novo_token
       
-      conn = get_db_connection()
       try:
-          conn.execute("CREATE TABLE IF NOT EXISTS master_sessao (id INTEGER PRIMARY KEY, token TEXT)")
-          conn.execute("DELETE FROM master_sessao") # Mantém apenas 1 token ativo globalmente
-          conn.execute("INSERT INTO master_sessao (id, token) VALUES (1, ?)", (novo_token,))
-          conn.commit()
-      finally:
-          conn.close()
+          conn = get_db_connection()
+          try:
+              conn.execute("CREATE TABLE IF NOT EXISTS master_sessao (id INTEGER PRIMARY KEY, token TEXT)")
+              conn.execute("DELETE FROM master_sessao") # Mantém apenas 1 token ativo globalmente
+              conn.execute("INSERT INTO master_sessao (id, token) VALUES (1, ?)", (novo_token,))
+              conn.commit()
+          except Exception as e:
+              print(f"Aviso BD Render (Master): {e}") # Ignora o erro para não quebrar o login
+          finally:
+              conn.close()
+      except Exception as e:
+          print(f"Erro de conexão BD Render (Master): {e}")
       
       return redirect(url_for('index'))
 
-    conn = get_db_connection()
+    membro = None
     try:
-      membro = conn.execute(
-          "SELECT * FROM equipe WHERE usuario = ? AND status_acesso = 'Ativo'",
-          (usuario_digitado,),
-      ).fetchone()
-    finally:
-      conn.close()
+        conn = get_db_connection()
+        try:
+          membro = conn.execute(
+              "SELECT * FROM equipe WHERE usuario = ? AND status_acesso = 'Ativo'",
+              (usuario_digitado,),
+          ).fetchone()
+        except Exception as e:
+            print(f"Aviso BD Render (Consulta Equipe): {e}")
+        finally:
+          conn.close()
+    except Exception as e:
+        print(f"Erro de conexão BD Render (Equipe): {e}")
 
     if membro and check_password_hash(membro['senha'], senha_digitada):
       session.permanent = True
@@ -68,19 +79,27 @@ def solicitar_acesso():
     usuario = request.form.get('usuario', '').strip()
     senha = request.form.get('senha')
     
-    conn = get_db_connection()
     try:
-      existente = conn.execute('SELECT * FROM equipe WHERE usuario = ?', (usuario,)).fetchone()
-      if existente:
-        erro = 'Este usuário já está sendo utilizado. Escolha outro.'
-      else:
-        hash_senha = generate_password_hash(senha, method='pbkdf2:sha256')
-        conn.execute(
-            'INSERT INTO equipe (nome, cargo, usuario, senha, status_acesso) VALUES (?, ?, ?, ?, ?)',
-            (nome, cargo, usuario, hash_senha, 'Pendente'),
-        )
-        conn.commit()
-        sucesso = 'Solicitação enviada! Aguarde a liberação do administrador.'
-    finally:
-      conn.close()
+        conn = get_db_connection()
+        try:
+          existente = conn.execute('SELECT * FROM equipe WHERE usuario = ?', (usuario,)).fetchone()
+          if existente:
+            erro = 'Este usuário já está sendo utilizado. Escolha outro.'
+          else:
+            hash_senha = generate_password_hash(senha, method='pbkdf2:sha256')
+            conn.execute(
+                'INSERT INTO equipe (nome, cargo, usuario, senha, status_acesso) VALUES (?, ?, ?, ?, ?)',
+                (nome, cargo, usuario, hash_senha, 'Pendente'),
+            )
+            conn.commit()
+            sucesso = 'Solicitação enviada! Aguarde a liberação do administrador.'
+        except Exception as e:
+            erro = 'Erro interno ao processar solicitação.'
+            print(f"Aviso BD Render (Gravar Solicitação): {e}")
+        finally:
+          conn.close()
+    except Exception as e:
+        erro = 'Não foi possível conectar ao banco de dados no momento.'
+        print(f"Erro de conexão BD Render (Solicitação): {e}")
+        
   return render_template('solicitar_acesso.html', sucesso=sucesso, erro=erro)
