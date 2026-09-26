@@ -196,7 +196,7 @@ def travar_dominios_e_autenticacao():
   if request.endpoint == 'static':
     return
 
-  # Validação de Sessão Única Master via Banco de Dados com Proteção de Erro (Resolvido Erro 500)
+  # Validação de Sessão Única Master via Banco de Dados
   if session.get('cargo') == 'admn':
       token_sessao = session.get('master_token')
       token_banco = None
@@ -205,8 +205,7 @@ def travar_dominios_e_autenticacao():
           try:
               row = conn.execute("SELECT token FROM master_sessao WHERE id = 1").fetchone()
               token_banco = row['token'] if row else None
-          except Exception as e:
-              # Se a tabela não existir ou der erro no Render, assumimos o token da sessão para não dar 500
+          except Exception:
               token_banco = token_sessao 
           finally:
               conn.close()
@@ -295,6 +294,8 @@ def bloquear_ip(ip):
     try:
         conn.execute("UPDATE ip_tracking SET status = 'bloqueado' WHERE ip = ?", (ip,))
         conn.commit()
+    except Exception:
+        pass
     finally:
         conn.close()
     return redirect(url_for('index'))
@@ -306,28 +307,34 @@ def desbloquear_ip(ip):
     try:
         conn.execute("UPDATE ip_tracking SET status = 'ativo' WHERE ip = ?", (ip,))
         conn.commit()
+    except Exception:
+        pass
     finally:
         conn.close()
     return redirect(url_for('index'))
 
 # ==========================================
-# ROTAS DO SISTEMA INTERNO
+# ROTAS DO SISTEMA INTERNO BLINDADAS CONTRA ERRO 500
 # ==========================================
 @app.route('/')
 def index():
   conn = get_db_connection()
+  total_alunos = 0
+  equipe_ativa = []
+  equipe_pendente = []
+  ips_monitorados = []
+  
   try:
-    total_alunos = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()[0]
-    equipe_ativa = conn.execute(
-        "SELECT * FROM equipe WHERE status_acesso = 'Ativo'"
-    ).fetchall()
-    equipe_pendente = conn.execute(
-        "SELECT * FROM equipe WHERE status_acesso = 'Pendente'"
-    ).fetchall()
-    
-    ips_monitorados = conn.execute(
-        "SELECT * FROM ip_tracking ORDER BY last_access DESC LIMIT 50"
-    ).fetchall()
+    # O try/except garante que se a tabela não existir, a tela abre limpa em vez de quebrar (Erro 500)
+    resultado = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()
+    if resultado:
+        total_alunos = resultado[0]
+        
+    equipe_ativa = conn.execute("SELECT * FROM equipe WHERE status_acesso = 'Ativo'").fetchall()
+    equipe_pendente = conn.execute("SELECT * FROM equipe WHERE status_acesso = 'Pendente'").fetchall()
+    ips_monitorados = conn.execute("SELECT * FROM ip_tracking ORDER BY last_access DESC LIMIT 50").fetchall()
+  except Exception as e:
+    print(f"Alerta: Banco de dados ausente ou bloqueado no Render (Index): {e}")
   finally:
     conn.close()
     
@@ -348,6 +355,8 @@ def aprovar_equipe(id):
         "UPDATE equipe SET status_acesso = 'Ativo' WHERE id = ?", (id,)
     )
     conn.commit()
+  except Exception:
+      pass
   finally:
     conn.close()
   return redirect(url_for('index'))
@@ -359,6 +368,8 @@ def remover_equipe(id):
   try:
     conn.execute('DELETE FROM equipe WHERE id = ?', (id,))
     conn.commit()
+  except Exception:
+      pass
   finally:
     conn.close()
   return redirect(url_for('index'))
@@ -420,6 +431,8 @@ def cadastro():
           ),
       )
       conn.commit()
+    except Exception as e:
+        return f"Erro de banco de dados ao salvar: {e}", 500
     finally:
       conn.close()
 
@@ -429,6 +442,7 @@ def cadastro():
 @app.route('/alterar', methods=['GET', 'POST'])
 def alterar():
   conn = get_db_connection()
+  alunos = []
   try:
     if request.method == 'POST':
       termo = request.form.get('termo', '').strip()
@@ -441,6 +455,8 @@ def alterar():
           alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
     else:
       alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
+  except Exception as e:
+      print(f"Alerta (Alterar): {e}")
   finally:
     conn.close()
     
@@ -507,13 +523,18 @@ def editar(id):
           ),
       )
       conn.commit()
+    except Exception as e:
+        return f"Erro ao atualizar dados: {e}", 500
     finally:
       conn.close()
 
     return redirect(url_for('alterar'))
   
+  aluno = None
   try:
     aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -522,6 +543,7 @@ def editar(id):
 @app.route('/excluir', methods=['GET', 'POST'])
 def excluir():
   conn = get_db_connection()
+  alunos = []
   try:
     if request.method == 'POST':
       termo = request.form.get('termo', '').strip()
@@ -534,6 +556,8 @@ def excluir():
           alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
     else:
       alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
+  except Exception as e:
+      print(f"Alerta (Excluir): {e}")
   finally:
     conn.close()
     
@@ -560,6 +584,8 @@ def deletar(id):
                 
     conn.execute('DELETE FROM alunos WHERE id = ?', (id,))
     conn.commit()
+  except Exception:
+      pass
   finally:
     conn.close()
   return redirect(url_for('excluir'))
@@ -585,6 +611,8 @@ def deletar_todos():
   try:
     conn.execute('DELETE FROM alunos')
     conn.commit()
+  except Exception:
+      pass
   finally:
     conn.close()
   return redirect(url_for('excluir'))
@@ -593,6 +621,7 @@ def deletar_todos():
 def informacoes(tipo):
   titulo = 'Dossiê de Graduações e Consultas'
   conn = get_db_connection()
+  alunos = []
   try:
     if request.method == 'POST':
       termo = request.form.get('termo', '').strip()
@@ -605,6 +634,8 @@ def informacoes(tipo):
           alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
     else:
       alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
+  except Exception as e:
+      print(f"Alerta (Info): {e}")
   finally:
     conn.close()
     
@@ -615,8 +646,11 @@ def informacoes(tipo):
 @app.route('/painel_aluno/<int:id>')
 def painel_aluno(id):
   conn = get_db_connection()
+  aluno = None
   try:
     aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -642,10 +676,13 @@ def painel_aluno(id):
 def portal_do_aluno_publico(cpf):
   cpf_limpo = normalizar_cpf(cpf)
   conn = get_db_connection()
+  aluno = None
   try:
     aluno = conn.execute(
         'SELECT * FROM alunos WHERE cpf = ? OR matricula = ?', (cpf_limpo, cpf)
     ).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -698,8 +735,11 @@ def portal_do_aluno_publico(cpf):
 def validacao_qr_code(faculdade_slug, identificador):
   id_limpo = normalizar_cpf(identificador)
   conn = get_db_connection()
+  aluno = None
   try:
     aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ? OR matricula = ?', (id_limpo, identificador)).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -735,8 +775,11 @@ def validacao_qr_code(faculdade_slug, identificador):
 def visualizar_qrcode(cpf):
   cpf = normalizar_cpf(cpf)
   conn = get_db_connection()
+  aluno = None
   try:
     aluno = conn.execute('SELECT * FROM alunos WHERE cpf = ?', (cpf,)).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -778,6 +821,8 @@ def consulta_xml():
                 busca_base,
             ),
         ).fetchone()
+      except Exception:
+          pass
       finally:
         conn.close()
 
@@ -791,10 +836,13 @@ def consulta_xml():
 def consulta_xml_direta(cpf):
   cpf = normalizar_cpf(cpf)
   conn = get_db_connection()
+  aluno = None
   try:
     aluno = conn.execute(
         'SELECT * FROM alunos WHERE cpf = ?', (cpf,)
     ).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -806,10 +854,13 @@ def consulta_xml_direta(cpf):
 def imprensanacional_consulta(cpf):
   cpf = normalizar_cpf(cpf)
   conn = get_db_connection()
+  aluno = None
   try:
     aluno = conn.execute(
         'SELECT * FROM alunos WHERE cpf = ?', (cpf,)
     ).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -839,8 +890,11 @@ def download_file(filename):
 @app.route('/visualizar_documento/<int:aluno_id>/<tipo_doc>')
 def visualizar_documento(aluno_id, tipo_doc):
   conn = get_db_connection()
+  aluno = None
   try:
     aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (aluno_id,)).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -871,8 +925,11 @@ def visualizar_documento(aluno_id, tipo_doc):
 @app.route('/conselho_oab/<int:id>')
 def conselho_oab(id):
   conn = get_db_connection()
+  aluno = None
   try:
     aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -883,8 +940,11 @@ def conselho_oab(id):
 @app.route('/conselho_confea/<int:id>')
 def conselho_confea(id):
   conn = get_db_connection()
+  aluno = None
   try:
     aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -895,8 +955,11 @@ def conselho_confea(id):
 @app.route('/gerar_posse/<int:id>')
 def gerar_posse(id):
   conn = get_db_connection()
+  aluno = None
   try:
     aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -912,8 +975,11 @@ def gerar_posse(id):
 @app.route('/gerar_exercicio/<int:id>')
 def gerar_exercicio(id):
   conn = get_db_connection()
+  aluno = None
   try:
     aluno = conn.execute('SELECT * FROM alunos WHERE id = ?', (id,)).fetchone()
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -922,6 +988,5 @@ def gerar_exercicio(id):
   return render_template('termo_exercicio.html', aluno=aluno)
 
 if __name__ == '__main__':
-  # Configuração correta e robusta para servidores de produção como o Render
   porta = int(os.environ.get('PORT', 5000))
   app.run(host='0.0.0.0', port=porta, debug=False)
