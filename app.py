@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from functools import wraps
 import os
 import random
@@ -107,6 +107,31 @@ def aplicar_headers_seguranca(response):
 
 init_db()
 
+def criar_tabelas_seguranca_se_nao_existir():
+    conn = get_db_connection()
+    try:
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS ip_tracking (
+                ip TEXT PRIMARY KEY,
+                last_access DATETIME,
+                status TEXT,
+                endpoint TEXT
+            )
+        ''')
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS master_sessao (
+                id INTEGER PRIMARY KEY,
+                token TEXT
+            )
+        ''')
+        conn.commit()
+    except Exception:
+        pass
+    finally:
+        conn.close()
+
+criar_tabelas_seguranca_se_nao_existir()
+
 # ==========================================
 # FUNÇÕES DE UPLOAD E VALIDAÇÃO DE EXTENSÃO
 # ==========================================
@@ -137,7 +162,7 @@ def salvar_multiplos_arquivos(file_storage_list, antigos=''):
   return '|'.join(nomes_salvos) if nomes_salvos else ''
 
 # ==========================================
-# ROTEADOR DE DOMÍNIOS E SEGURANÇA
+# ROTEADOR DE DOMÍNIOS, SEGURANÇA E SESSÃO MASTER ÚNICA
 # ==========================================
 @app.before_request
 def travar_dominios_e_autenticacao():
@@ -145,6 +170,40 @@ def travar_dominios_e_autenticacao():
 
   if request.endpoint == 'static':
     return
+
+  # Validação de Sessão Única Master via Banco de Dados
+  if session.get('cargo') == 'admn':
+      token_sessao = session.get('master_token')
+      conn = get_db_connection()
+      try:
+          row = conn.execute("SELECT token FROM master_sessao WHERE id = 1").fetchone()
+          token_banco = row['token'] if row else None
+      finally:
+          conn.close()
+          
+      if not token_sessao or token_sessao != token_banco:
+          session.clear()
+          return redirect(url_for('auth.login'))
+
+  # RASTREIO E BLOQUEIO DE IP
+  ip_visitante = request.remote_addr
+  if ip_visitante:
+      conn = get_db_connection()
+      try:
+          agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+          row = conn.execute('SELECT status FROM ip_tracking WHERE ip = ?', (ip_visitante,)).fetchone()
+          
+          if row:
+              if row['status'] == 'bloqueado':
+                  return "ACESSO NEGADO. O seu endereço de IP foi bloqueado permanentemente por atividade suspeita.", 403
+              conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ? WHERE ip = ?', (agora, request.endpoint or 'desconhecido', ip_visitante))
+          else:
+              conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint) VALUES (?, ?, ?, ?)', (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido'))
+          conn.commit()
+      except Exception:
+          pass
+      finally:
+          conn.close()
 
   host = request.host.lower()
 
@@ -191,6 +250,60 @@ def somente_admn(f):
     return f(*args, **kwargs)
   return wrapper
 
+# ==========================================
+# ROTAS DE GESTÃO DE IPs (SÓ PARA ADMIN)
+# ==========================================
+@app.route('/bloquear_ip/<ip>', methods=['POST'])
+@somente_admn
+def bloquear_ip(ip):
+    conn = get_db_connection()
+    try:
+        conn.execute("UPDATE ip_tracking SET status = 'bloqueado' WHERE ip = ?", (ip,))
+        conn.commit()
+    finally:
+        conn.close()
+    return redirect(url_for('index'))
+
+@app.route('/desbloquear_ip/<ip>', methods=['POST'])
+@somente_admn
+def desbloquear_ip(ip):
+    conn = get_db_connection()
+    try:
+        conn.execute("UPDATE ip_tracking SET status = 'ativo' WHERE ip = ?", (ip,))
+        conn.commit()
+    finally:
+        conn.close()
+    return redirect(url_for('index'))
+
+# ==========================================
+# ROTAS DO SISTEMA INTERNO
+# ==========================================
+@app.route('/')
+def index():
+  conn = get_db_connection()
+  try:
+    total_alunos = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()[0]
+    equipe_ativa = conn.execute(
+        "SELECT * FROM equipe WHERE status_acesso = 'Ativo'"
+    ).fetchall()
+    equipe_pendente = conn.execute(
+        "SELECT * FROM equipe WHERE status_acesso = 'Pendente'"
+    ).fetchall()
+    
+    ips_monitorados = conn.execute(
+        "SELECT * FROM ip_tracking ORDER BY last_access DESC LIMIT 50"
+    ).fetchall()
+  finally:
+    conn.close()
+    
+  return render_template(
+      'index.html', 
+      total=total_alunos, 
+      ativos=equipe_ativa, 
+      pendentes=equipe_pendente,
+      ips_monitorados=ips_monitorados
+  )
+
 @app.route('/aprovar_equipe/<int:id>', methods=['POST'])
 @somente_admn
 def aprovar_equipe(id):
@@ -214,26 +327,6 @@ def remover_equipe(id):
   finally:
     conn.close()
   return redirect(url_for('index'))
-
-# ==========================================
-# ROTAS DO SISTEMA INTERNO
-# ==========================================
-@app.route('/')
-def index():
-  conn = get_db_connection()
-  try:
-    total_alunos = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()[0]
-    equipe_ativa = conn.execute(
-        "SELECT * FROM equipe WHERE status_acesso = 'Ativo'"
-    ).fetchall()
-    equipe_pendente = conn.execute(
-        "SELECT * FROM equipe WHERE status_acesso = 'Pendente'"
-    ).fetchall()
-  finally:
-    conn.close()
-  return render_template(
-      'index.html', total=total_alunos, ativos=equipe_ativa, pendentes=equipe_pendente
-  )
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
@@ -300,17 +393,22 @@ def cadastro():
 
 @app.route('/alterar', methods=['GET', 'POST'])
 def alterar():
-  alunos = []
-  if request.method == 'POST':
-    termo = request.form.get('termo', '')
-    conn = get_db_connection()
-    try:
-      alunos = conn.execute(
-          'SELECT * FROM alunos WHERE nome LIKE ? OR cpf = ?',
-          ('%' + termo + '%', normalizar_cpf(termo)),
-      ).fetchall()
-    finally:
-      conn.close()
+  conn = get_db_connection()
+  try:
+    if request.method == 'POST':
+      termo = request.form.get('termo', '').strip()
+      if termo:
+          alunos = conn.execute(
+              'SELECT * FROM alunos WHERE nome LIKE ? OR cpf = ? ORDER BY nome ASC',
+              ('%' + termo + '%', normalizar_cpf(termo)),
+          ).fetchall()
+      else:
+          alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
+    else:
+      alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
+  finally:
+    conn.close()
+    
   return render_template('alterar.html', alunos=alunos)
 
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
@@ -388,17 +486,22 @@ def editar(id):
 
 @app.route('/excluir', methods=['GET', 'POST'])
 def excluir():
-  alunos = []
-  if request.method == 'POST':
-    termo = request.form.get('termo', '')
-    conn = get_db_connection()
-    try:
-      alunos = conn.execute(
-          'SELECT * FROM alunos WHERE nome LIKE ? OR cpf = ?',
-          ('%' + termo + '%', normalizar_cpf(termo)),
-      ).fetchall()
-    finally:
-      conn.close()
+  conn = get_db_connection()
+  try:
+    if request.method == 'POST':
+      termo = request.form.get('termo', '').strip()
+      if termo:
+          alunos = conn.execute(
+              'SELECT * FROM alunos WHERE nome LIKE ? OR cpf = ? ORDER BY nome ASC',
+              ('%' + termo + '%', normalizar_cpf(termo)),
+          ).fetchall()
+      else:
+          alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
+    else:
+      alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
+  finally:
+    conn.close()
+    
   return render_template('excluir.html', alunos=alunos)
 
 @app.route('/deletar/<int:id>', methods=['POST'])
@@ -451,27 +554,25 @@ def deletar_todos():
     conn.close()
   return redirect(url_for('excluir'))
 
-# ==========================================
-# ROTA DE INFORMAÇÕES UNIFICADA
-# ==========================================
 @app.route('/informacoes/<tipo>', methods=['GET', 'POST'])
 def informacoes(tipo):
-  alunos = []
   titulo = 'Dossiê de Graduações e Consultas'
-
-  if request.method == 'POST':
-    termo = request.form.get('termo', '')
-    conn = get_db_connection()
-    try:
-      alunos = conn.execute(
-          '''
-              SELECT * FROM alunos 
-              WHERE nome LIKE ? OR cpf = ?
-          ''',
-          ('%' + termo + '%', normalizar_cpf(termo)),
-      ).fetchall()
-    finally:
-      conn.close()
+  conn = get_db_connection()
+  try:
+    if request.method == 'POST':
+      termo = request.form.get('termo', '').strip()
+      if termo:
+          alunos = conn.execute(
+              'SELECT * FROM alunos WHERE nome LIKE ? OR cpf = ? ORDER BY nome ASC',
+              ('%' + termo + '%', normalizar_cpf(termo)),
+          ).fetchall()
+      else:
+          alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
+    else:
+      alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
+  finally:
+    conn.close()
+    
   return render_template(
       'informacoes.html', alunos=alunos, tipo=tipo, titulo=titulo
   )
@@ -502,9 +603,6 @@ def painel_aluno(id):
 
   return render_template('painel_aluno.html', aluno=aluno, url_base=url_base_custom)
 
-# ==========================================
-# ROTAS PÚBLICAS (Busca EXCLUSIVA por CPF)
-# ==========================================
 @app.route('/portal_aluno/<cpf>', methods=['GET', 'POST'])
 def portal_do_aluno_publico(cpf):
   cpf_limpo = normalizar_cpf(cpf)
@@ -561,7 +659,6 @@ def portal_do_aluno_publico(cpf):
           404,
       )
 
-# >>> ROTA PADRÃO DE VALIDAÇÃO DE QR CODE (IDÊNTICA ÀS OUTRAS FACULDADES) <<<
 @app.route('/validacao/<faculdade_slug>/<identificador>')
 def validacao_qr_code(faculdade_slug, identificador):
   id_limpo = normalizar_cpf(identificador)

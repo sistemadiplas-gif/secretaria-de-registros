@@ -6,150 +6,336 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <style>
-    .select2-container .select2-selection--single { height: 38px !important; border: 1px solid #ccc !important; border-radius: 4px !important; padding-top: 5px !important; }
-    .select2-container--default .select2-selection--single .select2-selection__arrow { top: 6px !important; }
-    .select2-results__option { color: #333 !important; }
+    /* Estilização Sênior de Inputs, Selects e Select2 Mantendo as Cores Originais */
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #21212a;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border: 1px solid #3a3a45;
+        text-align: left;
+    }
+    .form-section {
+        margin-bottom: 30px;
+        background: #2a2a35;
+        padding: 25px;
+        border-radius: 8px;
+        border: 1px solid #3a3a45;
+    }
+    .form-section h3 {
+        color: #0056b3;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #0056b3;
+        padding-bottom: 8px;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    .form-row .form-group {
+        flex: 1;
+        margin-bottom: 0;
+    }
+    label {
+        display: block;
+        font-size: 13px;
+        color: #bbb;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+    input[type="text"], input[type="date"], select {
+        width: 100%;
+        padding: 12px 15px;
+        background-color: #1e1e24;
+        border: 1px solid #444;
+        border-radius: 6px;
+        color: #fff;
+        font-size: 14px;
+        box-sizing: border-box;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    input[type="text"]:focus, input[type="date"]:focus, select:focus {
+        border-color: #0056b3;
+    }
+    input[type="file"] {
+        color: #ccc;
+        font-size: 13px;
+    }
+    .select2-container .select2-selection--single {
+        height: 43px !important;
+        background-color: #1e1e24 !important;
+        border: 1px solid #444 !important;
+        border-radius: 6px !important;
+        padding-top: 8px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        top: 9px !important;
+    }
+    .select2-dropdown {
+        background-color: #2a2a35 !important;
+        border: 1px solid #444 !important;
+        color: #fff !important;
+    }
+    .select2-results__option {
+        color: #ccc !important;
+        padding: 10px !important;
+    }
+    .select2-results__option--highlighted {
+        background-color: #0056b3 !important;
+        color: #fff !important;
+    }
+    .btn-salvar {
+        width: 100%;
+        padding: 16px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background 0.2s, transform 0.1s;
+        box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+    }
+    .btn-salvar:hover {
+        background-color: #218838;
+        transform: translateY(-1px);
+    }
 </style>
 
-<h1 style="color: #0056b3;">Cadastro de Aluno</h1>
+<div style="margin-bottom: 25px;">
+    <h1 style="color: #0056b3; font-size: 28px; font-weight: 600; margin-bottom: 5px;">Cadastro de Aluno</h1>
+    <p style="color: #888; font-size: 14px; margin: 0;">Preencha os campos abaixo para registar o aluno no sistema.</p>
+</div>
 
-<form method="POST" action="/cadastro" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    
-    <h3 style="color: #0056b3; border-bottom: 1px solid #ccc; width: 80%; text-align: left;">Foto do Aluno (195x225)</h3>
-    <div style="width: 195px; height: 225px; border: 2px dashed #0056b3; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #1e1e24; border-radius: 8px; padding: 10px;">
-        <span style="font-size: 12px; color: #aaa; margin-bottom: 5px;">195 x 225 px</span>
-        <input type="file" name="foto_file" accept="image/*" style="font-size: 11px; color: #fff; width: 100%;">
-    </div>
-
-    <h3 style="color: #0056b3; border-bottom: 1px solid #ccc; width: 80%; text-align: left; margin-top: 10px;">Documento de Identidade & Dados Pessoais</h3>
-    <input type="text" name="nome" placeholder="Nome Completo" required>
-    <input type="text" name="cpf" placeholder="CPF (apenas números)" required>
-    
-    <div style="width: 60%; max-width: 500px; display: flex; gap: 10px;">
-        <input type="text" name="rg" placeholder="Número do RG" style="flex: 2;" required>
-        <input type="text" name="orgao_rg" placeholder="Órgão Emissor (ex: SSP/GO)" style="flex: 1;" required>
-    </div>
-
-    <div style="width: 60%; max-width: 500px; text-align: left;">
-        <label style="font-size: 14px; color: #ccc;">Data de Expedição do RG</label>
-        <input type="date" name="data_expedicao" style="width: 100%; box-sizing: border-box;" required>
-    </div>
-
-    <div style="width: 60%; max-width: 500px; text-align: left;">
-        <label style="font-size: 14px; color: #ccc;">Data de Nascimento</label>
-        <input type="date" name="data_nascimento" style="width: 100%; box-sizing: border-box;" required>
-    </div>
-
-    <input type="text" name="naturalidade" placeholder="Naturalidade (Cidade/UF)" required>
-    <input type="text" name="filiacao" placeholder="Filiação (Nome dos Pais)" required>
-    <input type="text" name="endereco" placeholder="Endereço Atual Completo (Rua, Nº, Bairro, Cidade/UF)" required>
-
-    <h3 style="color: #0056b3; border-bottom: 1px solid #ccc; width: 80%; text-align: left; margin-top: 20px;">Formação Acadêmica</h3>
-    
-    <select name="tipo_curso" required style="width: 60%; max-width: 500px;">
-        <option value="" disabled selected>Selecione a Categoria da Graduação</option>
-        <option value="Bacharelado">Bacharelado</option>
-        <option value="Licenciatura">Licenciatura</option>
-        <option value="Tecnologia">Tecnologia</option>
-    </select>
-
-    <input type="text" name="curso" placeholder="Nome do Curso..." required>
-    
-    <div style="width: 60%; max-width: 500px; display: flex; flex-direction: column; gap: 15px;">
+<div class="form-container">
+    <form method="POST" action="/cadastro" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
-        <div style="text-align: left; background-color: #2a2a35; padding: 15px; border-radius: 5px; border: 1px solid #4da6ff;">
-            <label style="color: #4da6ff; font-weight: bold; font-size: 15px;">Portal da Faculdade (Automação QR Code)</label>
-            <p style="font-size: 11px; color: #aaa; margin: 5px 0 10px 0;">Selecione a faculdade para definir qual tela o QR Code irá abrir.</p>
-            <select name="faculdade_slug" id="seletor_faculdade" class="select2-faculdade" style="width: 100%;" required>
-                <option value=""></option>
-                <option value="unip">🟥 UNIP - Universidade Paulista (Abre: Meus Dados)</option>
-                <option value="sia_estacio_br">🟦 Estácio (SIA) (Abre: Pasta do Aluno)</option>
-                <option value="anhanguera">🟧 Anhanguera (Abre: Portal do Aluno)</option>
-                <option value="puc_sp">🔴 PUC-SP - Pontifícia Universidade Católica de SP</option>
-                <option value="puc_mg">🔵 PUC-MG - Pontifícia Universidade Católica de Minas Gerais</option>
-            </select>
+        <!-- SEÇÃO 1: FOTO -->
+        <div class="form-section">
+            <h3>Foto do Aluno</h3>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div style="width: 110px; height: 135px; border: 2px dashed #0056b3; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #1e1e24; border-radius: 8px; padding: 5px; flex-shrink: 0; text-align: center;">
+                    <span style="font-size: 10px; color: #888;">195 x 225 px</span>
+                </div>
+                <div style="flex: 1;">
+                    <label>Selecionar Imagem (PNG, JPG)</label>
+                    <input type="file" name="foto_file" accept="image/*">
+                </div>
+            </div>
         </div>
 
-        <input type="text" name="grau_academico" placeholder="Grau Acadêmico (ex: Bacharel em Administração)">
-        <input type="text" name="instituicao_ensino" placeholder="Identificação da Instituição de Ensino">
-        <input type="text" name="registro_validacao" placeholder="Número de Registro de Validação do Diploma">
-        
-        <div style="background-color: #2a2a35; padding: 15px; border-radius: 5px; border: 1px solid #444; display: flex; flex-direction: column; gap: 10px;">
-            <label style="color: #4da6ff; font-weight: bold; font-size: 14px;">Arquivos do Diploma e Documentos</label>
+        <!-- SEÇÃO 2: DADOS PESSOAIS -->
+        <div class="form-section">
+            <h3>Documento de Identidade & Dados Pessoais</h3>
             
-            <div style="display: flex; flex-direction: column; gap: 3px;">
-                <label style="font-size: 12px; color: #ccc;">Diploma FRENTE:</label>
-                <input type="file" name="diploma_frente_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
+            <div class="form-group">
+                <label>Nome Completo</label>
+                <input type="text" name="nome" placeholder="Digite o nome completo do aluno" required>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 5px;">
-                <label style="font-size: 12px; color: #ccc;">Diploma VERSO:</label>
-                <input type="file" name="diploma_verso_file" accept=".pdf,image/*" style="color: #fff; font-size: 12px;">
+            <div class="form-group">
+                <label>CPF (Apenas números)</label>
+                <input type="text" name="cpf" placeholder="00000000000" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Número do RG</label>
+                    <input type="text" name="rg" placeholder="Ex: 1234567" required>
+                </div>
+                <div class="form-group">
+                    <label>Órgão Emissor</label>
+                    <input type="text" name="orgao_rg" placeholder="Ex: SSP/GO" required>
+                </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 10px;">
-                <label style="font-size: 12px; color: #ccc;">Certificado de Conclusão: <span style="color:#28a745;">(Vários)</span></label>
-                <input type="file" name="certificado_file" accept=".pdf,image/*" multiple style="color: #fff; font-size: 12px;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Data de Expedição do RG</label>
+                    <input type="date" name="data_expedicao" required>
+                </div>
+                <div class="form-group">
+                    <label>Data de Nascimento</label>
+                    <input type="date" name="data_nascimento" required>
+                </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 5px;">
-                <label style="font-size: 12px; color: #ccc;">Histórico Escolar: <span style="color:#28a745;">(Vários)</span></label>
-                <input type="file" name="historico_file" accept=".pdf,image/*" multiple style="color: #fff; font-size: 12px;">
+            <div class="form-group">
+                <label>Naturalidade</label>
+                <input type="text" name="naturalidade" placeholder="Ex: Goiânia / GO" required>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 5px;">
-                <label style="font-size: 12px; color: #ccc;">Outros (Trabalhos): <span style="color:#28a745;">(Vários)</span></label>
-                <input type="file" name="outros_file" accept=".pdf,image/*" multiple style="color: #fff; font-size: 12px;">
+            <div class="form-group">
+                <label>Filiação</label>
+                <input type="text" name="filiacao" placeholder="Nome dos Pais" required>
+            </div>
+
+            <div class="form-group">
+                <label>Endereço Atual Completo</label>
+                <input type="text" name="endereco" placeholder="Rua, Nº, Bairro, Cidade/UF" required>
             </div>
         </div>
 
-        <div style="text-align: left; background-color: #2a2a35; padding: 10px; border-radius: 5px;">
-            <label style="color: #ccc; font-size: 14px;">Gerar QR Code no verso do documento?</label>
-            <select name="gerar_qrcode" style="width: 100%; margin-top: 5px;">
-                <option value="Sim">Sim</option>
-                <option value="Não" selected>Não</option>
-            </select>
+        <!-- SEÇÃO 3: FORMAÇÃO ACADÊMICA -->
+        <div class="form-section">
+            <h3>Formação Acadêmica</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Categoria da Graduação</label>
+                    <select name="tipo_curso" required>
+                        <option value="" disabled selected>Selecione a Categoria</option>
+                        <option value="Bacharelado">Bacharelado</option>
+                        <option value="Licenciatura">Licenciatura</option>
+                        <option value="Tecnologia">Tecnologia</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nome do Curso</label>
+                    <input type="text" name="curso" placeholder="Ex: Direito, Engenharia..." required>
+                </div>
+            </div>
+
+            <div class="form-group" style="background-color: #1e1e24; padding: 20px; border-radius: 8px; border: 1px solid #4da6ff; margin-bottom: 15px;">
+                <label style="color: #4da6ff; font-weight: bold; font-size: 14px; margin-bottom: 4px;">Portal da Faculdade (Automação QR Code)</label>
+                <p style="font-size: 12px; color: #888; margin: 0 0 12px 0;">Selecione a faculdade para definir qual tela o QR Code irá abrir.</p>
+                <select name="faculdade_slug" id="seletor_faculdade" class="select2-faculdade" style="width: 100%;" required>
+                    <option value=""></option>
+                    <option value="unip">🟥 UNIP - Universidade Paulista (Abre: Meus Dados)</option>
+                    <option value="sia_estacio_br">🟦 Estácio (SIA) (Abre: Pasta do Aluno)</option>
+                    <option value="anhanguera">🟧 Anhanguera (Abre: Portal do Aluno)</option>
+                    <option value="puc_sp">🔴 PUC-SP - Pontifícia Universidade Católica de SP</option>
+                    <option value="puc_mg">🔵 PUC-MG - Pontifícia Universidade Católica de Minas Gerais</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Grau Acadêmico</label>
+                    <input type="text" name="grau_academico" placeholder="Ex: Bacharel em Administração">
+                </div>
+                <div class="form-group">
+                    <label>Instituição de Ensino</label>
+                    <input type="text" name="instituicao_ensino" placeholder="Nome da Instituição">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Número de Registro de Validação do Diploma</label>
+                <input type="text" name="registro_validacao" placeholder="Número de registo">
+            </div>
+
+            <!-- BLOCO DE DOCUMENTOS -->
+            <div style="background-color: #1e1e24; padding: 20px; border-radius: 8px; border: 1px solid #444; margin-bottom: 15px; display: flex; flex-direction: column; gap: 12px;">
+                <label style="color: #4da6ff; font-weight: bold; font-size: 14px;">Arquivos do Diploma e Documentos</label>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Diploma FRENTE (.pdf ou imagem)</label>
+                    <input type="file" name="diploma_frente_file" accept=".pdf,image/*">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Diploma VERSO (.pdf ou imagem)</label>
+                    <input type="file" name="diploma_verso_file" accept=".pdf,image/*">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Certificado de Conclusão <span style="color:#28a745;">(Múltiplos)</span></label>
+                    <input type="file" name="certificado_file" accept=".pdf,image/*" multiple>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Histórico Escolar <span style="color:#28a745;">(Múltiplos)</span></label>
+                    <input type="file" name="historico_file" accept=".pdf,image/*" multiple>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Outros Documentos / Trabalhos <span style="color:#28a745;">(Múltiplos)</span></label>
+                    <input type="file" name="outros_file" accept=".pdf,image/*" multiple>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Gerar QR Code no verso do documento?</label>
+                    <select name="gerar_qrcode">
+                        <option value="Sim">Sim</option>
+                        <option value="Não" selected>Não</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Número da Matrícula</label>
+                    <input type="text" name="matricula" placeholder="Número da matrícula" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Data de Início</label>
+                    <input type="date" name="data_inicio">
+                </div>
+                <div class="form-group">
+                    <label>Data de Conclusão</label>
+                    <input type="date" name="data_conclusao">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Carga Horária</label>
+                <input type="text" name="carga_horaria" placeholder="Ex: 3600h">
+            </div>
         </div>
 
-        <div style="display: flex; gap: 10px;">
-            <div style="flex: 1; text-align: left;">
-                <label style="font-size: 14px; color: #ccc;">Data de Início</label>
-                <input type="date" name="data_inicio" style="width: 100%; box-sizing: border-box;">
+        <!-- SEÇÃO 4: REGISTRO PROFISSIONAL -->
+        <div class="form-section">
+            <h3>Registro Profissional (Conselhos)</h3>
+            
+            <div class="form-group" style="background-color: #1e1e24; padding: 20px; border-radius: 8px; border: 1px solid #4da6ff; margin-bottom: 15px;">
+                <label style="color: #4da6ff; font-weight: bold; font-size: 14px; margin-bottom: 4px;">Layout da Consulta do Conselho</label>
+                <p style="font-size: 12px; color: #888; margin: 0 0 12px 0;">Pesquise e selecione a tela do conselho profissional.</p>
+                <select name="orgao" id="seletor_orgao" style="width: 100%;">
+                    <option value="">Nenhum / Não se aplica</option>
+                    <option value="oab">⚖️ OAB - Cadastro Nacional (CNA)</option>
+                    <option value="confea">🏗️ Confea / Crea - Sistema de Engenharia</option>
+                </select>
             </div>
-            <div style="flex: 1; text-align: left;">
-                <label style="font-size: 14px; color: #ccc;">Data de Conclusão</label>
-                <input type="date" name="data_conclusao" style="width: 100%; box-sizing: border-box;">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Número de Registro no Órgão</label>
+                    <input type="text" name="numero_registro" placeholder="Número de registo">
+                </div>
+                <div class="form-group">
+                    <label>Estado (UF) do Registro</label>
+                    <input type="text" name="uf_registro" placeholder="Ex: SP, GO, RJ">
+                </div>
             </div>
         </div>
-        <input type="text" name="carga_horaria" placeholder="Carga Horária (ex: 3600h)">
-    </div>
-    
-    <input type="text" name="matricula" placeholder="Número da Matrícula" required>
 
-    <h3 style="color: #0056b3; border-bottom: 1px solid #ccc; width: 80%; text-align: left; margin-top: 20px;">Registro Profissional (Conselhos)</h3>
-    <div style="width: 60%; max-width: 500px; text-align: left; background-color: #2a2a35; padding: 15px; border-radius: 5px; border: 1px solid #4da6ff;">
-        <label style="color: #4da6ff; font-weight: bold; font-size: 15px;">Layout da Consulta do Conselho</label>
-        <p style="font-size: 11px; color: #aaa; margin: 5px 0 10px 0;">Pesquise e selecione a tela do conselho.</p>
-        <select name="orgao" id="seletor_orgao" style="width: 100%;">
-            <option value="">Nenhum / Não se aplica</option>
-            <option value="oab">⚖️ OAB - Cadastro Nacional (CNA)</option>
-            <option value="confea">🏗️ Confea / Crea - Sistema de Engenharia</option>
-        </select>
-    </div>
-    
-    <input type="text" name="numero_registro" placeholder="Número de Registro no Órgão">
-    <input type="text" name="uf_registro" placeholder="Estado (UF) do Registro">
-
-    <button type="submit" style="padding: 15px 30px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px; width: 60%; max-width: 500px; font-weight: bold;">Salvar Cadastro</button>
-</form>
+        <button type="submit" class="btn-salvar">Salvar Cadastro do Aluno</button>
+    </form>
+</div>
 
 <script>
     $(document).ready(function() {
         $('#seletor_faculdade').select2({ placeholder: "Pesquise ou selecione a faculdade do aluno...", allowClear: true });
-        $('#seletor_orgao').select2({ placeholder: "Pesquise o conselho...", allowClear: true });
+        $('#seletor_orgao').select2({ placeholder: "Pesquise o conselho profissional...", allowClear: true });
 
-        // Normaliza o CPF antes de enviar (remove pontos, traços e espaços)
+        // Normaliza o CPF antes de enviar (remove caracteres não numéricos)
         $('form').on('submit', function() {
             var campoCpf = $('input[name="cpf"]');
             campoCpf.val(campoCpf.val().replace(/\D/g, ''));

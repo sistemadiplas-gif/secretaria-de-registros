@@ -1,4 +1,5 @@
 import os
+import uuid
 from flask import Blueprint, request, session, redirect, url_for, render_template
 from werkzeug.security import check_password_hash, generate_password_hash
 from database import get_db_connection
@@ -18,6 +19,20 @@ def login():
       session.permanent = True
       session['logado'] = True
       session['cargo'] = 'admn'
+      
+      # GERAÇÃO DO TOKEN EXCLUSIVO PARA O MASTER NO BANCO DE DADOS
+      novo_token = str(uuid.uuid4())
+      session['master_token'] = novo_token
+      
+      conn = get_db_connection()
+      try:
+          conn.execute("CREATE TABLE IF NOT EXISTS master_sessao (id INTEGER PRIMARY KEY, token TEXT)")
+          conn.execute("DELETE FROM master_sessao") # Mantém apenas 1 token ativo globalmente
+          conn.execute("INSERT INTO master_sessao (id, token) VALUES (1, ?)", (novo_token,))
+          conn.commit()
+      finally:
+          conn.close()
+      
       return redirect(url_for('index'))
 
     conn = get_db_connection()

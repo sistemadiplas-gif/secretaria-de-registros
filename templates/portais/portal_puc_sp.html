@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal do Aluno - PUC-SP</title>
     <style>
-        /* Cores Base do Sistema */
         :root {
             --cor-primaria: #8a1c22; 
             --cor-primaria-escura: #55070a;
             --cor-secundaria: #333333;
             --fundo-login: #55070a;
-            --fundo-dashboard: #f0f2f5;
-            --borda: #e1e4e8;
+            --fundo-dashboard: #e2e4e9;
+            --borda: #d1d5db;
         }
         
         body { 
@@ -23,11 +22,9 @@
             background-color: var(--fundo-dashboard);
         }
         
-        /* 
-        ========================================
-        1. ECRÃ DE LOGIN (ACESSO)
-        ========================================
-        */
+        /* ========================================
+           1. ECRÃ DE LOGIN
+           ======================================== */
         .login-fullscreen {
             background-color: var(--fundo-login);
             background-image: 
@@ -46,6 +43,7 @@
             position: absolute;
             top: 0;
             left: 0;
+            z-index: 1000;
         }
 
         .logo-fundacao {
@@ -55,23 +53,19 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 0 10px;
         }
 
         .logo-fundacao img {
-            width: 140px; 
+            width: 140px;
             margin-bottom: 10px;
             filter: brightness(0) invert(1);
-        }
-
-        .logo-fundacao div {
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 24px; 
-            letter-spacing: 0.5px;
+            object-fit: contain;
         }
 
         .login-card {
-            background: rgba(245, 246, 248, 0.88); /* Tom acinzentado translúcido integrado ao fundo */
-            backdrop-filter: blur(10px); /* Efeito esfumaçado integrando com as marcas d'água */
+            background: rgba(245, 246, 248, 0.88); 
+            backdrop-filter: blur(10px); 
             border-radius: 12px;
             width: 100%;
             max-width: 440px; 
@@ -80,6 +74,7 @@
             box-shadow: 0 15px 45px rgba(0,0,0,0.4); 
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 0 15px 30px 15px;
         }
 
         .login-title {
@@ -90,7 +85,6 @@
             font-weight: 400; 
         }
 
-        /* Logos Centrais Ajustadas Individualmente */
         .login-logos {
             display: flex;
             align-items: center;
@@ -100,36 +94,11 @@
             width: 100%;
         }
         
-        .logo-puc { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            flex: 1;
-        }
-        .logo-puc img { 
-            max-height: 90px; 
-            width: auto; 
-            object-fit: contain;
-        }
-        
-        .logo-divider { 
-            width: 1.5px; 
-            height: 50px; 
-            background-color: rgba(0, 0, 0, 0.15); 
-            margin: 0 5px; 
-        }
-        
-        .logo-assuncao { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            flex: 1;
-        }
-        .logo-assuncao img { 
-            max-height: 200px; 
-            width: auto; 
-            object-fit: contain;
-        }
+        .logo-puc { display: flex; align-items: center; justify-content: center; flex: 1; }
+        .logo-puc img { max-height: 90px; width: auto; object-fit: contain; }
+        .logo-divider { width: 1.5px; height: 50px; background-color: rgba(0, 0, 0, 0.15); margin: 0 5px; }
+        .logo-assuncao { display: flex; align-items: center; justify-content: center; flex: 1; }
+        .logo-assuncao img { max-height: 200px; width: auto; object-fit: contain; }
 
         .input-wrapper {
             display: flex;
@@ -186,559 +155,347 @@
 
         .erro-msg { background-color: #ffebee; color: #c62828; padding: 10px; border-radius: 4px; text-align: center; margin-bottom: 15px; border-left: 4px solid #c62828; }
 
-        /* 
-        ========================================
-        2. ECRÃ DO ALUNO (DASHBOARD TOTVS)
-        ========================================
-        */
+        /* ========================================
+           2. ECRÃ DO ALUNO (ÁREA LOGADA)
+           ======================================== */
         .dashboard-layout {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            background-color: #e2e4e9;
         }
 
-        /* Topbar */
-        .topbar {
-            background-color: var(--cor-primaria);
+        .header-institucional {
+            background-color: #55070a;
             color: white;
-            height: 60px;
+            text-align: center;
+            padding: 12px 10px;
+            border-bottom: 2px solid #420407;
+        }
+        .header-institucional img {
+            height: 60px; 
+            max-width: 90vw;
+            filter: brightness(0) invert(1);
+            display: inline-block;
+            object-fit: contain;
+        }
+
+        .sub-header-bar {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #d1d5db;
+            padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .topbar-left {
-            display: flex;
-            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            flex-wrap: wrap;
             gap: 15px;
         }
-
-        .topbar-logo {
-            height: 40px;
-            filter: brightness(0) invert(1);
-        }
-
-        .topbar-title {
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            border-left: 1px solid rgba(255,255,255,0.3);
-            padding-left: 15px;
-            margin-left: 5px;
-        }
-
-        .topbar-right {
+        
+        .sub-header-logos {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        /* Controlo individual das logos no cabeçalho */
+        .puc-logo-header {
+            max-height: 75px; 
+            width: auto;
+            object-fit: contain;
+        }
+        
+        .assuncao-logo-header {
+            max-height: 130px; /* Aumentado BASTANTE conforme solicitado */
+            width: auto;
+            object-fit: contain;
+        }
+        
+        .sub-header-divider {
+            width: 1px;
+            height: 75px; /* Aumentado para acompanhar o tamanho da Assunção */
+            background-color: #ccc;
         }
 
-        .user-mini-profile {
+        .user-panel-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            background: #eaeef3;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
         }
-
-        .user-mini-profile img {
+        .user-panel-info img {
             width: 36px;
             height: 36px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid rgba(255,255,255,0.5);
         }
-
-        .user-mini-name {
+        .user-panel-text {
             font-size: 14px;
+            color: #333;
             font-weight: 500;
         }
-
-        .btn-logout {
-            color: white;
+        .btn-logout-totvs {
+            color: #8a1c22;
             text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 14px;
-            padding: 6px 12px;
-            background-color: rgba(0,0,0,0.15);
-            border-radius: 4px;
-            transition: 0.2s;
+            gap: 4px;
+            margin-left: 8px;
+            border-left: 1px solid #ccc;
+            padding-left: 12px;
         }
+        .btn-logout-totvs:hover { text-decoration: underline; }
 
-        .btn-logout:hover {
-            background-color: rgba(0,0,0,0.3);
-        }
-
-        /* Container Principal */
         .main-wrapper {
             display: flex;
             flex: 1;
         }
 
-        /* Sidebar (Menu Lateral) */
         .sidebar {
-            width: 240px;
-            background-color: white;
-            border-right: 1px solid var(--borda);
-            padding: 20px 0;
+            width: 250px;
+            background-color: #69161a;
+            border-right: 1px solid #55070a;
+            padding: 15px 0;
             display: flex;
             flex-direction: column;
-            z-index: 10;
+            flex-shrink: 0;
         }
 
         .menu-item {
-            padding: 15px 25px;
+            padding: 14px 22px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            color: #555;
+            gap: 14px;
+            color: #f1f1f1;
             text-decoration: none;
-            font-weight: 500;
-            font-size: 15px;
-            border-left: 3px solid transparent;
+            font-weight: 400;
+            font-size: 14px;
+            border-left: 4px solid transparent;
             transition: 0.2s;
         }
+        .menu-item:hover { background-color: rgba(255,255,255,0.08); color: white; }
+        .menu-item.active { background-color: #dfc29f; color: #420407; font-weight: 600; border-left-color: #b68d53; }
 
-        .menu-item:hover, .menu-item.active {
-            background-color: #f8f9fa;
-            color: var(--cor-primaria);
-            border-left-color: var(--cor-primaria);
-        }
-
-        /* Área de Conteúdo + Marca d'água */
         .content-area {
             flex: 1;
-            padding: 30px 40px;
-            max-width: 1400px;
+            padding: 25px;
+            max-width: 1350px;
             margin: 0 auto;
             width: 100%;
             box-sizing: border-box;
-            position: relative; 
         }
 
-        /* MARCA D'ÁGUA FIXA NO FUNDO */
-        .marca-dagua {
-            position: fixed;
-            top: 50%;
-            left: calc(50% + 120px); 
-            transform: translate(-50%, -50%);
-            width: 450px;
-            opacity: 0.12; 
-            pointer-events: none; 
-            z-index: 0;
-        }
-
-        .page-header, .dashboard-grid {
-            position: relative;
-            z-index: 1; 
-        }
-
-        .page-header {
-            margin-bottom: 30px;
-        }
-
-        .page-header h1 {
-            margin: 0;
-            font-size: 26px;
-            color: var(--cor-secundaria);
-        }
-
-        .page-header p {
-            margin: 5px 0 0 0;
-            color: #777;
-            font-size: 15px;
-        }
-
-        /* Grid de Cartões (Com Glassmorphism) */
-        .dashboard-grid {
+        .dashboard-grid-totvs {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
-            gap: 25px;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
         }
 
-        .widget-card {
-            background: rgba(255, 255, 255, 0.7); 
-            backdrop-filter: blur(8px); 
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            overflow: hidden;
+        .coluna-esquerda, .coluna-direita {
             display: flex;
             flex-direction: column;
+            gap: 20px;
         }
 
-        .widget-header {
-            background-color: transparent; 
-            padding: 18px 20px;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .card-totvs {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            padding: 20px;
         }
 
-        .widget-header h3 {
-            margin: 0;
+        .card-totvs h3 {
+            margin-top: 0;
             font-size: 16px;
-            color: var(--cor-primaria);
+            color: #8a1c22;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
             font-weight: 600;
         }
 
-        .widget-body {
-            padding: 25px;
-            flex: 1;
-        }
-
-        /* Detalhes Completos do Aluno */
-        .aluno-info-layout {
+        /* BANNER DE PROPAGANDAS */
+        .banner-slideshow {
+            background: linear-gradient(135deg, #55070a 0%, #8a1c22 100%);
+            border-radius: 6px;
+            color: white;
+            padding: 20px 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            min-height: 90px;
             display: flex;
-            gap: 30px;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .slide-item { display: none; animation: fadeIn 0.8s ease-in-out; }
+        .slide-item.active { display: block; }
+        .slide-item h4 { margin: 0 0 5px 0; font-size: 17px; color: #dfc29f; font-weight: 600; }
+        .slide-item p { margin: 0; font-size: 13px; color: #f0f0f0; line-height: 1.4; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* FICHA DO ALUNO */
+        .aluno-ficha-layout {
+            display: flex;
+            gap: 20px;
             align-items: flex-start;
         }
-
         .aluno-foto-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
-            min-width: 120px;
+            gap: 8px;
+            flex-shrink: 0;
         }
-
-        .aluno-foto-grande {
-            width: 110px;
-            height: 140px; 
-            border-radius: 6px;
-            object-fit: cover;
-            border: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .aluno-foto-placeholder {
+        .aluno-foto-ficha {
             width: 110px;
             height: 140px;
+            object-fit: cover;
             border-radius: 6px;
-            background-color: rgba(238, 238, 238, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            font-size: 12px;
-            border: 1px solid rgba(0,0,0,0.1);
+            border: 1px solid #ccc;
         }
-
-        .status-badge {
-            background-color: rgba(232, 245, 233, 0.8);
-            color: #2e7d32;
-            padding: 6px 12px;
+        .status-aprovado-badge {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 4px 8px;
             border-radius: 4px;
             font-size: 11px;
             font-weight: bold;
-            border: 1px solid rgba(200, 230, 201, 0.8);
             text-align: center;
             width: 100%;
             box-sizing: border-box;
+            letter-spacing: 0.5px;
         }
-
-        .aluno-dados-completos {
+        .aluno-dados-grid {
             flex: 1;
             display: grid;
-            grid-template-columns: 1fr 1fr; 
-            gap: 20px;
-            row-gap: 15px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
-
-        .dado-full-width {
+        .dado-bloco {
+            background: #f9fafb;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+        .dado-bloco.full {
             grid-column: 1 / -1;
         }
-
-        .dado-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .dado-label {
-            font-size: 11px;
+        .dado-bloco span {
+            display: block;
+            font-size: 10px;
             color: #666;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
             font-weight: 600;
+            margin-bottom: 2px;
         }
-
-        .dado-valor {
-            font-size: 14px;
-            color: #222;
-            font-weight: 500;
-            padding: 6px 10px;
-            background-color: transparent; 
-            border-radius: 4px;
-            border: 1px solid rgba(0,0,0,0.08); 
-        }
-
-        .dado-destaque-verde {
-            background-color: rgba(232, 245, 233, 0.5);
-            color: #2e7d32;
-            border-color: rgba(200, 230, 201, 0.8);
-            font-weight: bold;
-        }
-
-        /* Lista de Documentos */
-        .doc-list-modern {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .doc-list-modern li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-        }
-
-        .doc-list-modern li:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .doc-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .doc-icon {
-            width: 45px;
-            height: 45px;
-            background-color: rgba(253, 242, 242, 0.6);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--cor-primaria);
-            border: 1px solid rgba(249, 229, 229, 0.8);
-        }
-
-        .doc-text h4 {
-            margin: 0 0 4px 0;
-            font-size: 15px;
-            color: #333;
-        }
-
-        .doc-text p {
-            margin: 0;
-            font-size: 12px;
-            color: #777;
-        }
-
-        .doc-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-doc {
-            background-color: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0,0,0,0.1);
-            color: #555;
-            padding: 8px 16px;
-            border-radius: 4px;
+        .dado-bloco strong {
             font-size: 13px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            color: #222;
         }
 
-        .btn-doc:hover {
-            background-color: #fff;
-            border-color: #aaa;
-        }
+        .avisos-grid { display: flex; gap: 15px; justify-content: space-around; padding: 5px 0; }
+        .aviso-icone-box { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; color: #555; font-size: 12px; }
 
-        .btn-doc.primary {
-            background-color: var(--cor-primaria);
-            color: white;
-            border-color: var(--cor-primaria);
-        }
+        .doc-grid-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
+        .btn-doc-puc { background-color: #8a1c22; color: white; padding: 7px 14px; border-radius: 4px; font-size: 12px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-doc-puc:hover { background-color: #55070a; }
 
-        .btn-doc.primary:hover {
-            background-color: var(--cor-primaria-escura);
-        }
-
-        /* 
-        ========================================
-        RESPONSIVIDADE (MOBILE / TABLET)
-        ========================================
-        */
-        @media (max-width: 992px) {
-            .aluno-info-layout { flex-direction: column; align-items: center; text-align: center; }
-            .aluno-foto-container { width: 100%; flex-direction: column; justify-content: center; }
-            .status-badge { width: auto; min-width: 120px; }
-            .aluno-dados-completos { grid-template-columns: 1fr; width: 100%; text-align: left; }
-            .marca-dagua { left: 50%; width: 350px; }
-        }
-
-        @media (max-width: 768px) {
-            /* Login Mobile Aprimorado */
-            .login-fullscreen { padding-top: 5vh; }
-            .login-card { 
-                max-width: 100%; 
-                margin: 0 15px; 
-                width: calc(100% - 30px);
-                padding: 30px 20px; 
-            }
-            .login-title { font-size: 32px; }
-            
-            /* Ajuste Perfeito para Logos no Mobile */
-            .login-logos { gap: 10px; margin-bottom: 10px; }
-            .logo-puc img { max-height: 90px; }
-            .logo-assuncao img { max-height: 200px; }
-            
-            /* Dashboard Mobile */
+        /* ========================================
+           RESPONSIVIDADE MÓBILE PERFEITA
+           ======================================== */
+        @media (max-width: 950px) {
+            .dashboard-grid-totvs { grid-template-columns: 1fr; }
             .main-wrapper { flex-direction: column; }
-            .topbar-title { font-size: 15px; }
-            .user-mini-name { display: none; }
-            .sidebar { 
-                width: 100%; 
-                border-right: none; 
-                border-bottom: 1px solid var(--borda); 
-                flex-direction: row; 
-                overflow-x: auto; 
-                padding: 5px; 
-            }
-            .menu-item { 
-                padding: 12px 15px; 
-                border-left: none; 
-                border-bottom: 3px solid transparent; 
-                white-space: nowrap; 
-            }
-            .menu-item:hover, .menu-item.active { 
-                border-left: none; 
-                border-bottom-color: var(--cor-primaria); 
-                background-color: transparent;
-            }
-            .content-area { padding: 20px 15px; }
-            .dashboard-grid { grid-template-columns: 1fr; }
+            .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 5px; }
+            .menu-item { padding: 10px 14px; border-left: none; border-bottom: 3px solid transparent; white-space: nowrap; font-size: 13px; }
+            .menu-item.active { border-bottom-color: #b68d53; border-left-color: transparent; }
             
-            .doc-list-modern li {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            .doc-actions {
-                width: 100%;
-                justify-content: flex-end;
-            }
-            .marca-dagua { width: 250px; opacity: 0.08; }
+            .sub-header-bar { flex-direction: column; gap: 12px; align-items: center; text-align: center; padding: 15px 10px; }
+            .sub-header-logos { justify-content: center; gap: 15px; width: 100%; }
+            .puc-logo-header { max-height: 60px; }
+            .assuncao-logo-header { max-height: 100px; } /* Ajuste proporcional pro mobile */
+            .sub-header-divider { display: none; }
+            
+            .user-panel-info { width: 100%; justify-content: center; }
+
+            .aluno-ficha-layout { flex-direction: column; align-items: center; text-align: center; }
+            .aluno-dados-grid { width: 100%; text-align: left; grid-template-columns: 1fr; }
+            .content-area { padding: 15px 10px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ========================================== -->
-    <!-- ÁREA DE LOGIN                              -->
-    <!-- ========================================== -->
     {% if not logado_portal %}
         <div class="login-fullscreen">
-            
             <div class="logo-fundacao">
                 <img src="{{ url_for('static', filename='logo-fundacao-sp.png') }}" alt="Fundação São Paulo">
-                <div>FUNDAÇÃO SÃO PAULO</div>
             </div>
-
             <div class="login-card">
                 <h2 class="login-title">Portal do Aluno</h2>
-                
                 <div class="login-logos">
-                    <div class="logo-puc">
-                        <img src="{{ url_for('static', filename='brasao-pucsp.png') }}" alt="PUC-SP">
-                    </div>
-                    
+                    <div class="logo-puc"><img src="{{ url_for('static', filename='brasao-pucsp.png') }}" alt="PUC-SP"></div>
                     <div class="logo-divider"></div>
-                    
-                    <div class="logo-assuncao">
-                        <img src="{{ url_for('static', filename='logo_assuncao.png') }}" alt="Assunção">
-                    </div>
+                    <div class="logo-assuncao"><img src="{{ url_for('static', filename='logo_assuncao.png') }}" alt="Assunção"></div>
                 </div>
-                
                 {% if erro %}
-                    <div class="erro-msg">
-                        <strong>Erro:</strong> {{ erro }}
-                    </div>
+                    <div class="erro-msg"><strong>Erro:</strong> {{ erro }}</div>
                 {% endif %}
-
                 <form method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    
-                    <!-- Campo 1: CPF -->
                     <div class="input-wrapper">
-                        <div class="input-addon">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        </div>
-                        <div class="input-field">
-                            <input type="text" id="usuario" name="usuario" placeholder="CPF do Aluno" value="{{ aluno.cpf if aluno else '' }}" required>
-                        </div>
+                        <div class="input-addon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+                        <div class="input-field"><input type="text" id="usuario" name="usuario" placeholder="CPF do Aluno" value="{{ aluno.cpf if aluno else '' }}" required></div>
                     </div>
-
-                    <!-- Campo 2: Senha (CPF) -->
                     <div class="input-wrapper">
-                        <div class="input-addon">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        </div>
-                        <div class="input-field">
-                            <input type="password" id="senha" name="senha" required placeholder="Senha (CPF)">
-                        </div>
+                        <div class="input-addon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+                        <div class="input-field"><input type="password" id="senha" name="senha" required placeholder="Senha (CPF)"></div>
                     </div>
-
                     <button type="submit" class="btn-acessar">ACESSAR</button>
                 </form>
-
                 <div class="login-footer">
                     <p>Ou utilize outra conta</p>
-                    <button class="btn-azure" type="button">
-                        <svg width="18" height="18" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg"><path fill="#f25022" d="M0 0h10v10H0z"/><path fill="#7fba00" d="M11 0h10v10H11z"/><path fill="#00a4ef" d="M0 11h10v10H0z"/><path fill="#ffb900" d="M11 11h10v10H11z"/></svg>
-                        AzureAD
-                    </button>
-                    <div class="links-rodape">
-                        <a href="#">Esqueceu sua senha?</a>
-                        <a href="#">Problemas com o acesso?</a>
-                    </div>
+                    <button class="btn-azure" type="button"><svg width="18" height="18" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg"><path fill="#f25022" d="M0 0h10v10H0z"/><path fill="#7fba00" d="M11 0h10v10H11z"/><path fill="#00a4ef" d="M0 11h10v10H0z"/><path fill="#ffb900" d="M11 11h10v10H11z"/></svg>AzureAD</button>
+                    <div class="links-rodape"><a href="#">Esqueceu sua senha?</a><a href="#">Problemas com o acesso?</a></div>
                 </div>
             </div>
         </div>
-
-    <!-- ========================================== -->
-    <!-- ÁREA LOGADA (DASHBOARD COMPLETO)           -->
-    <!-- ========================================== -->
     {% else %}
         <div class="dashboard-layout">
             
-            <header class="topbar">
-                <div class="topbar-left">
-                    <img src="{{ url_for('static', filename='brasao-pucsp.png') }}" alt="PUC-SP Logo" class="topbar-logo">
-                    <span class="topbar-title">Portal Educacional</span>
+            <header class="header-institucional">
+                <img src="{{ url_for('static', filename='logo-fundacao-sp.png') }}" alt="Fundação São Paulo">
+            </header>
+
+            <div class="sub-header-bar">
+                <div class="sub-header-logos">
+                    <!-- Classes CSS específicas para controlar os tamanhos de forma independente -->
+                    <img src="{{ url_for('static', filename='brasao-pucsp.png') }}" alt="PUC-SP" class="puc-logo-header">
+                    <div class="sub-header-divider"></div>
+                    <img src="{{ url_for('static', filename='logo_assuncao.png') }}" alt="Assunção" class="assuncao-logo-header">
                 </div>
-                <div class="topbar-right">
-                    <div class="user-mini-profile">
-                        {% if aluno.foto %}
-                            <img src="{{ url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) }}" alt="Avatar">
-                        {% else %}
-                            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ccc'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Avatar Padrão" style="background:#fff;">
-                        {% endif %}
-                        <span class="user-mini-name">{{ aluno.nome.split()[0] }}</span>
-                    </div>
-                    <a href="/" class="btn-logout">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                        Sair
+                <div class="user-panel-info">
+                    {% if aluno.foto %}
+                        <img src="{{ url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) }}" alt="Avatar">
+                    {% else %}
+                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ccc'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Avatar">
+                    {% endif %}
+                    <span class="user-panel-text">Olá, {{ aluno.nome.split()[0] }} {{ aluno.nome.split()[1] if aluno.nome.split()|length > 1 else '' }}</span>
+                    <a href="/" class="btn-logout-totvs">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        Logout
                     </a>
                 </div>
-            </header>
+            </div>
 
             <div class="main-wrapper">
                 <aside class="sidebar">
@@ -746,182 +503,164 @@
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                         Mural do Aluno
                     </a>
-                    <a href="#" class="menu-item">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                        Secretaria Virtual
-                    </a>
-                    <a href="#" class="menu-item">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                        Meus Documentos
-                    </a>
+                    <a href="#" class="menu-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>Boletim</a>
+                    <a href="#" class="menu-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>Horário</a>
+                    <a href="#" class="menu-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 10l5 5-5 5"></path><path d="M4 4v7a4 4 0 0 0 4 4h12"></path></svg>Aulas Online</a>
+                    <a href="#" class="menu-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>Secretaria Virtual</a>
+                    <a href="#" class="menu-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>Biblioteca</a>
                 </aside>
 
                 <main class="content-area">
-                    
-                    <!-- MARCA D'ÁGUA EM FORMATO DE IMAGEM -->
-                    <img src="{{ url_for('static', filename='brasao-pucsp.png') }}" class="marca-dagua" alt="Marca d'água">
-
-                    <div class="page-header">
-                        <h1>Bem-vindo(a), {{ aluno.nome }}</h1>
-                        <p>Acompanhe aqui a sua vida académica e documentos oficiais.</p>
-                    </div>
-
-                    <div class="dashboard-grid">
+                    <div class="dashboard-grid-totvs">
                         
-                        <div class="widget-card">
-                            <div class="widget-header">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                <h3>Contexto Académico e Pessoal</h3>
-                            </div>
-                            <div class="widget-body">
-                                <div class="aluno-info-layout">
-                                    
-                                    <div class="aluno-foto-container">
-                                        {% if aluno.foto %}
-                                            <img src="{{ url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) }}" alt="Foto 3x4" class="aluno-foto-grande">
-                                        {% else %}
-                                            <div class="aluno-foto-placeholder">Sem Foto</div>
-                                        {% endif %}
-                                        <div class="status-badge">Concluído em:<br>{{ aluno.data_conclusao }}</div>
-                                    </div>
-                                    
-                                    <div class="aluno-dados-completos">
-                                        
-                                        <div class="dado-item dado-full-width">
-                                            <span class="dado-label">Nome Completo</span>
-                                            <span class="dado-valor">{{ aluno.nome }}</span>
-                                        </div>
-                                        
-                                        <div class="dado-item dado-full-width">
-                                            <span class="dado-label">Curso Formação</span>
-                                            <span class="dado-valor">{{ aluno.curso }}</span>
-                                        </div>
-
-                                        <div class="dado-item dado-full-width">
-                                            <span class="dado-label">Instituição / Grau Académico</span>
-                                            <span class="dado-valor">{{ aluno.instituicao_ensino }} - {{ aluno.grau_academico }}</span>
-                                        </div>
-
-                                        <div class="dado-item">
-                                            <span class="dado-label">Status</span>
-                                            <span class="dado-valor dado-destaque-verde">{{ aluno.status|default('Aprovado') }}</span>
-                                        </div>
-                                        
-                                        <div class="dado-item">
-                                            <span class="dado-label">RA / Matrícula</span>
-                                            <span class="dado-valor">{{ aluno.matricula }}</span>
-                                        </div>
-                                        
-                                        <div class="dado-item">
-                                            <span class="dado-label">Data de Início</span>
-                                            <span class="dado-valor">{{ aluno.data_inicio }}</span>
-                                        </div>
-
-                                        <div class="dado-item">
-                                            <span class="dado-label">Carga Horária</span>
-                                            <span class="dado-valor">{{ aluno.carga_horaria }}h</span>
-                                        </div>
-
-                                        <div class="dado-item">
-                                            <span class="dado-label">CPF</span>
-                                            <span class="dado-valor">{{ aluno.cpf }}</span>
-                                        </div>
-
-                                        <div class="dado-item">
-                                            <span class="dado-label">Data de Nascimento</span>
-                                            <span class="dado-valor">{{ aluno.data_nascimento }}</span>
-                                        </div>
-
-                                        <div class="dado-item">
-                                            <span class="dado-label">RG</span>
-                                            <span class="dado-valor">{{ aluno.rg }}</span>
-                                        </div>
-                                    </div>
-
+                        <!-- Coluna Esquerda -->
+                        <div class="coluna-esquerda">
+                            
+                            <!-- Banner de Propagandas -->
+                            <div class="banner-slideshow" id="slideshow-banner">
+                                <div class="slide-item active">
+                                    <h4>🎓 Vestibular e Pós-Graduação PUC-SP</h4>
+                                    <p>Inscreva-se já nos novos cursos de extensão com condições especiais para egressos e diplomados.</p>
+                                </div>
+                                <div class="slide-item">
+                                    <h4>📚 Biblioteca Central e Acervo Digital</h4>
+                                    <p>Acesse mais de 1 milhão de e-books e periódicos internacionais diretamente pelo portal acadêmico.</p>
+                                </div>
+                                <div class="slide-item">
+                                    <h4>🌍 Intercâmbio Académico Internacional</h4>
+                                    <p>Consulte os editais abertos para parcerias com universidades na Europa e América do Norte.</p>
                                 </div>
                             </div>
+
+                            <!-- Ficha do Aluno -->
+                            <div class="card-totvs">
+                                <h3>Informações Oficiais do Aluno (Dados Cadastrais)</h3>
+                                <div class="aluno-ficha-layout">
+                                    <div class="aluno-foto-container">
+                                        {% if aluno.foto %}
+                                            <img src="{{ url_for('static', filename='uploads/' + aluno.foto.split('|')[0]) }}" alt="Foto 3x4" class="aluno-foto-ficha">
+                                        {% else %}
+                                            <div style="width:110px; height:140px; background:#eee; display:flex; align-items:center; justify-content:center; color:#999; font-size:11px; border-radius:6px;">Sem Foto</div>
+                                        {% endif %}
+                                        <div class="status-aprovado-badge">✔ APROVADO</div>
+                                    </div>
+
+                                    <div class="aluno-dados-grid">
+                                        <div class="dado-bloco full">
+                                            <span>Nome Completo</span>
+                                            <strong>{{ aluno.nome }}</strong>
+                                        </div>
+                                        <div class="dado-bloco">
+                                            <span>CPF</span>
+                                            <strong>{{ aluno.cpf }}</strong>
+                                        </div>
+                                        <div class="dado-bloco">
+                                            <span>RG / Órgão Emissor</span>
+                                            <strong>{{ aluno.rg }} ({{ aluno.orgao_rg }})</strong>
+                                        </div>
+                                        <div class="dado-bloco">
+                                            <span>Data de Nascimento</span>
+                                            <strong>{{ aluno.data_nascimento }}</strong>
+                                        </div>
+                                        <div class="dado-bloco">
+                                            <span>Naturalidade</span>
+                                            <strong>{{ aluno.naturalidade }}</strong>
+                                        </div>
+                                        <div class="dado-bloco full">
+                                            <span>Filiação</span>
+                                            <strong>{{ aluno.filiacao }}</strong>
+                                        </div>
+                                        <div class="dado-bloco full">
+                                            <span>Endereço Atual</span>
+                                            <strong>{{ aluno.endereco }}</strong>
+                                        </div>
+                                        <div class="dado-bloco">
+                                            <span>Categoria / Curso</span>
+                                            <strong>{{ aluno.tipo_curso }} em {{ aluno.curso }}</strong>
+                                        </div>
+                                        <div class="dado-bloco">
+                                            <span>Grau Académico</span>
+                                            <strong>{{ aluno.grau_academico }}</strong>
+                                        </div>
+                                        <div class="dado-bloco">
+                                            <span>Instituição de Ensino</span>
+                                            <strong>{{ aluno.instituicao_ensino }}</strong>
+                                        </div>
+                                        <div class="dado-bloco">
+                                            <span>Matrícula (RA)</span>
+                                            <strong>{{ aluno.matricula }}</strong>
+                                        </div>
+                                        <div class="dado-bloco">
+                                            <span>Carga Horária</span>
+                                            <strong>{{ aluno.carga_horaria }}</strong>
+                                        </div>
+                                        <div class="dado-bloco">
+                                            <span>Período (Início - Conclusão)</span>
+                                            <strong>{{ aluno.data_inicio }} a {{ aluno.data_conclusao }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Botões dos Documentos -->
+                                <div style="margin-top: 20px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                                    <h4 style="margin: 0 0 10px 0; font-size: 13px; color: #8a1c22; text-transform: uppercase;">Documentos Anexados no Cadastro:</h4>
+                                    <div class="doc-grid-links">
+                                        {% if aluno.historico %}
+                                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='historico') }}" target="_blank" class="btn-doc-puc">📄 Histórico Escolar</a>
+                                        {% endif %}
+                                        {% if aluno.certificado %}
+                                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='certificado') }}" target="_blank" class="btn-doc-puc">📜 Certificado de Conclusão</a>
+                                        {% endif %}
+                                        {% if aluno.diploma_frente %}
+                                            <a href="{{ url_for('static', filename='uploads/' + aluno.diploma_frente.split('|')[0]) }}" target="_blank" class="btn-doc-puc">🎓 Diploma (Frente)</a>
+                                        {% endif %}
+                                        {% if aluno.diploma_verso %}
+                                            <a href="{{ url_for('static', filename='uploads/' + aluno.diploma_verso.split('|')[0]) }}" target="_blank" class="btn-doc-puc">🎓 Diploma (Verso)</a>
+                                        {% endif %}
+                                        {% if aluno.outros_docs %}
+                                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='outros') }}" target="_blank" class="btn-doc-puc">📁 Outros Documentos</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
-                        <div class="widget-card">
-                            <div class="widget-header">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                                <h3>Arquivos da Secretaria</h3>
+                        <!-- Coluna Direita -->
+                        <div class="coluna-direita">
+                            
+                            <div class="card-totvs">
+                                <h3>Avisos Académicos</h3>
+                                <div class="avisos-grid">
+                                    <div class="aviso-icone-box">
+                                        <svg width="26" height="26" fill="#8a1c22" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                                        <span>Mensagens (1)</span>
+                                    </div>
+                                    <div class="aviso-icone-box">
+                                        <svg width="26" height="26" fill="#8a1c22" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                        <span>Comunicados</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="widget-body" style="padding: 10px 20px;">
-                                <ul class="doc-list-modern">
-                                    
-                                    {% if aluno.historico %}
-                                    <li>
-                                        <div class="doc-info">
-                                            <div class="doc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
-                                            <div class="doc-text">
-                                                <h4>Histórico Escolar</h4>
-                                                <p>Documento Oficial Registado</p>
-                                            </div>
-                                        </div>
-                                        <div class="doc-actions">
-                                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='historico') }}" target="_blank" class="btn-doc">Visualizar</a>
-                                        </div>
-                                    </li>
-                                    {% endif %}
-                                    
-                                    {% if aluno.certificado %}
-                                    <li>
-                                        <div class="doc-info">
-                                            <div class="doc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg></div>
-                                            <div class="doc-text">
-                                                <h4>Certificado de Conclusão</h4>
-                                                <p>Validação Académica</p>
-                                            </div>
-                                        </div>
-                                        <div class="doc-actions">
-                                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='certificado') }}" target="_blank" class="btn-doc">Visualizar</a>
-                                        </div>
-                                    </li>
-                                    {% endif %}
 
-                                    {% if aluno.diploma_frente or aluno.diploma_verso %}
-                                    <li>
-                                        <div class="doc-info">
-                                            <div class="doc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></div>
-                                            <div class="doc-text">
-                                                <h4>Diploma Digital</h4>
-                                                <p>Digitalização Autenticada</p>
-                                            </div>
-                                        </div>
-                                        <div class="doc-actions">
-                                            {% if aluno.diploma_frente %}
-                                            <a href="{{ url_for('static', filename='uploads/' + aluno.diploma_frente.split('|')[0]) }}" target="_blank" class="btn-doc primary">Frente</a>
-                                            {% endif %}
-                                            {% if aluno.diploma_verso %}
-                                            <a href="{{ url_for('static', filename='uploads/' + aluno.diploma_verso.split('|')[0]) }}" target="_blank" class="btn-doc primary">Verso</a>
-                                            {% endif %}
-                                        </div>
-                                    </li>
-                                    {% endif %}
-                                    
-                                    {% if aluno.outros_docs %}
-                                    <li>
-                                        <div class="doc-info">
-                                            <div class="doc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></div>
-                                            <div class="doc-text">
-                                                <h4>Anexos Complementares</h4>
-                                                <p>Documentos Extra</p>
-                                            </div>
-                                        </div>
-                                        <div class="doc-actions">
-                                            <a href="{{ url_for('visualizar_documento', aluno_id=aluno.id, tipo_doc='outros') }}" target="_blank" class="btn-doc">Visualizar</a>
-                                        </div>
-                                    </li>
-                                    {% endif %}
-                                </ul>
-                            </div>
                         </div>
 
                     </div>
                 </main>
             </div>
         </div>
+
+        <script>
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('.slide-item');
+            function nextSlide() {
+                if (slides.length === 0) return;
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+            setInterval(nextSlide, 5000);
+        </script>
     {% endif %}
 
 </body>

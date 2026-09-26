@@ -16,15 +16,15 @@
         #header-azul img { width: 100%; height: 85px; object-fit: cover; object-position: center; display: block; }
 
         /* CONTAINER PRINCIPAL */
-        .main-container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+        .main-container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; width: 100%; }
         
         /* TÍTULO INICIAL */
-        .title-section { text-align: center; margin-bottom: 25px; width: 100%; max-width: 600px; }
+        .title-section { text-align: center; margin-bottom: 25px; width: 100%; max-width: 600px; padding: 0 10px; }
         .title-section h1 { font-size: 28px; color: #7f8a94; font-weight: 500; margin-bottom: 8px; }
         .title-section p { font-size: 14px; color: #666; line-height: 1.5; }
 
         /* FORMULÁRIO COMPACTO (TELA 1) */
-        .search-form { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 14px; }
+        .search-form { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 14px; padding: 0 10px; }
         .form-input, .form-select { width: 100%; padding: 15px 18px; border: 1px solid #ced4da; border-radius: 4px; background-color: #f8f9fa; font-size: 16px; color: #495057; outline: none; }
         .form-input::placeholder { color: #88929b; }
         .form-select { color: #495057; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23495057%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 18px top 50%; background-size: 12px auto; cursor: pointer; }
@@ -34,7 +34,7 @@
         /* SESSÃO DE APPS GERAL */
         .apps-section { margin-top: 40px; text-align: center; }
         .apps-section p { font-size: 12px; color: #88929b; margin-bottom: 10px; }
-        .apps-badges { display: flex; gap: 10px; justify-content: center; }
+        .apps-badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
         .app-btn { background-color: #111; color: white; border-radius: 6px; padding: 7px 14px; display: flex; align-items: center; gap: 8px; text-decoration: none; }
         .app-btn-icon { font-size: 22px; line-height: 1; }
         .app-btn-text { text-align: left; display: flex; flex-direction: column; }
@@ -45,8 +45,8 @@
            LAYOUT COMPARTILHADO (TELA 2 E 3) - GRANDÃO (1150px)
            ========================================================= */
         .tela-conteudo-wrapper { display: none; width: 100%; max-width: 1150px; font-family: Arial, sans-serif; }
-        .layout-duas-colunas { display: flex; gap: 30px; align-items: flex-start; }
-        .coluna-principal { flex: 1; }
+        .layout-duas-colunas { display: flex; gap: 30px; align-items: flex-start; width: 100%; }
+        .coluna-principal { flex: 1; min-width: 0; }
         
         /* SIDEBAR DIREITA */
         .coluna-sidebar { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px; }
@@ -62,46 +62,47 @@
         .tela2-titulo { font-size: 28px; color: #111; margin-bottom: 20px; font-weight: 500; }
         .tela2-resumo { background-color: #e5e5e5; border: 1px solid #c9c9c9; padding: 18px; border-radius: 4px; font-size: 16px; color: #333; margin-bottom: 25px; }
         
-        .tela2-tabela { width: 100%; border-collapse: collapse; font-size: 15px; border: 1px solid #c9c9c9; }
-        .tela2-tabela th { background-color: #e2e2e2; padding: 14px; text-align: left; border: 1px solid #c9c9c9; color: #222; font-weight: bold; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #c9c9c9; margin-bottom: 15px; }
+        .tela2-tabela { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 650px; }
+        .tela2-tabela th { background-color: #e2e2e2; padding: 14px; text-align: left; border: 1px solid #c9c9c9; color: #222; font-weight: bold; white-space: nowrap; }
         .tela2-tabela td { padding: 14px; border: 1px solid #c9c9c9; color: #333; }
         .tela2-tabela tbody tr:nth-child(even) { background-color: #f9f9f9; }
 
-        .btn-ver-detalhes { background-color: #1c4b82; color: #fff; border: none; padding: 8px 12px; border-radius: 3px; cursor: pointer; font-size: 14px; font-weight: 500; }
+        .btn-ver-detalhes { background-color: #1c4b82; color: #fff; border: none; padding: 8px 12px; border-radius: 3px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; }
         .btn-ver-detalhes:hover { background-color: #12335c; }
         
-        .tela2-paginacao { display: flex; justify-content: flex-end; align-items: center; gap: 5px; margin-top: 15px; }
+        .tela2-paginacao { display: flex; justify-content: flex-end; align-items: center; gap: 5px; margin-top: 15px; flex-wrap: wrap; }
         .pag-btn { padding: 8px 12px; border: 1px solid #c9c9c9; background: #f1f1f1; color: #555; cursor: pointer; font-size: 14px; border-radius: 2px; }
         .pag-btn.active { background-color: #1c4b82; color: #fff; border-color: #1c4b82; }
 
-        .btn-pdf { background-color: #1c4b82; color: white; padding: 12px 18px; border: none; border-radius: 3px; margin-top: 20px; float: right; cursor: pointer; font-size: 15px; }
+        .btn-pdf { background-color: #1c4b82; color: white; padding: 12px 18px; border: none; border-radius: 3px; margin-top: 20px; cursor: pointer; font-size: 15px; display: inline-block; }
 
         /* =========================================================
-           TELA 3: FICHA DE DETALHES GRANDONA E EDITÁVEL (FOTO 12)
+           TELA 3: FICHA DE DETALHES GRANDONA E EDITÁVEL
            ========================================================= */
         .detalhes-titulo-main { font-size: 32px; color: #111; margin-bottom: 25px; font-weight: bold; font-family: Arial, sans-serif; letter-spacing: -0.5px; }
         
-        .perfil-box { display: flex; align-items: center; gap: 25px; background-color: #d1d1d1; padding: 15px; border: 1px solid #c0c0c0; border-radius: 3px; margin-bottom: 25px; }
+        .perfil-box { display: flex; align-items: center; gap: 25px; background-color: #d1d1d1; padding: 15px; border: 1px solid #c0c0c0; border-radius: 3px; margin-bottom: 25px; flex-wrap: wrap; }
         .perfil-foto { width: 95px; height: 120px; border: 1px solid #999; background: #fff; padding: 3px; flex-shrink: 0; }
         .perfil-foto img { width: 100%; height: 100%; object-fit: cover; }
-        .perfil-nome { font-size: 30px; font-weight: 500; color: #111; letter-spacing: -0.5px; }
+        .perfil-nome { font-size: 30px; font-weight: 500; color: #111; letter-spacing: -0.5px; word-break: break-word; }
 
         .secao-detalhes { border: 1px solid #c0c0c0; border-radius: 3px; margin-bottom: 20px; background-color: #eaeaea; overflow: hidden; }
         .secao-header-title { background-color: #cfcfcf; padding: 12px 16px; font-size: 14px; font-weight: bold; color: #222; border-bottom: 1px solid #c0c0c0; text-transform: uppercase; }
         
-        .secao-row { display: flex; border-bottom: 1px solid #c0c0c0; background-color: #e3e3e3; }
+        .secao-row { display: flex; border-bottom: 1px solid #c0c0c0; background-color: #e3e3e3; flex-wrap: wrap; }
         .secao-row:last-child { border-bottom: none; }
-        .secao-col { flex: 1; padding: 16px; border-right: 1px solid #c0c0c0; display: flex; flex-direction: column; justify-content: center; }
-        .secao-col:last-child { border-right: none; }
+        .secao-col { flex: 1; min-width: 140px; padding: 16px; border-right: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; display: flex; flex-direction: column; justify-content: center; }
+        .secao-col:last-child { border-right: none; border-bottom: none; }
         
         .label-min { font-size: 13px; color: #555; margin-bottom: 6px; }
-        .val-min { font-size: 16px; color: #222; }
+        .val-min { font-size: 16px; color: #222; word-break: break-word; }
         .val-large { font-size: 20px; font-weight: bold; color: #111; }
         .text-success { color: #2e7d32; font-weight: bold; display: flex; align-items: center; gap: 6px; font-size: 16px; }
 
-        /* Campos Editáveis da Seção 3 (Design Transparente/Invisível) */
-        .secao-col-inline { display: flex; align-items: center; padding: 16px; border-right: 1px solid #c0c0c0; }
-        .secao-col-inline:last-child { border-right: none; }
+        /* Campos Editáveis da Seção 3 */
+        .secao-col-inline { display: flex; align-items: center; padding: 16px; border-right: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; flex: 1; min-width: 280px; flex-wrap: wrap; }
+        .secao-col-inline:last-child { border-right: none; border-bottom: none; }
         
         .label-inline { font-size: 15px; color: #555; margin-right: 8px; white-space: nowrap; }
         
@@ -114,21 +115,35 @@
             border: 1px solid transparent;
             font-family: Arial, sans-serif;
             transition: 0.2s;
-            min-width: 0; /* evita quebra de layout */
+            min-width: 150px;
         }
         .input-inline:hover { border-color: #b0b0b0; background-color: #fff; border-radius: 3px; }
         .input-inline:focus { border-color: #356094; background-color: #fff; outline: none; border-radius: 3px; box-shadow: 0 0 4px rgba(53,96,148,0.3); }
 
-        .botoes-acao-footer { display: flex; justify-content: space-between; margin-top: 20px; align-items: center; padding-bottom: 30px; }
+        .botoes-acao-footer { display: flex; justify-content: space-between; margin-top: 20px; align-items: center; padding-bottom: 30px; gap: 15px; flex-wrap: wrap; }
         .btn-cinza { background: #dcdcdc; border: 1px solid #a9a9a9; padding: 12px 20px; color: #333; cursor: pointer; font-size: 15px; border-radius: 3px; font-weight: 500; transition: 0.2s; }
         .btn-cinza:hover { background: #cecece; }
         .btn-azul { background: #356094; border: 1px solid #284c7a; padding: 12px 20px; color: #fff; cursor: pointer; font-size: 15px; border-radius: 3px; font-weight: bold; transition: 0.2s; }
         .btn-azul:hover { background: #2a4c77; }
 
         /* FOOTER PRINCIPAL */
-        .footer { background-color: #e9ecef; border-top: 1px solid #dee2e6; padding: 25px 60px; display: flex; justify-content: space-between; font-size: 13px; color: #6c757d; margin-top: auto; }
+        .footer { background-color: #e9ecef; border-top: 1px solid #dee2e6; padding: 25px 40px; display: flex; justify-content: space-between; font-size: 13px; color: #6c757d; margin-top: auto; gap: 20px; flex-wrap: wrap; }
         .footer-left strong { color: #495057; display: block; margin-bottom: 4px; font-size: 14px; }
         .footer-link { color: #0056b3; text-decoration: none; }
+
+        /* =========================================================
+           ADAPTAÇÃO MÓBILE E TABLET (Responsividade)
+           ========================================================= */
+        @media (max-width: 850px) {
+            .layout-duas-colunas { flex-direction: column; }
+            .coluna-sidebar { width: 100%; order: 2; margin-top: 20px; }
+            .coluna-principal { width: 100%; order: 1; }
+            .botoes-acao-footer { flex-direction: column; align-items: stretch; }
+            .botoes-acao-footer > div { flex-direction: column; }
+            .footer { flex-direction: column; text-align: center; }
+            .perfil-nome { font-size: 24px; }
+            .detalhes-titulo-main { font-size: 26px; }
+        }
     </style>
 </head>
 <body>
@@ -215,63 +230,67 @@
 
             <div class="layout-duas-colunas">
                 <div class="coluna-principal">
-                    <table class="tela2-tabela">
-                        <thead>
-                            <tr>
-                                <th>Nome Completo</th>
-                                <th>Inscrição</th>
-                                <th>Seccional</th>
-                                <th>Tipo</th>
-                                <th>Status</th>
-                                <th>Detalhes</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>João Pereira da Silva</td>
-                                <td>123456</td>
-                                <td>SP</td>
-                                <td>Advogado</td>
-                                <td>Ativo</td>
-                                <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
-                            </tr>
-                            <tr>
-                                <td>Maria Helena Silva Souza</td>
-                                <td>789012</td>
-                                <td>SP</td>
-                                <td>Advogado</td>
-                                <td>Ativo</td>
-                                <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
-                            </tr>
-                            
-                            <!-- SEU ALUNO REAL -->
-                            <tr style="background-color: #f4f8ff;">
-                                <td style="text-transform: capitalize; font-weight: bold;">{{ aluno['nome'] }}</td>
-                                <td id="td-inscricao">{{ aluno['numero_registro'] }}</td>
-                                <td id="td-seccional-aluno">{{ aluno['uf_registro'] }}</td>
-                                <td>Advogado</td>
-                                <td>Ativo</td>
-                                <td><button class="btn-ver-detalhes" onclick="irParaDetalhes()">Ver Detalhes</button></td>
-                            </tr>
-                            
-                            <tr>
-                                <td>José Roberto Silva Santos</td>
-                                <td>345678</td>
-                                <td>MG</td>
-                                <td>Advogado Suplementar</td>
-                                <td>Ativo</td>
-                                <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
-                            </tr>
-                            <tr>
-                                <td>Ana Lúcia Ferreira Silva</td>
-                                <td>901234</td>
-                                <td>DF</td>
-                                <td>Advogado</td>
-                                <td>Ativo</td>
-                                <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    
+                    <!-- TABELA COM SUPORTE A SCROLL HORIZONTAL NO MÓBILE -->
+                    <div class="table-responsive">
+                        <table class="tela2-tabela">
+                            <thead>
+                                <tr>
+                                    <th>Nome Completo</th>
+                                    <th>Inscrição</th>
+                                    <th>Seccional</th>
+                                    <th>Tipo</th>
+                                    <th>Status</th>
+                                    <th>Detalhes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>João Pereira da Silva</td>
+                                    <td>123456</td>
+                                    <td>SP</td>
+                                    <td>Advogado</td>
+                                    <td>Ativo</td>
+                                    <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Maria Helena Silva Souza</td>
+                                    <td>789012</td>
+                                    <td>SP</td>
+                                    <td>Advogado</td>
+                                    <td>Ativo</td>
+                                    <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
+                                </tr>
+                                
+                                <!-- SEU ALUNO REAL -->
+                                <tr style="background-color: #f4f8ff;">
+                                    <td style="text-transform: capitalize; font-weight: bold;">{{ aluno['nome'] }}</td>
+                                    <td id="td-inscricao">{{ aluno['numero_registro'] }}</td>
+                                    <td id="td-seccional-aluno">{{ aluno['uf_registro'] }}</td>
+                                    <td>Advogado</td>
+                                    <td>Ativo</td>
+                                    <td><button class="btn-ver-detalhes" onclick="irParaDetalhes()">Ver Detalhes</button></td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>José Roberto Silva Santos</td>
+                                    <td>345678</td>
+                                    <td>MG</td>
+                                    <td>Advogado Suplementar</td>
+                                    <td>Ativo</td>
+                                    <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Ana Lúcia Ferreira Silva</td>
+                                    <td>901234</td>
+                                    <td>DF</td>
+                                    <td>Advogado</td>
+                                    <td>Ativo</td>
+                                    <td><button class="btn-ver-detalhes">Ver Detalhes</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     
                     <div class="tela2-paginacao">
                         <span class="pag-btn" style="color: #aaa;">Anterior</span>
@@ -292,9 +311,9 @@
                         <a class="sidebar-link">Relatórios</a>
                     </div>
                     
-                    <div class="sidebar-apps">
-                        <p>Baixe o App CNA</p>
-                        <div class="apps-badges">
+                    <div class="sidebar-apps" style="margin-top: 20px;">
+                        <p style="font-size: 12px; color: #88929b; margin-bottom: 10px; text-align: center;">Baixe o App CNA</p>
+                        <div class="apps-badges" style="flex-direction: column;">
                             <div class="app-btn" style="width: 100%; justify-content: flex-start;"><div class="app-btn-icon"></div><div class="app-btn-text"><small>Baixar na</small><span>App Store</span></div></div>
                             <div class="app-btn" style="width: 100%; justify-content: flex-start;"><div class="app-btn-icon" style="color: #00ffcc;">▶️</div><div class="app-btn-text"><small>DISPONÍVEL NO</small><span>Google Play</span></div></div>
                         </div>
@@ -304,7 +323,7 @@
         </div>
 
         <!-- ==========================================
-             ETAPA 3: FICHA GRANDONA E EDITÁVEL (FOTO 12)
+             ETAPA 3: FICHA GRANDONA E EDITÁVEL
              ========================================== -->
         <div id="bloco-detalhes" class="tela-conteudo-wrapper">
             
@@ -380,7 +399,7 @@
                         </div>
                     </div>
 
-                    <!-- SEÇÃO 3: INFORMAÇÕES PROFISSIONAIS (TRUQUE EDITÁVEL INVISÍVEL) -->
+                    <!-- SEÇÃO 3: INFORMAÇÕES PROFISSIONAIS -->
                     <div class="secao-detalhes">
                         <div class="secao-header-title">SEÇÃO 3: INFORMAÇÕES PROFISSIONAIS</div>
                         
@@ -417,7 +436,7 @@
                     <!-- BOTOES DE AÇÃO -->
                     <div class="botoes-acao-footer">
                         <button class="btn-cinza" onclick="voltarParaTabela()">Voltar para Pesquisa</button>
-                        <div style="display: flex; gap: 10px;">
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                             <button class="btn-cinza">Imprimir Certidão de Regularidade (PDF)</button>
                             <button class="btn-azul">Gerar Cartão de Identidade CNA</button>
                         </div>
@@ -432,9 +451,9 @@
                         <a class="sidebar-link">Relatórios</a>
                     </div>
                     
-                    <div class="sidebar-apps">
-                        <p>Baixe o App CNA</p>
-                        <div class="apps-badges">
+                    <div class="sidebar-apps" style="margin-top: 20px;">
+                        <p style="font-size: 12px; color: #88929b; margin-bottom: 10px; text-align: center;">Baixe o App CNA</p>
+                        <div class="apps-badges" style="flex-direction: column;">
                             <div class="app-btn" style="width: 100%; justify-content: flex-start;"><div class="app-btn-icon"></div><div class="app-btn-text"><small>Baixar na</small><span>App Store</span></div></div>
                             <div class="app-btn" style="width: 100%; justify-content: flex-start;"><div class="app-btn-icon" style="color: #00ffcc;">▶️</div><div class="app-btn-text"><small>DISPONÍVEL NO</small><span>Google Play</span></div></div>
                         </div>
@@ -512,14 +531,11 @@
             let valSelecionado = selectSec.value;
             let valTexto = selectSec.options[selectSec.selectedIndex].text;
             
-            // Tratamento da Sigla para a Tabela e Detalhes
             let sigla = "BR";
             if (valSelecionado) {
-                // Tenta extrair o final da string "Conselho Seccional - Acre" -> "Acre"
                 let partes = valTexto.split("- ");
                 let estadoNome = partes.length > 1 ? partes[1] : valSelecionado;
                 
-                // Mapeamento simples de Siglas
                 const mapaSiglas = {
                     "Acre": "AC", "Alagoas": "AL", "Amapá": "AP", "Amazonas": "AM", "Bahia": "BA", "Ceará": "CE", "Distrito Federal": "DF",
                     "Espírito Santo": "ES", "Goiás": "GO", "Maranhão": "MA", "Mato Grosso": "MT", "Mato Grosso do Sul": "MS", "Minas Gerais": "MG",

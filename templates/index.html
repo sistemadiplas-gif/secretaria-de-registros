@@ -1,49 +1,67 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 style="color: #0056b3; text-align: left;">Dashboard Gerencial</h1>
-
-<!-- Caixa de Aviso -->
-<div style="background-color: #2a2a35; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 5px solid #0056b3; text-align: left;">
-    <h3 style="margin-top: 0; color: #fff;">Aviso Importante</h3>
-    <p style="color: #ccc; font-size: 16px; margin-bottom: 0;">
-        Todos os dados detalhados, emissões de XML e geração de documentos de <strong>Graduação e Concursos</strong> estão concentrados exclusivamente na aba <strong>"Informações do aluno"</strong>.
-    </p>
+<!-- TOPO EXECUTIVO LIMPO (SEM CALENDÁRIO) -->
+<div style="margin-bottom: 30px; border-bottom: 1px solid #3a3a45; padding-bottom: 20px;">
+    <h1 style="color: #fff; font-size: 30px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 8px;">Dashboard Gerencial</h1>
+    <p style="color: #999; font-size: 15px; margin: 0;">Bem-vindo ao painel de controle central, monitoramento de rede e gestão académica.</p>
 </div>
 
-<!-- Painéis de Métricas -->
-<div style="display: flex; gap: 20px; justify-content: space-between; margin-bottom: 30px;">
+<!-- GUIA RÁPIDO & FERRAMENTAS -->
+<div style="background: linear-gradient(135deg, #2a2a35 0%, #1e1e26 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px; border-left: 6px solid #0056b3; box-shadow: 0 10px 30px rgba(0,0,0,0.4); text-align: left;">
+    <h3 style="margin-top: 0; color: #fff; margin-bottom: 15px; font-size: 19px; display: flex; align-items: center; gap: 12px;">
+        <span style="background: rgba(0, 86, 179, 0.25); padding: 8px 12px; border-radius: 8px; color: #3a86ff; font-size: 16px;">🚀</span> Guia Rápido de Utilização do Sistema
+    </h3>
+    
+    <ol style="color: #ccc; font-size: 15px; margin-bottom: 25px; padding-left: 20px; line-height: 1.8;">
+        <li><strong style="color: #fff;">Cadastro de Alunos:</strong> Acesse "Cadastro", preencha as informações do estudante e efetue o upload da fotografia e dos documentos necessários.</li>
+        <li><strong style="color: #fff;">Gerenciamento de Registros:</strong> Utilize as abas de "Alterar" ou "Excluir" para pesquisar rapidamente e atualizar os dados do banco.</li>
+        <li><strong style="color: #fff;">Consultas e Emissões:</strong> Todos os dossiês detalhados, emissões de XML e documentação oficial de <strong style="color: #fff;">Graduação e Concursos</strong> encontram-se centralizados na aba <strong style="color: #3a86ff;">"Graduações"</strong>.</li>
+    </ol>
+
+    <div style="border-top: 1px solid #3a3a45; padding-top: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+        <span style="color: #888; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Utilitários Externos:</span>
+        <a href="https://www.remove.bg/pt" target="_blank" style="background-color: #17a2b8; color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(23, 162, 184, 0.25);" onmouseover="this.style.transform='translateY(-2px)'; this.style.backgroundColor='#138496';" onmouseout="this.style.transform='translateY(0)'; this.style.backgroundColor='#17a2b8';">
+            ✂️ Remove.bg (Fundo de Foto)
+        </a>
+        <a href="https://www.ilovepdf.com/pt" target="_blank" style="background-color: #e83e8c; color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(232, 62, 140, 0.25);" onmouseover="this.style.transform='translateY(-2px)'; this.style.backgroundColor='#d81b60';" onmouseout="this.style.transform='translateY(0)'; this.style.backgroundColor='#e83e8c';">
+            📑 iLovePDF (Gestão de PDFs)
+        </a>
+    </div>
+</div>
+
+<!-- PAINÉIS DE MÉTRICAS (ALUNOS & EQUIPA) -->
+<div style="display: flex; gap: 25px; justify-content: space-between; margin-bottom: 30px; flex-wrap: wrap;">
     
     <!-- Card: Total de Alunos -->
-    <div style="background-color: #2a2a35; padding: 30px; border-radius: 8px; width: 48%; border-top: 5px solid #28a745; text-align: center; box-sizing: border-box;">
-        <h3 style="margin-top: 0; color: #ccc; text-transform: uppercase; font-size: 14px;">Alunos Cadastrados</h3>
-        <p style="font-size: 56px; font-weight: bold; margin: 10px 0; color: #28a745;">{{ total }}</p>
+    <div style="background: linear-gradient(135deg, #2a2a35 0%, #1e1e26 100%); padding: 35px; border-radius: 12px; flex: 1; min-width: 280px; border-top: 5px solid #28a745; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.3); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <h3 style="margin-top: 0; color: #888; text-transform: uppercase; font-size: 13px; letter-spacing: 1.5px;">Alunos Cadastrados</h3>
+        <p style="font-size: 72px; font-weight: 800; margin: 15px 0 0 0; color: #28a745; text-shadow: 0 4px 15px rgba(40,167,69,0.25);">{{ total }}</p>
     </div>
 
     <!-- Card: Equipe Autorizada Online -->
-    <div style="background-color: #2a2a35; padding: 30px; border-radius: 8px; width: 48%; border-top: 5px solid #ffc107; text-align: left; box-sizing: border-box;">
-        <h3 style="margin-top: 0; color: #ccc; text-transform: uppercase; font-size: 14px; text-align: center;">Equipe Autorizada Online</h3>
-        <ul style="list-style: none; padding: 0; margin-top: 20px; color: #fff; font-size: 16px;">
+    <div style="background: linear-gradient(135deg, #2a2a35 0%, #1e1e26 100%); padding: 35px; border-radius: 12px; flex: 1; min-width: 320px; border-top: 5px solid #ffc107; text-align: left; box-shadow: 0 8px 25px rgba(0,0,0,0.3); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <h3 style="margin-top: 0; color: #888; text-transform: uppercase; font-size: 13px; letter-spacing: 1.5px; margin-bottom: 20px;">Equipe Autorizada Online</h3>
+        <ul style="list-style: none; padding: 0; margin: 0; color: #fff; font-size: 15px;">
             {% for usuario in ativos %}
-                <li style="margin-bottom: 15px; border-bottom: 1px solid #3a3a45; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                <li style="margin-bottom: 14px; border-bottom: 1px solid #3a3a45; padding-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <span style="color: #ffc107; margin-right: 10px;">●</span> <strong>{{ usuario.nome }}</strong>
+                        <span style="color: #28a745; margin-right: 8px; font-size: 14px;">●</span> <strong style="color: #fff; font-size: 16px;">{{ usuario.nome }}</strong>
                         <br>
-                        <small style="color: #888; margin-left: 22px;">{{ usuario.cargo }}</small>
+                        <small style="color: #999; margin-left: 20px; font-size: 13px;">{{ usuario.cargo }}</small>
                         {% if usuario.usuario %}
-                            <small style="color: #17a2b8; margin-left: 5px;">(Login: {{ usuario.usuario }})</small>
+                            <small style="color: #3a86ff; margin-left: 4px; font-size: 13px;">(@{{ usuario.usuario }})</small>
                         {% endif %}
                     </div>
                     
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="background-color: #28a745; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;">Permitido</span>
+                        <span style="background-color: rgba(40,167,69,0.2); color: #28a745; border: 1px solid rgba(40,167,69,0.4); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">Ativo</span>
                         
-                        <!-- Botão Excluir NATIVO: Aparece para todos, menos para o admn -->
                         {% if usuario.usuario != 'admn' %}
                             <form method="POST" action="/remover_equipe/{{ usuario.id }}" style="margin: 0;">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" style="background-color: #dc3545; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; border: none; cursor: pointer; font-family: inherit; transition: 0.3s;" onmouseover="this.style.backgroundColor='#c82333'" onmouseout="this.style.backgroundColor='#dc3545'" title="Remover Acesso">
-                                    Excluir ❌
+                                <button type="submit" style="background-color: rgba(220,53,69,0.2); color: #dc3545; border: 1px solid rgba(220,53,69,0.4); padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#dc3545'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='rgba(220,53,69,0.2)'; this.style.color='#dc3545';" title="Remover Acesso">
+                                    ✕
                                 </button>
                             </form>
                         {% endif %}
@@ -55,36 +73,36 @@
 </div>
 
 <!-- ==================================================== -->
-<!-- SEÇÃO DE SOLICITAÇÕES PENDENTES                      -->
+<!-- SOLICITAÇÕES PENDENTES                               -->
 <!-- ==================================================== -->
 {% if pendentes %}
-<div style="background-color: #2a2a35; padding: 25px; border-radius: 8px; margin-bottom: 30px; border-top: 5px solid #dc3545; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-    <h3 style="margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px;">
+<div style="background: linear-gradient(135deg, #2a2a35 0%, #1e1e26 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px; border-top: 5px solid #dc3545; box-shadow: 0 8px 25px rgba(0,0,0,0.3);">
+    <h3 style="margin-top: 0; color: #fff; display: flex; align-items: center; gap: 12px; font-size: 19px;">
         ⏳ Solicitações de Acesso Pendentes
     </h3>
-    <p style="color: #aaa; font-size: 14px; margin-bottom: 20px;">Novos administradores e colaboradores aguardando a sua aprovação.</p>
+    <p style="color: #999; font-size: 14px; margin-bottom: 20px;">Novos administradores e colaboradores aguardando a sua validação para entrar no sistema.</p>
     
     <ul style="list-style: none; padding: 0; margin: 0; color: #fff; font-size: 15px;">
         {% for pendente in pendentes %}
-        <li style="margin-bottom: 12px; padding-bottom: 15px; border-bottom: 1px solid #3a3a45; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <li style="margin-bottom: 14px; padding-bottom: 16px; border-bottom: 1px solid #3a3a45; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
             <div>
                 <strong style="color: #fff; font-size: 16px;">{{ pendente.nome }}</strong> 
-                <span style="color: #888;">— {{ pendente.cargo }}</span>
+                <span style="color: #999;">— {{ pendente.cargo }}</span>
                 <br>
-                <small style="color: #17a2b8; font-weight: 600; margin-left: 0;">Usuário desejado: {{ pendente.usuario }}</small>
+                <small style="color: #3a86ff; font-weight: 500; font-size: 13px;">Usuário pretendido: {{ pendente.usuario }}</small>
             </div>
             <div style="display: flex; gap: 10px;">
                 <form method="POST" action="/aprovar_equipe/{{ pendente.id }}" style="margin: 0;">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" style="background-color: #28a745; color: white; padding: 10px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; font-family: inherit; transition: 0.3s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'">
-                        ✅ Aprovar
+                    <button type="submit" style="background-color: #28a745; color: white; padding: 9px 16px; border-radius: 6px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'">
+                        ✓ Aprovar
                     </button>
                 </form>
                 
                 <form method="POST" action="/remover_equipe/{{ pendente.id }}" style="margin: 0;">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; font-family: inherit; transition: 0.3s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.backgroundColor='#c82333'" onmouseout="this.style.backgroundColor='#dc3545'">
-                        ❌ Recusar
+                    <button type="submit" style="background-color: #dc3545; color: white; padding: 9px 16px; border-radius: 6px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#c82333'" onmouseout="this.style.backgroundColor='#dc3545'">
+                        ✕ Recusar
                     </button>
                 </form>
             </div>
@@ -94,13 +112,81 @@
 </div>
 {% endif %}
 
-<!-- Barras de Consulta Rápida -->
-<h3 style="color: #0056b3; text-align: left; margin-bottom: 15px;">Links de Consulta Rápida</h3>
-<div style="display: flex; flex-direction: column; gap: 10px;">
-    <!-- DOMÍNIO CORRIGIDO COM O 'http-' (Sem o www.) -->
-    <a href="https://http-verficadordiplomadigitalmecgovbr.com" target="_blank" style="background-color: #2a2a35; padding: 20px; border-radius: 8px; color: white; text-decoration: none; border-left: 5px solid #17a2b8; display: flex; justify-content: space-between; align-items: center; transition: 0.3s;" onmouseover="this.style.backgroundColor='#3a3a45'" onmouseout="this.style.backgroundColor='#2a2a35'">
-        <span style="font-size: 18px; font-weight: bold;">📄 Consulta XML</span>
-        <span style="color: #17a2b8; font-weight: bold;">Acessar ➔</span>
+<!-- ==================================================== -->
+<!-- FIREWALL DE SEGURANÇA (EXCLUSIVO PARA MASTER)        -->
+<!-- ==================================================== -->
+{% if session.get('cargo') == 'admn' or session.get('usuario') == 'admn' %}
+<div style="background: linear-gradient(135deg, #2a2a35 0%, #1e1e26 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px; border-top: 5px solid #dc3545; box-shadow: 0 8px 25px rgba(0,0,0,0.3);">
+    <h3 style="margin-top: 0; color: #fff; display: flex; align-items: center; gap: 12px; font-size: 19px;">
+        🛡️ Firewall Interno: Monitoramento de IP
+    </h3>
+    <p style="color: #999; font-size: 14px; margin-bottom: 20px;">Registro em tempo real das conexões de rede e endpoints acessados. Utilize os botões para restringir ou liberar endereços IP.</p>
+    
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; color: #ccc;">
+            <thead>
+                <tr style="border-bottom: 2px solid #3a3a45; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <th style="padding: 12px;">Endereço IP</th>
+                    <th style="padding: 12px;">Última Atividade</th>
+                    <th style="padding: 12px;">Endpoint Acessado</th>
+                    <th style="padding: 12px;">Estado</th>
+                    <th style="padding: 12px; text-align: right;">Ações de Segurança</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for monitor in ips_monitorados %}
+                <tr style="border-bottom: 1px solid #3a3a45; transition: background 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.03)'" onmouseout="this.style.backgroundColor='transparent'">
+                    <td style="padding: 14px; font-weight: bold; color: #fff;">{{ monitor.ip }}</td>
+                    <td style="padding: 14px; color: #999; font-size: 13px;">{{ monitor.last_access }}</td>
+                    <td style="padding: 14px;"><span style="background: rgba(23,162,184,0.15); color: #17a2b8; padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: 500;">{{ monitor.endpoint }}</span></td>
+                    <td style="padding: 14px;">
+                        {% if monitor.status == 'bloqueado' %}
+                            <span style="background-color: rgba(220,53,69,0.2); color: #dc3545; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: bold;">BLOQUEADO</span>
+                        {% else %}
+                            <span style="background-color: rgba(40,167,69,0.2); color: #28a745; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: bold;">PERMITIDO</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 14px; text-align: right;">
+                        {% if monitor.status == 'bloqueado' %}
+                        <form method="POST" action="/desbloquear_ip/{{ monitor.ip }}" style="margin: 0; display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" style="background-color: #28a745; color: white; padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; border: none; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'" onclick="return confirm('Deseja realmente desbloquear este IP?')">
+                                ✓ Desbloquear
+                            </button>
+                        </form>
+                        {% else %}
+                        <form method="POST" action="/bloquear_ip/{{ monitor.ip }}" style="margin: 0; display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" style="background-color: #dc3545; color: white; padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; border: none; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#c82333'" onmouseout="this.style.backgroundColor='#dc3545'" onclick="return confirm('Atenção: Bloquear este IP impedirá o acesso às rotas do sistema. Prosseguir?')">
+                                ✕ Bloquear
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #888; padding: 30px 0;">Nenhum registro de tráfego recente no Firewall.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- ACESSOS E LINKS RÁPIDOS -->
+<h3 style="color: #fff; font-size: 19px; text-align: left; margin-bottom: 15px; font-weight: 500;">Acessos e Links Úteis</h3>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+    <a href="https://http-verficadordiplomadigitalmecgovbr.com" target="_blank" style="background: linear-gradient(135deg, #2a2a35 0%, #1e1e26 100%); padding: 22px 25px; border-radius: 10px; color: white; text-decoration: none; border-left: 6px solid #17a2b8; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 6px 20px rgba(0,0,0,0.2); transition: all 0.2s ease;" onmouseover="this.style.transform='translateX(6px)'; this.style.backgroundColor='#3a3a45';" onmouseout="this.style.transform='translateX(0)'; this.style.backgroundColor='#2a2a35';">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span style="font-size: 24px;">📄</span>
+            <div>
+                <strong style="font-size: 17px; display: block; color: #fff; margin-bottom: 3px;">Verificador de Diploma Digital (XML)</strong>
+                <small style="color: #999; font-size: 13px;">Validar autenticidade de registros académicos</small>
+            </div>
+        </div>
+        <span style="color: #17a2b8; font-weight: bold; font-size: 14px;">Acessar ➔</span>
     </a>
 </div>
 {% endblock %}
