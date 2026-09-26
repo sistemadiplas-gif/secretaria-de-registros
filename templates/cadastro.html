@@ -213,8 +213,9 @@
             <div class="form-group" style="background-color: #1e1e24; padding: 20px; border-radius: 8px; border: 1px solid #4da6ff; margin-bottom: 15px;">
                 <label style="color: #4da6ff; font-weight: bold; font-size: 14px; margin-bottom: 4px;">Portal da Faculdade (Automação QR Code)</label>
                 <p style="font-size: 12px; color: #888; margin: 0 0 12px 0;">Selecione a faculdade para definir qual tela o QR Code irá abrir.</p>
-                <select name="faculdade_slug" id="seletor_faculdade" class="select2-faculdade" style="width: 100%;" required>
-                    <option value=""></option>
+                <!-- Ajuste: 'required' removido e option vazia modificada -->
+                <select name="faculdade_slug" id="seletor_faculdade" class="select2-faculdade" style="width: 100%;">
+                    <option value="">Nenhuma (Sem portal do aluno)</option>
                     <option value="unip">🟥 UNIP - Universidade Paulista (Abre: Meus Dados)</option>
                     <option value="sia_estacio_br">🟦 Estácio (SIA) (Abre: Pasta do Aluno)</option>
                     <option value="anhanguera">🟧 Anhanguera (Abre: Portal do Aluno)</option>
