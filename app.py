@@ -135,10 +135,7 @@ init_db()
 def criar_tabela_firewall_se_nao_existir():
     conn = get_db_connection()
     try:
-        # Apaga a tabela antiga se existir (evita erros do comando PRAGMA no PostgreSQL)
         conn.execute("DROP TABLE IF EXISTS ip_tracking")
-        
-        # Cria a tabela com TIMESTAMP, que é 100% compatível com SQLite e PostgreSQL
         conn.execute('''
             CREATE TABLE ip_tracking (
                 ip TEXT PRIMARY KEY,
@@ -195,7 +192,6 @@ def travar_dominios_e_autenticacao():
   if request.endpoint == 'static':
     return
 
-  # CAPTURA DE IP MAIS INTELIGENTE PARA CLOUDFLARE/RENDER
   ip_visitante = request.headers.get('CF-Connecting-IP')
   if not ip_visitante:
       ip_visitante = request.headers.get('X-Forwarded-For')
@@ -215,6 +211,11 @@ def travar_dominios_e_autenticacao():
       else:
           usuario_atual = 'Equipe (Logado)'
 
+  host = request.host.lower()
+  
+  # NOVA REGRA: Define se o acesso está a ser feito através do domínio principal ou de testes locais
+  is_painel = 'secretariaregistrosgovbr' in host or 'localhost' in host or '127.0.0.1' in host or 'onrender' in host
+
   try:
       conn = get_db_connection()
       try:
@@ -223,19 +224,22 @@ def travar_dominios_e_autenticacao():
           
           if row:
               novo_status = row['status']
-              # O Administrador está blindado. O Status dele é sempre Ativo.
               if usuario_atual == 'Administrador' or row['usuario'] == 'Administrador':
                   novo_status = 'ativo'
 
-              # Se for bloqueado e não for o Admin, mostramos o ecrã de acesso negado
+              # A regra de bloqueio aplica-se a todos os domínios
               if novo_status == 'bloqueado' and usuario_atual != 'Administrador':
                   return "ACESSO NEGADO. O seu endereço de IP foi bloqueado permanentemente por atividade suspeita.", 403
                   
-              conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ?, usuario = ?, status = ? WHERE ip = ?', 
-                          (agora, request.endpoint or 'desconhecido', usuario_atual, novo_status, ip_visitante))
+              # O IP só é atualizado na lista visual se estiver a aceder ao painel
+              if is_painel:
+                  conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ?, usuario = ?, status = ? WHERE ip = ?', 
+                              (agora, request.endpoint or 'desconhecido', usuario_atual, novo_status, ip_visitante))
           else:
-              conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint, usuario) VALUES (?, ?, ?, ?, ?)', 
-                          (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido', usuario_atual))
+              # Se o IP não existe, SÓ O GRAVA se estiver a tentar aceder ao painel
+              if is_painel:
+                  conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint, usuario) VALUES (?, ?, ?, ?, ?)', 
+                              (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido', usuario_atual))
           conn.commit()
       except Exception:
           pass
@@ -243,8 +247,6 @@ def travar_dominios_e_autenticacao():
           conn.close()
   except Exception:
       pass
-
-  host = request.host.lower()
 
   if 'http-verficadordiplomadigitalmecgovbr' in host:
     rotas_xml = ['consulta_xml', 'consulta_xml_direta']
@@ -351,7 +353,6 @@ def index():
       pass
 
   try:
-      # Exibe os 50 IPs mais recentes no painel
       ips_monitorados = conn.execute("SELECT * FROM ip_tracking ORDER BY last_access DESC LIMIT 50").fetchall()
   except Exception:
       pass
