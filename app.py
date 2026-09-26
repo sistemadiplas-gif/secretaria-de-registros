@@ -135,35 +135,20 @@ init_db()
 def criar_tabela_firewall_se_nao_existir():
     conn = get_db_connection()
     try:
-        # Primeiro garantimos que a tabela existe
+        # Apaga a tabela antiga se existir (evita erros do comando PRAGMA no PostgreSQL)
+        conn.execute("DROP TABLE IF EXISTS ip_tracking")
+        
+        # Cria a tabela com TIMESTAMP, que é 100% compatível com SQLite e PostgreSQL
         conn.execute('''
-            CREATE TABLE IF NOT EXISTS ip_tracking (
+            CREATE TABLE ip_tracking (
                 ip TEXT PRIMARY KEY,
-                last_access DATETIME,
+                last_access TIMESTAMP,
                 status TEXT,
-                endpoint TEXT
+                endpoint TEXT,
+                usuario TEXT
             )
         ''')
         conn.commit()
-
-        # Depois usamos PRAGMA (Maneira 100% segura de ler as colunas sem gerar erro fatal)
-        cursor = conn.execute("PRAGMA table_info(ip_tracking)")
-        colunas = [coluna['name'] for coluna in cursor.fetchall()]
-
-        # Se a coluna 'usuario' não estiver lá, apagamos e recriamos a tabela completinha
-        if 'usuario' not in colunas:
-            conn.execute("DROP TABLE ip_tracking")
-            conn.execute('''
-                CREATE TABLE ip_tracking (
-                    ip TEXT PRIMARY KEY,
-                    last_access DATETIME,
-                    status TEXT,
-                    endpoint TEXT,
-                    usuario TEXT
-                )
-            ''')
-            conn.commit()
-
     except Exception as e:
         print(f"Erro ao forçar tabela firewall: {e}")
     finally:
