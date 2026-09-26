@@ -129,46 +129,31 @@ def aplicar_headers_seguranca(response):
 
 init_db()
 
-# GESTÃO INTELIGENTE DE CRIAÇÃO/ATUALIZAÇÃO DE TABELAS
+# ==========================================
+# GESTÃO INTELIGENTE DA TABELA DE FIREWALL
+# ==========================================
 def criar_tabela_firewall_se_nao_existir():
     conn = get_db_connection()
     try:
+        # Se a tabela não tiver a coluna usuario, dá erro no SELECT e cai no except
+        try:
+            conn.execute('SELECT usuario FROM ip_tracking LIMIT 1')
+        except Exception:
+            # Apaga a tabela velha para recriar com a estrutura 100% correta
+            conn.execute("DROP TABLE IF EXISTS ip_tracking")
+            
         conn.execute('''
             CREATE TABLE IF NOT EXISTS ip_tracking (
                 ip TEXT PRIMARY KEY,
                 last_access DATETIME,
                 status TEXT,
-                endpoint TEXT
+                endpoint TEXT,
+                usuario TEXT
             )
         ''')
         conn.commit()
-    except Exception:
-        pass
-        
-    try:
-        # Testa se a coluna 'usuario' existe
-        conn.execute('SELECT usuario FROM ip_tracking LIMIT 1')
-    except Exception:
-        # Se não existe, tenta atualizar o schema
-        try:
-            conn.execute("ALTER TABLE ip_tracking ADD COLUMN usuario TEXT DEFAULT 'Visitante'")
-            conn.commit()
-        except Exception:
-            # Em último caso, recria a tabela para garantir funcionamento 100%
-            try:
-                conn.execute("DROP TABLE IF EXISTS ip_tracking")
-                conn.execute('''
-                    CREATE TABLE ip_tracking (
-                        ip TEXT PRIMARY KEY,
-                        last_access DATETIME,
-                        status TEXT,
-                        endpoint TEXT,
-                        usuario TEXT
-                    )
-                ''')
-                conn.commit()
-            except Exception:
-                pass
+    except Exception as e:
+        print(f"Erro ao forçar tabela firewall: {e}")
     finally:
         conn.close()
 
@@ -345,7 +330,6 @@ def index():
   equipe_pendente = []
   ips_monitorados = []
   
-  # BLOCOS INDEPENDENTES E BLINDADOS
   try:
       resultado = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()
       if resultado:
