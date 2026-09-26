@@ -1,13 +1,10 @@
-from datetime import timedelta, datetime
-from functools import wraps
 import os
 import random
-import urllib.parse
-import urllib.request
+from datetime import timedelta, datetime
+from functools import wraps
 from flask import (
     Flask,
     abort,
-    jsonify,
     redirect,
     render_template,
     render_template_string,
@@ -132,7 +129,7 @@ def aplicar_headers_seguranca(response):
 
 init_db()
 
-def criar_tabelas_seguranca_se_nao_existir():
+def criar_tabela_firewall_se_nao_existir():
     conn = get_db_connection()
     try:
         conn.execute('''
@@ -140,22 +137,22 @@ def criar_tabelas_seguranca_se_nao_existir():
                 ip TEXT PRIMARY KEY,
                 last_access DATETIME,
                 status TEXT,
-                endpoint TEXT
+                endpoint TEXT,
+                usuario TEXT
             )
         ''')
-        conn.execute('''
-            CREATE TABLE IF NOT EXISTS master_sessao (
-                id INTEGER PRIMARY KEY,
-                token TEXT
-            )
-        ''')
+        # Tenta adicionar a coluna caso a tabela seja antiga e não tenha "usuario"
+        try:
+            conn.execute("ALTER TABLE ip_tracking ADD COLUMN usuario TEXT DEFAULT 'Visitante'")
+        except Exception:
+            pass
         conn.commit()
     except Exception:
         pass
     finally:
         conn.close()
 
-criar_tabelas_seguranca_se_nao_existir()
+criar_tabela_firewall_se_nao_existir()
 
 # ==========================================
 # FUNÇÕES DE UPLOAD E VALIDAÇÃO DE EXTENSÃO
@@ -187,7 +184,7 @@ def salvar_multiplos_arquivos(file_storage_list, antigos=''):
   return '|'.join(nomes_salvos) if nomes_salvos else ''
 
 # ==========================================
-# ROTEADOR DE DOMÍNIOS, SEGURANÇA E SESSÃO MASTER ÚNICA
+# ROTEADOR DE DOMÍNIOS E FIREWALL CLOUDFLARE
 # ==========================================
 @app.before_request
 def travar_dominios_e_autenticacao():
@@ -196,41 +193,43 @@ def travar_dominios_e_autenticacao():
   if request.endpoint == 'static':
     return
 
-  # Validação de Sessão Única Master via Banco de Dados
-  if session.get('cargo') == 'admn':
-      token_sessao = session.get('master_token')
-      token_banco = None
-      try:
-          conn = get_db_connection()
-          try:
-              row = conn.execute("SELECT token FROM master_sessao WHERE id = 1").fetchone()
-              token_banco = row['token'] if row else None
-          except Exception:
-              token_banco = token_sessao 
-          finally:
-              conn.close()
-      except Exception:
-          token_banco = token_sessao
-          
-      if not token_sessao or token_sessao != token_banco:
-          session.clear()
-          return redirect(url_for('auth.login'))
+  # NOVO FIREWALL: Capta o IP real por trás do Cloudflare/Render
+  ip_visitante = request.headers.get('CF-Connecting-IP')
+  if not ip_visitante:
+      ip_visitante = request.headers.get('X-Forwarded-For', request.remote_addr)
+  
+  if ip_visitante and ',' in ip_visitante:
+      ip_visitante = ip_visitante.split(',')[0].strip()
 
-  # RASTREIO E BLOQUEIO DE IP
-  ip_visitante = request.remote_addr
+  # Identifica quem está a usar este IP agora
+  usuario_atual = 'Visitante'
+  if session.get('logado'):
+      if session.get('cargo') == 'admn':
+          usuario_atual = 'Administrador'
+      else:
+          usuario_atual = 'Equipe (Logado)'
+
   if ip_visitante:
       try:
           conn = get_db_connection()
           try:
               agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-              row = conn.execute('SELECT status FROM ip_tracking WHERE ip = ?', (ip_visitante,)).fetchone()
+              row = conn.execute('SELECT status, usuario FROM ip_tracking WHERE ip = ?', (ip_visitante,)).fetchone()
               
               if row:
-                  if row['status'] == 'bloqueado':
+                  # Força o status ativo se for Administrador (Impede bloqueio do Admin)
+                  novo_status = row['status']
+                  if usuario_atual == 'Administrador' or row['usuario'] == 'Administrador':
+                      novo_status = 'ativo'
+
+                  if novo_status == 'bloqueado' and usuario_atual != 'Administrador':
                       return "ACESSO NEGADO. O seu endereço de IP foi bloqueado permanentemente por atividade suspeita.", 403
-                  conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ? WHERE ip = ?', (agora, request.endpoint or 'desconhecido', ip_visitante))
+                      
+                  conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ?, usuario = ?, status = ? WHERE ip = ?', 
+                              (agora, request.endpoint or 'desconhecido', usuario_atual, novo_status, ip_visitante))
               else:
-                  conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint) VALUES (?, ?, ?, ?)', (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido'))
+                  conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint, usuario) VALUES (?, ?, ?, ?, ?)', 
+                              (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido', usuario_atual))
               conn.commit()
           except Exception:
               pass
@@ -285,15 +284,20 @@ def somente_admn(f):
   return wrapper
 
 # ==========================================
-# ROTAS DE GESTÃO DE IPs (SÓ PARA ADMIN)
+# ROTAS DO FIREWALL (SÓ PARA ADMIN)
 # ==========================================
 @app.route('/bloquear_ip/<ip>', methods=['POST'])
 @somente_admn
 def bloquear_ip(ip):
     conn = get_db_connection()
     try:
-        conn.execute("UPDATE ip_tracking SET status = 'bloqueado' WHERE ip = ?", (ip,))
-        conn.commit()
+        # Se tentar bloquear um Admin, ignora o comando
+        row = conn.execute("SELECT usuario FROM ip_tracking WHERE ip = ?", (ip,)).fetchone()
+        if row and row['usuario'] == 'Administrador':
+            pass
+        else:
+            conn.execute("UPDATE ip_tracking SET status = 'bloqueado' WHERE ip = ?", (ip,))
+            conn.commit()
     except Exception:
         pass
     finally:
@@ -314,7 +318,7 @@ def desbloquear_ip(ip):
     return redirect(url_for('index'))
 
 # ==========================================
-# ROTAS DO SISTEMA INTERNO BLINDADAS CONTRA ERRO 500
+# ROTAS DO SISTEMA INTERNO
 # ==========================================
 @app.route('/')
 def index():
@@ -325,16 +329,16 @@ def index():
   ips_monitorados = []
   
   try:
-    # O try/except garante que se a tabela não existir, a tela abre limpa em vez de quebrar (Erro 500)
     resultado = conn.execute('SELECT COUNT(*) FROM alunos').fetchone()
     if resultado:
         total_alunos = resultado[0]
         
     equipe_ativa = conn.execute("SELECT * FROM equipe WHERE status_acesso = 'Ativo'").fetchall()
     equipe_pendente = conn.execute("SELECT * FROM equipe WHERE status_acesso = 'Pendente'").fetchall()
+    
     ips_monitorados = conn.execute("SELECT * FROM ip_tracking ORDER BY last_access DESC LIMIT 50").fetchall()
   except Exception as e:
-    print(f"Alerta: Banco de dados ausente ou bloqueado no Render (Index): {e}")
+    print(f"Alerta Banco (Index): {e}")
   finally:
     conn.close()
     
@@ -455,8 +459,8 @@ def alterar():
           alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
     else:
       alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
-  except Exception as e:
-      print(f"Alerta (Alterar): {e}")
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -556,8 +560,8 @@ def excluir():
           alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
     else:
       alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
-  except Exception as e:
-      print(f"Alerta (Excluir): {e}")
+  except Exception:
+      pass
   finally:
     conn.close()
     
@@ -634,8 +638,8 @@ def informacoes(tipo):
           alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
     else:
       alunos = conn.execute('SELECT * FROM alunos ORDER BY nome ASC').fetchall()
-  except Exception as e:
-      print(f"Alerta (Info): {e}")
+  except Exception:
+      pass
   finally:
     conn.close()
     
