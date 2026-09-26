@@ -3,20 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acesso Restrito | Administração MEC</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <title>Acesso Restrito | Secretaria de Registros CNE-MEC</title>
+    
+    <!-- Fonte Corporativa Moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
-            --bg-color: #0b0d13;
-            --card-bg: #161922;
-            --primary-blue: #1351b4;
-            --primary-hover: #0c3882;
-            --text-main: #f8f9fa;
-            --text-muted: #8b92a5;
-            --border-color: #262b3a;
-            --error-bg: #3f1919;
-            --error-text: #ff6b6b;
+            --bg-color: #0b0f19;
+            --card-bg: #131826;
+            --primary-blue: #0056b3;
+            --primary-hover: #00d2ff;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #232b3e;
+            --input-bg: #1a2030;
+            --error-bg: rgba(220, 53, 69, 0.1);
+            --error-text: #ff4757;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -30,9 +34,10 @@
             min-height: 100vh;
             position: relative;
             overflow: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* MARCA D'ÁGUA EM FAIXA DIAGONAL CRUZANDO A TELA */
+        /* MARCA D'ÁGUA EM FAIXA DIAGONAL */
         .watermark-banner {
             position: absolute;
             top: 0; left: 0; width: 200%; height: 200%;
@@ -44,12 +49,12 @@
             pointer-events: none;
             user-select: none;
             z-index: 0;
-            opacity: 0.035;
+            opacity: 0.03; 
         }
 
         .watermark-row {
             white-space: nowrap;
-            font-size: 32px;
+            font-size: 38px;
             font-weight: 900;
             letter-spacing: 6px;
             color: var(--text-main);
@@ -58,17 +63,17 @@
 
         .bg-glow {
             position: absolute;
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle, rgba(19, 81, 180, 0.09) 0%, transparent 70%);
-            top: -150px;
-            right: -150px;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.05) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
             z-index: 0;
             pointer-events: none;
         }
 
         /* ==========================================
-           TELA DE BOAS-VINDAS ANIMADA (TEMPO MAIOR)
+           TELA DE BOAS-VINDAS ANIMADA
            ========================================== */
         #splash-screen {
             position: fixed;
@@ -93,13 +98,13 @@
 
         .splash-icon {
             font-size: 55px;
-            color: var(--primary-blue);
+            color: var(--primary-hover);
             animation: pulseGlow 1.8s infinite alternate;
         }
 
         .splash-welcome-text {
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
             color: var(--text-main);
             letter-spacing: -0.3px;
             opacity: 0;
@@ -109,31 +114,31 @@
 
         .splash-domain {
             font-size: 14px;
-            font-weight: 600;
-            color: var(--primary-blue);
-            background: rgba(19, 81, 180, 0.12);
-            padding: 8px 16px;
+            font-weight: 700;
+            color: var(--primary-hover);
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            padding: 8px 18px;
             border-radius: 20px;
-            border: 1px solid rgba(19, 81, 180, 0.25);
             opacity: 0;
             animation: fadeInText 0.9s ease forwards 0.7s;
         }
 
         .splash-loader {
-            width: 220px;
-            height: 3px;
+            width: 240px;
+            height: 4px;
             background-color: var(--border-color);
             border-radius: 4px;
             overflow: hidden;
             position: relative;
-            margin-top: 12px;
+            margin-top: 15px;
         }
 
         .splash-loader::after {
             content: '';
             position: absolute;
             top: 0; left: 0; height: 100%; width: 100%;
-            background: linear-gradient(90deg, #00a859, #ffd700, var(--primary-blue));
+            background: var(--primary-hover);
             animation: loadBar 2.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
         }
 
@@ -147,19 +152,19 @@
         }
 
         @keyframes pulseGlow {
-            0% { transform: scale(0.95); opacity: 0.7; filter: drop-shadow(0 0 5px rgba(19, 81, 180, 0.2)); }
-            100% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 22px rgba(19, 81, 180, 0.6)); }
+            0% { transform: scale(0.95); opacity: 0.8; }
+            100% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 4px 15px rgba(0, 210, 255, 0.4)); }
         }
 
         /* ==========================================
-           CAIXA DE LOGIN COM ANIMAÇÃO DE ENTRADA
+           CAIXA DE LOGIN ESCURA
            ========================================== */
         .login-wrapper {
             background-color: var(--card-bg);
             width: 100%;
             max-width: 440px;
-            border-radius: 14px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0,0,0,0.2);
             position: relative;
             z-index: 1;
             overflow: hidden;
@@ -178,29 +183,29 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #00a859 33%, #ffd700 33%, #ffd700 66%, #1351b4 66%);
+            height: 5px;
+            background: linear-gradient(90deg, #0056b3 0%, #00d2ff 100%);
         }
 
-        .login-content { padding: 45px 40px; }
+        .login-content { padding: 50px 40px; }
 
-        .brand-header { text-align: center; margin-bottom: 35px; }
-        .brand-header i { font-size: 44px; color: var(--primary-blue); margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(19, 81, 180, 0.4)); }
-        .brand-header h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 5px; }
-        .brand-header p { font-size: 14px; color: var(--text-muted); font-weight: 400; }
+        .brand-header { text-align: center; margin-bottom: 40px; }
+        .brand-header i { font-size: 42px; color: var(--primary-hover); margin-bottom: 15px; }
+        .brand-header h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; color: #fff; }
+        .brand-header p { font-size: 14px; color: var(--text-muted); font-weight: 500; }
 
         .alert-box {
             background-color: var(--error-bg);
             color: var(--error-text);
             border-left: 4px solid var(--error-text);
-            padding: 14px;
+            padding: 14px 16px;
             border-radius: 6px;
-            font-size: 13.5px;
+            font-size: 14px;
             font-weight: 600;
             margin-bottom: 25px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .input-group { position: relative; margin-bottom: 20px; }
@@ -208,30 +213,32 @@
             position: absolute; 
             top: 50%; 
             transform: translateY(-50%); 
-            left: 16px; 
-            color: #5c6275; 
-            font-size: 15px;
+            left: 18px; 
+            color: #6c757d; 
+            font-size: 16px;
             transition: color 0.3s;
         }
         
         .input-group input { 
             width: 100%; 
-            background-color: rgba(0, 0, 0, 0.3); 
-            border: 1px solid var(--border-color); 
-            color: var(--text-main); 
-            padding: 16px 16px 16px 45px; 
-            border-radius: 8px; 
+            background-color: var(--input-bg); 
+            border: 1px solid #2a3447; 
+            color: #fff; 
+            padding: 16px 16px 16px 48px; 
+            border-radius: 10px; 
             font-size: 15px; 
+            font-weight: 500;
             outline: none; 
-            transition: all 0.3s; 
+            transition: all 0.2s; 
         }
         
         .input-group input:focus { 
-            border-color: var(--primary-blue); 
-            box-shadow: 0 0 0 4px rgba(19, 81, 180, 0.15); 
+            border-color: var(--primary-hover); 
+            box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.1); 
         }
+        
         .input-group input:focus + i, .input-group input:not(:placeholder-shown) + i {
-            color: var(--primary-blue);
+            color: var(--primary-hover);
         }
 
         .btn-submit { 
@@ -240,50 +247,136 @@
             color: #fff; 
             border: none; 
             padding: 16px; 
-            border-radius: 8px; 
-            font-size: 15px; 
+            border-radius: 10px; 
+            font-size: 16px; 
             font-weight: 700; 
             cursor: pointer; 
-            transition: all 0.3s; 
-            margin-top: 5px;
+            transition: all 0.2s; 
+            margin-top: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 4px 12px rgba(19, 81, 180, 0.3);
         }
-        .btn-submit:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(19, 81, 180, 0.4); }
+        
+        .btn-submit:hover { 
+            background-color: var(--primary-hover); 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.3); 
+            color: #000;
+        }
 
         .footer-links { 
-            margin-top: 30px; 
-            padding-top: 20px; 
+            margin-top: 35px; 
+            padding-top: 25px; 
             border-top: 1px solid var(--border-color); 
             text-align: center; 
         }
+        
         .footer-links a { 
             color: var(--text-muted); 
             text-decoration: none; 
-            font-size: 13.5px; 
-            font-weight: 500; 
+            font-size: 14px; 
+            font-weight: 600; 
             transition: color 0.2s; 
         }
-        .footer-links a:hover { color: var(--text-main); }
-        .footer-links i { margin-right: 5px; }
+        
+        .footer-links a:hover { color: #fff; }
+        .footer-links i { margin-right: 6px; }
+
+        /* ==========================================
+           TELA GÊNESIS VIVA E GIGANTE (KRYPTEIA)
+           ========================================== */
+        #krypteia-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #02040a; /* Fundo hiper-escuro para fundir a imagem */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease;
+        }
+
+        #krypteia-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* A imagem gigante, usando screen para apagar o fundo preto original */
+        .genesis-img {
+            height: 65vh; /* Altura massiva dominando a tela */
+            max-height: 650px;
+            width: auto;
+            margin-bottom: 30px;
+            mix-blend-mode: screen; 
+            object-fit: contain;
+            transform-origin: center center;
+        }
+
+        /* Animação que simula a IA "falando" e processando energia */
+        #krypteia-overlay.active .genesis-img {
+            animation: floatSlow 4s ease-in-out infinite, aiTalk 0.15s infinite alternate;
+        }
+
+        /* O texto digitado dinamicamente */
+        .krypteia-text-container {
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .krypteia-text {
+            font-size: 42px; /* Fonte gigante */
+            font-weight: 900;
+            color: #00d2ff; /* Azul Neon */
+            letter-spacing: -1px;
+            text-shadow: 0 0 25px rgba(0, 210, 255, 0.8), 0 0 5px #fff;
+            margin: 0;
+            border-right: 4px solid #00d2ff; /* Cursor piscando */
+            padding-right: 8px;
+            animation: blinkCursor 0.7s step-end infinite;
+        }
+
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Animação frenética no brilho e no eixo Y para simular a voz sintética vibrando */
+        @keyframes aiTalk {
+            0% { 
+                transform: scaleY(1) scaleX(1); 
+                filter: brightness(1) contrast(1.1) drop-shadow(0 0 20px rgba(0, 210, 255, 0.2)); 
+            }
+            100% { 
+                transform: scaleY(1.02) scaleX(0.99) translateY(-2px); 
+                filter: brightness(1.4) contrast(1.4) drop-shadow(0 0 60px rgba(0, 210, 255, 0.9)); 
+            }
+        }
+
+        @keyframes blinkCursor {
+            0%, 100% { border-color: transparent; }
+            50% { border-color: #00d2ff; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- TELA DE BOAS-VINDAS COM DOMÍNIO CORRIGIDO -->
+    <!-- TELA DE BOAS-VINDAS INICIAL -->
     <div id="splash-screen">
         <div class="splash-content">
             <i class="fas fa-landmark splash-icon"></i>
-            <div class="splash-welcome-text">Seja bem-vindo</div>
+            <div class="splash-welcome-text">Autenticação Segura</div>
             <div class="splash-domain">secretariaregistrosgovbr.com</div>
             <div class="splash-loader"></div>
         </div>
     </div>
 
-    <!-- MARCA D'ÁGUA EM FAIXA DIAGONAL CRUZANDO A TELA -->
+    <!-- MARCA D'ÁGUA EM FAIXA DIAGONAL -->
     <div class="watermark-banner">
         <div class="watermark-row">SECRETARIA DE REGISTROS &bull; MEC &bull; GOV.BR &bull; OFICIAL</div>
         <div class="watermark-row">SECRETARIA DE REGISTROS &bull; MEC &bull; GOV.BR &bull; OFICIAL</div>
@@ -294,12 +387,12 @@
 
     <div class="bg-glow"></div>
 
-    <!-- CAIXA DE LOGIN -->
+    <!-- CAIXA DE LOGIN PRINCIPAL -->
     <div class="login-wrapper" id="loginBox">
         <div class="login-content">
             
             <div class="brand-header">
-                <i class="fas fa-landmark"></i>
+                <i class="fas fa-shield-alt"></i>
                 <h2>MEC Administração</h2>
                 <p>Painel Central de Registros e Chancelas</p>
             </div>
@@ -311,7 +404,8 @@
             </div>
             {% endif %}
 
-            <form method="POST" action="/login" autocomplete="off">
+            <!-- O onsubmit chama a função JS da Gênesis antes de enviar o formulário -->
+            <form id="loginForm" method="POST" action="/login" autocomplete="off" onsubmit="iniciarKrypteia(event)">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 
                 <div class="input-group">
@@ -325,7 +419,7 @@
                 </div>
 
                 <button type="submit" class="btn-submit">
-                    Acessar Painel <i class="fas fa-arrow-right"></i>
+                    Acessar Sistema <i class="fas fa-arrow-right"></i>
                 </button>
             </form>
 
@@ -336,8 +430,20 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE TRANSIÇÃO (CORRIGIDO E COMPLETO) -->
+    <!-- INTERCETOR GÊNESIS VIVA -->
+    <div id="krypteia-overlay">
+        <!-- O Rosto Gigante (lembre-se de colocar a imagem na pasta static com o nome genesis.png) -->
+        <img src="{{ url_for('static', filename='genesis.png') }}" class="genesis-img" alt="Gênesis Krypteia">
+        
+        <!-- Contêiner do texto que será digitado via JavaScript -->
+        <div class="krypteia-text-container">
+            <span class="krypteia-text" id="k-text"></span>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
     <script>
+        // Animação de entrada ao carregar a página
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
@@ -348,8 +454,42 @@
                     splash.style.visibility = 'hidden';
                     box.classList.add('show');
                 }
-            }, 3000); // 3 segundos exatos de splash screen
+            }, 3000);
         });
+
+        // Função de interceção do formulário (Krypteia Vivo)
+        function iniciarKrypteia(event) {
+            event.preventDefault(); // Trava o envio imediato
+            
+            const form = document.getElementById('loginForm');
+            const krypteiaOverlay = document.getElementById('krypteia-overlay');
+            const textElement = document.getElementById('k-text');
+            
+            // Ativa a tela escura com o holograma gigante
+            krypteiaOverlay.classList.add('active');
+            
+            // Efeito de Digitação Máquina (Sincronizado com o Rosto "falando")
+            const mensagem = "O Krypteia está de olho 👀";
+            textElement.innerHTML = '';
+            let i = 0;
+            
+            // Inicia a digitação após 0.5s (quando a tela já cobriu tudo)
+            setTimeout(() => {
+                const interval = setInterval(() => {
+                    if(i < mensagem.length) {
+                        textElement.innerHTML += mensagem.charAt(i);
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 80); // Velocidade da digitação
+            }, 500);
+            
+            // Aguarda 4,5 segundos para que todo o espetáculo termine antes de enviar a senha ao backend
+            setTimeout(() => {
+                form.submit();
+            }, 4500);
+        }
     </script>
 
 </body>

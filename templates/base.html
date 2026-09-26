@@ -7,75 +7,215 @@
     <!-- Permitir que o Google rastreie e indexe o sistema -->
     <meta name="robots" content="index, follow">
     
-    <!-- Definir a página canónica dinamicamente para evitar conflitos de domínios duplicados -->
+    <!-- Definir a página canônica dinamicamente para evitar conflitos de domínios duplicados -->
     <link rel="canonical" href="{{ request.base_url }}">
     
     <title>SECRETARIA DE REGISTROS CNE|MEC</title>
+    
+    <!-- Fonte Premium (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            /* Cores da área de conteúdo (Dark Mode) */
+            --bg-main: #0b0f19;
+            --border-color: #232b3e;
+            --text-main: #e2e8f0;
+            
+            /* Cores da Sidebar (Azul Chamativo e Executivo) */
+            --sidebar-bg-top: #0056b3;
+            --sidebar-bg-bottom: #003670;
+            --sidebar-accent: #00d2ff;
+        }
+
         body { 
             margin: 0; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             display: flex; 
             min-height: 100vh; 
-            background-color: #1e1e24; 
-            color: white; 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
             overflow-x: hidden; 
         }
+
+        /* Scrollbar Premium e Minimalista */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4a5568; }
+
+        /* ========================================== */
+        /* SIDEBAR AZUL SÊNIOR COM TEXTO BRANCO       */
+        /* ========================================== */
         .sidebar { 
-            width: 250px; 
-            background-color: #0056b3; 
-            color: white; 
+            width: 270px; /* Levemente mais larga para acomodar letras grandes */
+            background: linear-gradient(180deg, var(--sidebar-bg-top) 0%, var(--sidebar-bg-bottom) 100%);
             display: flex; 
             flex-direction: column; 
             position: fixed; 
             height: 100%; 
-            box-shadow: 2px 0 5px rgba(0,0,0,0.5); 
+            border-right: none;
+            box-shadow: 4px 0 25px rgba(0,0,0,0.5);
             z-index: 100;
         }
-        .sidebar h2 { text-align: center; padding: 20px 0; margin: 0; font-size: 18px; border-bottom: 1px solid #003d82; text-transform: uppercase; }
-        .sidebar a { padding: 15px 20px; text-decoration: none; color: white; font-weight: bold; border-bottom: 1px solid #003d82; transition: 0.3s; }
-        .sidebar a:hover { background-color: #003d82; }
-        
-        .content { 
-            margin-left: 250px; 
-            padding: 50px; 
-            width: calc(100% - 250px); 
-            text-align: center; 
-            box-sizing: border-box; 
-        }
-        .content h1 { font-size: 36px; margin-bottom: 20px; }
-        select, input { padding: 10px; width: 60%; max-width: 500px; border-radius: 5px; border: none; font-size: 16px; }
 
+        .sidebar-header {
+            padding: 35px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header h2 { 
+            margin: 0; 
+            font-size: 17px; 
+            color: #ffffff; /* Texto totalmente branco e com destaque */
+            text-transform: uppercase; 
+            letter-spacing: 1.5px;
+            font-weight: 800;
+            line-height: 1.5;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            padding: 25px 0;
+            gap: 8px; /* Mais espaço para respirar */
+            flex: 1;
+        }
+
+        .sidebar a { 
+            padding: 16px 25px; 
+            text-decoration: none; 
+            color: rgba(255, 255, 255, 0.9); /* Branco forte */
+            font-size: 16px; /* Letras maiores */
+            font-weight: 600; /* Mais grossas */
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 4px solid transparent;
+            transition: all 0.25s ease; 
+        }
+
+        /* Efeito de Hover: Fundo escurece sutilmente e borda acende */
+        .sidebar a:hover { 
+            background-color: rgba(0, 0, 0, 0.2); 
+            color: #ffffff; /* Branco puro no hover */
+            border-left: 4px solid var(--sidebar-accent);
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        /* Ícones um pouco maiores para alinhar com o texto */
+        .sidebar a span {
+            font-size: 18px;
+        }
+
+        /* Botão de sair fixo em baixo e com destaque */
+        .logout-link {
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 20px;
+        }
+
+        .sidebar a.logout-link:hover {
+            background-color: rgba(220, 53, 69, 0.2);
+            border-left: 4px solid #ff4757;
+            color: #ff4757;
+            text-shadow: none;
+        }
+
+        /* ========================================== */
+        /* ÁREA DE CONTEÚDO PRINCIPAL                 */
+        /* ========================================== */
+        .content { 
+            margin-left: 270px; 
+            padding: 40px 50px; 
+            width: calc(100% - 270px); 
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        .content h1 { 
+            font-size: 32px; 
+            margin-bottom: 20px; 
+            font-weight: 700;
+        }
+
+        /* ========================================== */
+        /* RESPONSIVIDADE MOBILE (APP-LIKE)           */
+        /* ========================================== */
         @media (max-width: 768px) {
-            body { flex-direction: column; height: auto; min-height: 100vh; }
+            body { flex-direction: column; }
+            
             .sidebar { 
                 width: 100%; 
                 position: relative; 
                 height: auto; 
-                flex-direction: row; 
-                flex-wrap: wrap; 
-                box-shadow: 0 2px 5px rgba(0,0,0,0.5); 
-                z-index: 10;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             }
-            .sidebar h2 { width: 100%; padding: 15px 10px; font-size: 16px; }
-            .sidebar a { flex: 1 1 30%; text-align: center; font-size: 14px; padding: 12px 5px; }
-            .content { margin-left: 0; width: 100%; padding: 20px; box-sizing: border-box; }
-            .content h1 { font-size: 28px; }
-            select, input { width: 100% !important; box-sizing: border-box; }
+            
+            .sidebar-header { 
+                padding: 20px; 
+            }
+            
+            .nav-links { 
+                flex-direction: row; 
+                padding: 0; 
+                overflow-x: auto; 
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+                gap: 0;
+            }
+            
+            .sidebar a { 
+                padding: 18px 20px; 
+                border-left: none;
+                border-bottom: 4px solid transparent;
+                flex-shrink: 0;
+            }
+            
+            .sidebar a:hover { 
+                border-left: none;
+                border-bottom: 4px solid var(--sidebar-accent);
+            }
+
+            .logout-link {
+                margin-top: 0;
+                border-top: none;
+                margin-bottom: 0;
+                border-left: 1px solid rgba(255,255,255,0.15);
+            }
+            
+            .sidebar a.logout-link:hover {
+                border-left: 1px solid rgba(255,255,255,0.15);
+                border-bottom: 4px solid #ff4757;
+            }
+            
+            .content { 
+                margin-left: 0; 
+                width: 100%; 
+                padding: 25px 20px; 
+            }
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <h2>SECRETARIA DE REGISTROS CNE|MEC</h2>
-        <a href="/">Início</a>
-        <a href="/cadastro">Cadastro</a>
-        <a href="/alterar">Alterar</a>
-        <a href="/excluir">Excluir</a>
-        <a href="/informacoes/graduacao">🎓 Graduações</a>
-        <!-- Link de Concursos removido daqui -->
-        <a href="/logout">Sair</a>
+        <div class="sidebar-header">
+            <h2>SECRETARIA DE REGISTROS<br>CNE | MEC</h2>
+        </div>
+        <div class="nav-links">
+            <a href="/"><span>🏠</span> Início</a>
+            <a href="/cadastro"><span>📝</span> Cadastro</a>
+            <a href="/alterar"><span>🔄</span> Alterar</a>
+            <a href="/excluir"><span>🗑️</span> Excluir</a>
+            <a href="/informacoes/graduacao"><span>🎓</span> Graduações</a>
+            
+            <a href="/logout" class="logout-link"><span>🚪</span> Sair do Sistema</a>
+        </div>
     </div>
+    
     <div class="content">
         {% block content %}{% endblock %}
     </div>
