@@ -183,7 +183,7 @@ def salvar_multiplos_arquivos(file_storage_list, antigos=''):
   return '|'.join(nomes_salvos) if nomes_salvos else ''
 
 # ==========================================
-# ROTEADOR DE DOMÍNIOS E FIREWALL CLOUDFLARE
+# ROTEADOR DE DOMÍNIOS E AUTENTICAÇÃO
 # ==========================================
 @app.before_request
 def travar_dominios_e_autenticacao():
@@ -192,55 +192,39 @@ def travar_dominios_e_autenticacao():
   if request.endpoint == 'static':
     return
 
-  ip_visitante = request.headers.get('CF-Connecting-IP')
-  if not ip_visitante:
-      ip_visitante = request.headers.get('X-Forwarded-For')
-  if not ip_visitante:
-      ip_visitante = request.remote_addr
-  
-  if ip_visitante and ',' in ip_visitante:
-      ip_visitante = ip_visitante.split(',')[0].strip()
-
-  if not ip_visitante:
-      ip_visitante = "IP-Oculto"
-
-  usuario_atual = 'Visitante Público'
-  if session.get('logado'):
-      if session.get('cargo') == 'admn':
-          usuario_atual = 'Administrador'
-      else:
-          usuario_atual = 'Equipe (Logado)'
-
   host = request.host.lower()
-  
   is_painel = 'secretariaregistrosgovbr' in host or 'localhost' in host or '127.0.0.1' in host or 'onrender' in host
 
-  try:
-      conn = get_db_connection()
+  # Se o usuário estiver autenticado e no painel, rastreia/atualiza o IP de quem entrou com sucesso
+  if is_painel and session.get('logado'):
+      ip_visitante = request.headers.get('CF-Connecting-IP') or request.headers.get('X-Forwarded-For') or request.remote_addr
+      if ip_visitante and ',' in ip_visitante:
+          ip_visitante = ip_visitante.split(',')[0].strip()
+      if not ip_visitante:
+          ip_visitante = "IP-Oculto"
+
+      usuario_atual = 'Administrador' if session.get('cargo') == 'admn' else 'Equipe (Logado)'
+
       try:
+          conn = get_db_connection()
           agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-          row = conn.execute('SELECT status, usuario FROM ip_tracking WHERE ip = ?', (ip_visitante,)).fetchone()
+          row = conn.execute('SELECT status FROM ip_tracking WHERE ip = ?', (ip_visitante,)).fetchone()
           
           if row:
-              novo_status = row['status']
-              
-              if novo_status == 'bloqueado':
+              if row['status'] == 'bloqueado':
+                  conn.close()
                   return "ACESSO NEGADO. O seu endereço de IP foi bloqueado permanentemente por atividade suspeita.", 403
-                  
-              if is_painel:
-                  conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ?, usuario = ?, status = ? WHERE ip = ?', 
-                              (agora, request.endpoint or 'desconhecido', usuario_atual, novo_status, ip_visitante))
+              
+              conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ?, usuario = ? WHERE ip = ?', 
+                          (agora, request.endpoint or 'desconhecido', usuario_atual, ip_visitante))
           else:
-              if is_painel:
-                  conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint, usuario) VALUES (?, ?, ?, ?, ?)', 
-                              (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido', usuario_atual))
+              conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint, usuario) VALUES (?, ?, ?, ?, ?)', 
+                          (ip_visitante, agora, 'ativo', request.endpoint or 'desconhecido', usuario_atual))
           conn.commit()
       except Exception:
           pass
       finally:
           conn.close()
-  except Exception:
-      pass
 
   if 'http-verficadordiplomadigitalmecgovbr' in host:
     rotas_xml = ['consulta_xml', 'consulta_xml_direta', 'validar_xml']
