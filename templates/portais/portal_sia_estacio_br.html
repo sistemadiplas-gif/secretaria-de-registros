@@ -3,6 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- SEGURANÇA: Prevenção de Cache Estrito para evitar vazamento de dados em computadores públicos (LGPD) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <title>SIA - Sistema de Informações Acadêmicas - Estácio</title>
     <link rel="icon" type="image/png" href="https://sia.estacio.br/sianet/Content/SiteNovo/dist/img/icones/ico-estacio.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -14,7 +20,18 @@
     
     <style>
         /* Ajustes locais para garantir funcionamento e remover conflitos */
-        body { min-height: 100vh; overflow-x: hidden; background: #ffffff; margin: 0; padding: 0; font-family: 'Rawline', sans-serif; }
+        body { 
+            min-height: 100vh; overflow-x: hidden; background: #ffffff; margin: 0; padding: 0; font-family: 'Rawline', sans-serif; 
+            
+            /* SEGURANÇA: Dificulta seleção de texto para evitar adulteração visual e cópias */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Permite seleção apenas nos inputs/selects para não quebrar a usabilidade de preenchimento */
+        input, textarea, select { user-select: auto; -webkit-user-select: auto; }
         
         #msg-erro { display: none; color: #dc3545; font-size: 13px; font-weight: bold; text-align: center; margin-bottom: 15px; }
 
@@ -201,7 +218,7 @@
                             <div class="form-group mb-4 text-left">
                                 <label style="font-size: 11px; color: #555; margin-bottom: 4px; display: block;">Senha</label>
                                 <div class="estacio-input-group">
-                                    <input type="password" id="senha_input" class="form-control estacio-input" placeholder="Digite sua senha" oninput="checarBotao()">
+                                    <input type="password" id="senha_input" class="form-control estacio-input" placeholder="Digite sua senha" autocomplete="off" oninput="checarBotao()">
                                     <div class="estacio-input-icon">
                                         <i class="fas fa-eye-slash"></i>
                                     </div>
@@ -404,7 +421,7 @@
 
     </div>
 
-    <!-- SCRIPTS DE LÓGICA -->
+    <!-- SCRIPTS DE LÓGICA E SEGURANÇA -->
     <script>
         // Data
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -431,25 +448,38 @@
             }
         }
 
-        // Lógica de Login
+        // Lógica de Login Blindado (Trava Duplo Submite)
         var cpfBanco = "{{ aluno['cpf'] }}".replace(/[^\d]/g, "");
         
         function validarLogin() {
+            var btn = document.getElementById('btn_entrar');
+            if(btn.disabled) return false;
+            
             var senhaDigitada = document.getElementById('senha_input').value.replace(/[^\d]/g, "");
             var msgErro = document.getElementById('msg-erro');
             
-            if (senhaDigitada === cpfBanco || senhaDigitada === "{{ aluno['cpf'] }}") {
-                document.getElementById('tela-login').style.display = 'none';
-                document.getElementById('tela-painel').style.display = 'flex';
-                history.replaceState({tela: 'login'}, '', window.location.pathname);
-                history.pushState({tela: 'inicio'}, '', '#inicio');
-            } else {
-                msgErro.style.display = 'block';
-                var formBox = document.querySelector('.lado-direito > div');
-                formBox.style.transform = "translateX(5px)";
-                setTimeout(() => formBox.style.transform = "translateX(-5px)", 100);
-                setTimeout(() => formBox.style.transform = "translateX(0)", 200);
-            }
+            // Trava botão temporariamente para evitar duplo clique
+            btn.innerHTML = 'AUTENTICANDO...';
+            btn.setAttribute('disabled', 'true');
+            
+            setTimeout(() => {
+                if (senhaDigitada === cpfBanco || senhaDigitada === "{{ aluno['cpf'] }}") {
+                    document.getElementById('tela-login').style.display = 'none';
+                    document.getElementById('tela-painel').style.display = 'flex';
+                    history.replaceState({tela: 'login'}, '', window.location.pathname);
+                    history.pushState({tela: 'inicio'}, '', '#inicio');
+                } else {
+                    msgErro.style.display = 'block';
+                    var formBox = document.querySelector('.lado-direito > div');
+                    formBox.style.transform = "translateX(5px)";
+                    setTimeout(() => formBox.style.transform = "translateX(-5px)", 100);
+                    setTimeout(() => formBox.style.transform = "translateX(0)", 200);
+                    
+                    // Libera o botão se errar a senha
+                    btn.innerHTML = 'Entrar';
+                    btn.removeAttribute('disabled');
+                }
+            }, 600); // pequeno delay para simular processamento do servidor
         }
 
         document.getElementById('senha_input').addEventListener('keypress', function (e) {
@@ -516,6 +546,24 @@
                 }
 
                 history.replaceState({tela: 'aluno'}, '', window.location.href);
+            }
+        });
+
+        // ==========================================
+        // SEGURANÇA: Anti-Inspect / Anti-Tampering
+        // ==========================================
+        
+        // Desabilita o botão direito (Inspecionar/Salvar)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault(); 
+        });
+
+        // Desabilita atalhos de teclado de desenvolvedor (F12, Ctrl+Shift+I, etc)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+               (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j')) || 
+               (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+                e.preventDefault();
             }
         });
     </script>

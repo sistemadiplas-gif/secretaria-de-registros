@@ -3,11 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEGURANÇA: Prevenção de Cache para evitar vazamento de dados em computadores públicos -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <title>Cadastro Nacional - OAB Nacional</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', Arial, sans-serif; }
-        body { background-color: #f4f5f7; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        body { 
+            background-color: #f4f5f7; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+            /* SEGURANÇA: Dificulta seleção de texto para evitar adulteração visual e cópias */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Permite seleção apenas nos inputs/selects para não quebrar a usabilidade de preenchimento */
+        input, textarea, select { user-select: auto; -webkit-user-select: auto; }
 
         /* =========================================================
            CABEÇALHO GERAL (AZUL)
@@ -479,7 +499,7 @@
         </div>
     </footer>
 
-    <!-- SCRIPT DE INTERAÇÕES -->
+    <!-- SCRIPT DE INTERAÇÕES E PROTEÇÃO -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             
@@ -580,6 +600,24 @@
             document.getElementById('bloco-pesquisa').style.display = 'flex';
             window.scrollTo(0, 0);
         }
+
+        // ==========================================
+        // SEGURANÇA: Anti-Inspect / Anti-Tampering
+        // ==========================================
+        
+        // Desabilita o botão direito (Menu de contexto)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault(); 
+        });
+
+        // Desabilita atalhos de teclado de desenvolvedor (F12, Ctrl+Shift+I, etc)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+               (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j')) || 
+               (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+                e.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>

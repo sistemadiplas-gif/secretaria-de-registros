@@ -7,6 +7,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
+    /* SEGURANÇA: Dificulta seleção de texto para evitar extração de dados sensíveis e cópias */
+    body {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    /* Permite seleção APENAS nos inputs onde ficam os links para permitir o copy-paste nativo */
+    input.tech-input {
+        user-select: auto;
+        -webkit-user-select: auto;
+    }
+
     /* Estilos Premium para dar vida ao painel */
     .dashboard-card {
         background: linear-gradient(145deg, #252532, #1b1b24);
@@ -407,5 +421,23 @@
             });
         }
     }
+
+    // ==========================================
+    // SEGURANÇA: Anti-Inspect / Anti-Tampering
+    // ==========================================
+    
+    // Desabilita o botão direito (Inspecionar/Salvar)
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault(); 
+    });
+
+    // Desabilita atalhos de teclado de desenvolvedor (F12, Ctrl+Shift+I, etc)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || 
+           (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j')) || 
+           (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+            e.preventDefault();
+        }
+    });
 </script>
 {% endblock %}

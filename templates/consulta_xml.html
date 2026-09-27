@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- SEGURANÇA: Prevenção de Cache para evitar vazamento de dados de diplomas em computadores públicos -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <!-- Permitir que o Google rastreie e indexe a página principal -->
     <meta name="robots" content="index, follow">
     
@@ -32,7 +37,15 @@
         body {
             background-color: #f2f2f2;
             color: var(--text-dark);
+            /* SEGURANÇA: Dificulta seleção de texto para dificultar cópias fraudulentas da tela */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
+        
+        /* O usuário ainda precisa conseguir digitar caso houvesse inputs de texto */
+        input, textarea { user-select: auto; -webkit-user-select: auto; }
         
         /* Cabeçalho */
         .top-header {
@@ -200,6 +213,11 @@
             background-color: var(--gov-green);
             color: #fff;
             cursor: pointer;
+        }
+        .btn-verificar.processing {
+            background-color: #7f8c8d;
+            color: #fff;
+            cursor: not-allowed;
         }
         .version-text {
             font-size: 13px;
@@ -636,7 +654,7 @@
                 <div id="upload-box">
                     <h2>Verificar a estrutura XML do Diploma</h2>
                     
-                    <p class="desc">Essa ferramenta permite verificar se a structure do arquivo XML do diploma digital está em conformidade com o padrão estabelecido pelo MEC por meio da IN SESU nº1/2020 e suas alterações.</p>
+                    <p class="desc">Essa ferramenta permite verificar se a estrutura do arquivo XML do diploma digital está em conformidade com o padrão estabelecido pelo MEC por meio da IN SESU nº1/2020 e suas alterações.</p>
                     <p class="desc">O conteúdo do arquivo não é validado, para isso é necessário acessar o link do diploma digital disponibilizado pelas IES e acessível pelo Cadastro e-MEC na aba ACERVO ACADÊMICO.</p>
                     
                     {% if erro %}
@@ -644,6 +662,10 @@
                             ⚠️ {{ erro }}
                         </div>
                     {% endif %}
+                    
+                    <div id="erro-seguranca" style="display:none; background-color: #fff3cd; color: #856404; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; text-align: center; border: 1px solid #ffeeba;">
+                        <!-- Erros gerados dinamicamente via JS (Segurança) -->
+                    </div>
 
                     <div class="icon-diploma-wrapper">
                         <svg width="130" height="85" viewBox="0 0 130 85" fill="none" stroke="#1d2b64" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
@@ -657,8 +679,10 @@
 
                     <p class="instruction">Faça upload do arquivo .xml e depois clique em verificar.</p>
                     
-                    <form method="POST" action="/consulta_xml" enctype="multipart/form-data">
+                    <!-- Adicionado ID form-upload e chamada onsubmit para bloqueio de duplo envio -->
+                    <form id="form-upload" method="POST" action="/consulta_xml" enctype="multipart/form-data" onsubmit="return blindarEnvioFormulario()">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
                         <input type="file" id="arquivo_xml" name="arquivo_xml" accept=".xml, .pdf, image/jpeg, image/jpg, image/png" style="display: none;" onchange="ativarBotaoVerificar()">
                         
                         <button type="button" class="btn-escolher" onclick="document.getElementById('arquivo_xml').click()">
@@ -942,14 +966,72 @@
     {% endif %}
 
     <script>
+        // SEGURANÇA: Anti-Inspect / Anti-Tampering - Dificulta adulterações visuais da tela para prints falsos
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault(); // Desabilita o botão direito (Inspecionar/Salvar)
+        });
+
+        document.addEventListener('keydown', function(e) {
+            // Desabilita F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+Shift+J, Ctrl+U
+            if (e.key === 'F12' || 
+               (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j')) || 
+               (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+                e.preventDefault();
+            }
+        });
+
+        // SEGURANÇA: Validação Rigorosa Front-End antes de enviar o arquivo (Client-Side Defense)
         function ativarBotaoVerificar() {
             var input = document.getElementById('arquivo_xml');
             var btn = document.getElementById('btn-verificar');
+            var boxErro = document.getElementById('erro-seguranca');
+            
+            boxErro.style.display = 'none';
+            btn.disabled = true;
+            btn.classList.remove('active');
             
             if(input.files.length > 0) {
+                var arquivo = input.files[0];
+                var tamanhoMaximo = 5 * 1024 * 1024; // Limite cravado em 5MB
+                var extensoesPermitidas = ['xml', 'pdf', 'jpg', 'jpeg', 'png'];
+                var extArquivo = arquivo.name.split('.').pop().toLowerCase();
+                
+                // Validação de Tamanho (Proteção DDoS / Estouro de Memória)
+                if(arquivo.size > tamanhoMaximo) {
+                    boxErro.innerHTML = '⚠️ O arquivo excede o limite máximo permitido de 5MB.';
+                    boxErro.style.display = 'block';
+                    input.value = ''; 
+                    return;
+                }
+                
+                // Validação de Extensão Falsa
+                if(!extensoesPermitidas.includes(extArquivo)) {
+                    boxErro.innerHTML = '⚠️ Tipo de arquivo não suportado. Envie apenas XML, PDF, JPG ou PNG.';
+                    boxErro.style.display = 'block';
+                    input.value = ''; 
+                    return;
+                }
+                
+                // Se passou em todas as verificações de segurança, libera botão
                 btn.disabled = false;
                 btn.classList.add('active'); 
             }
+        }
+
+        // SEGURANÇA: Prevenção de Múltiplos Cliques (Double Submit Lock)
+        function blindarEnvioFormulario() {
+            var btn = document.getElementById('btn-verificar');
+            
+            if (btn.classList.contains('processing') || btn.disabled) {
+                return false; // Trava se já estiver enviando
+            }
+            
+            btn.classList.remove('active');
+            btn.classList.add('processing');
+            btn.disabled = true;
+            btn.innerHTML = 'Analisando documento...';
+            
+            return true; // Permite o envio para o backend
         }
 
         // Script da Animação do Scanner e Acendimento das Etapas
@@ -963,17 +1045,15 @@
             var resultBox = document.getElementById("resultado-validacao");
 
             if (loadingBox && resultBox) {
-                // Acende as etapas gradualmente
                 setTimeout(function(){ if(step1) step1.style.opacity = "1"; }, 800);
                 setTimeout(function(){ if(step2) step2.style.opacity = "1"; }, 1600);
                 setTimeout(function(){ if(step3) step3.style.opacity = "1"; }, 2400);
                 setTimeout(function(){ if(step4) step4.style.opacity = "1"; }, 3200);
 
-                // Oculta o loading e exibe o resultado final
                 setTimeout(function(){
                     loadingBox.style.display = "none";
                     resultBox.style.display = "block";
-                }, 4500); // Exato delay de 4,5 segundos
+                }, 4500);
             }
         });
         {% endif %}

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Acesso Restrito | Secretaria de Registros CNE-MEC</title>
     
     <!-- Fonte Corporativa Moderna -->
@@ -25,15 +25,20 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         
+        /* Ajuste de segurança para evitar rolagem horizontal indesejada no mobile */
+        html, body { 
+            max-width: 100vw;
+            height: 100vh;
+            overflow: hidden; 
+        }
+
         body { 
             background-color: var(--bg-color); 
             color: var(--text-main); 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            min-height: 100vh;
             position: relative;
-            overflow: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -54,7 +59,7 @@
 
         .watermark-row {
             white-space: nowrap;
-            font-size: 38px;
+            font-size: clamp(20px, 4vw, 38px); /* Responsividade na tipografia da marca d'água */
             font-weight: 900;
             letter-spacing: 6px;
             color: var(--text-main);
@@ -97,13 +102,13 @@
         }
 
         .splash-icon {
-            font-size: 55px;
+            font-size: clamp(45px, 6vw, 55px);
             color: var(--primary-hover);
             animation: pulseGlow 1.8s infinite alternate;
         }
 
         .splash-welcome-text {
-            font-size: 22px;
+            font-size: clamp(18px, 4vw, 22px);
             font-weight: 800;
             color: var(--text-main);
             letter-spacing: -0.3px;
@@ -113,7 +118,7 @@
         }
 
         .splash-domain {
-            font-size: 14px;
+            font-size: clamp(12px, 3vw, 14px);
             font-weight: 700;
             color: var(--primary-hover);
             background: rgba(0, 210, 255, 0.1);
@@ -125,7 +130,7 @@
         }
 
         .splash-loader {
-            width: 240px;
+            width: clamp(180px, 50vw, 240px);
             height: 4px;
             background-color: var(--border-color);
             border-radius: 4px;
@@ -161,7 +166,7 @@
            ========================================== */
         .login-wrapper {
             background-color: var(--card-bg);
-            width: 100%;
+            width: 90%;
             max-width: 440px;
             border-radius: 16px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0,0,0,0.2);
@@ -187,11 +192,16 @@
             background: linear-gradient(90deg, #0056b3 0%, #00d2ff 100%);
         }
 
-        .login-content { padding: 50px 40px; }
+        .login-content { padding: 40px 30px; }
+        
+        /* Ajuste de padding para desktop */
+        @media (min-width: 480px) {
+            .login-content { padding: 50px 40px; }
+        }
 
         .brand-header { text-align: center; margin-bottom: 40px; }
         .brand-header i { font-size: 42px; color: var(--primary-hover); margin-bottom: 15px; }
-        .brand-header h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; color: #fff; }
+        .brand-header h2 { font-size: clamp(20px, 5vw, 24px); font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; color: #fff; }
         .brand-header p { font-size: 14px; color: var(--text-muted); font-weight: 500; }
 
         .alert-box {
@@ -259,11 +269,16 @@
             gap: 10px;
         }
         
-        .btn-submit:hover { 
+        .btn-submit:hover:not(:disabled) { 
             background-color: var(--primary-hover); 
             transform: translateY(-2px); 
             box-shadow: 0 6px 20px rgba(0, 210, 255, 0.3); 
             color: #000;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         .footer-links { 
@@ -285,12 +300,12 @@
         .footer-links i { margin-right: 6px; }
 
         /* ==========================================
-           TELA GÊNESIS VIVA E GIGANTE (KRYPTEIA)
+           TELA GÊNESIS VIVA E GIGANTE (KRYPTEIA) - UPGRADE HOLOGRÁFICO
            ========================================== */
         #krypteia-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #02040a; /* Fundo hiper-escuro para fundir a imagem */
+            background-color: #02040a; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -299,6 +314,19 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s ease;
+            overflow: hidden;
+        }
+
+        /* Scanlines - Efeito visual de monitor futurista */
+        #krypteia-overlay::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
+            z-index: 2001;
+            pointer-events: none;
+            opacity: 0.5;
         }
 
         #krypteia-overlay.active {
@@ -306,39 +334,43 @@
             visibility: visible;
         }
 
-        /* A imagem gigante, usando screen para apagar o fundo preto original */
         .genesis-img {
-            height: 65vh; /* Altura massiva dominando a tela */
-            max-height: 650px;
-            width: auto;
+            height: clamp(300px, 50vh, 650px); /* Escalabilidade vertical perfeita */
+            width: 100%;
+            max-width: 800px; /* Limite horizontal para não quebrar */
             margin-bottom: 30px;
             mix-blend-mode: screen; 
             object-fit: contain;
             transform-origin: center center;
+            position: relative;
+            z-index: 2002;
         }
 
-        /* Animação que simula a IA "falando" e processando energia */
         #krypteia-overlay.active .genesis-img {
-            animation: floatSlow 4s ease-in-out infinite, aiTalk 0.15s infinite alternate;
+            animation: floatSlow 4s ease-in-out infinite, aiTalk 0.12s infinite alternate;
         }
 
-        /* O texto digitado dinamicamente */
         .krypteia-text-container {
-            height: 50px;
+            min-height: 50px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            width: 90%;
+            text-align: center;
+            z-index: 2002;
         }
 
         .krypteia-text {
-            font-size: 42px; /* Fonte gigante */
+            font-size: clamp(24px, 6vw, 42px); /* Adaptável para não vazar a tela no celular */
             font-weight: 900;
-            color: #00d2ff; /* Azul Neon */
+            color: #00d2ff; 
             letter-spacing: -1px;
-            text-shadow: 0 0 25px rgba(0, 210, 255, 0.8), 0 0 5px #fff;
+            text-shadow: 0 0 20px rgba(0, 210, 255, 0.9), 0 0 4px #fff, 0 0 40px rgba(0, 210, 255, 0.5);
             margin: 0;
-            border-right: 4px solid #00d2ff; /* Cursor piscando */
+            border-right: 4px solid #00d2ff; 
             padding-right: 8px;
             animation: blinkCursor 0.7s step-end infinite;
+            line-height: 1.2;
         }
 
         @keyframes floatSlow {
@@ -346,15 +378,23 @@
             50% { transform: translateY(-15px); }
         }
 
-        /* Animação frenética no brilho e no eixo Y para simular a voz sintética vibrando */
+        /* Efeito de IA processando com aberração/glitch avançado */
         @keyframes aiTalk {
             0% { 
-                transform: scaleY(1) scaleX(1); 
+                transform: scale(1) translate(0, 0); 
                 filter: brightness(1) contrast(1.1) drop-shadow(0 0 20px rgba(0, 210, 255, 0.2)); 
             }
+            25% {
+                transform: scaleY(1.01) scaleX(0.99) translate(-1px, 1px) skewX(0.5deg);
+                filter: brightness(1.2) contrast(1.3) hue-rotate(-5deg) drop-shadow(0 0 30px rgba(0, 210, 255, 0.5));
+            }
+            75% {
+                transform: scaleY(0.99) scaleX(1.01) translate(1px, -1px) skewX(-0.5deg);
+                filter: brightness(1.4) contrast(1.4) hue-rotate(5deg) drop-shadow(0 0 60px rgba(0, 210, 255, 0.9));
+            }
             100% { 
-                transform: scaleY(1.02) scaleX(0.99) translateY(-2px); 
-                filter: brightness(1.4) contrast(1.4) drop-shadow(0 0 60px rgba(0, 210, 255, 0.9)); 
+                transform: scale(1.02) translateY(-2px); 
+                filter: brightness(1.5) contrast(1.5) drop-shadow(0 0 80px rgba(0, 210, 255, 1)); 
             }
         }
 
@@ -409,16 +449,17 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 
                 <div class="input-group">
-                    <input type="text" name="usuario" placeholder="Usuário (Ex: admn)" required autocomplete="off">
+                    <input type="text" name="usuario" placeholder="Usuário (Ex: admn)" required autocomplete="username">
                     <i class="fas fa-user"></i>
                 </div>
                 
                 <div class="input-group">
-                    <input type="password" name="senha" placeholder="Senha de Acesso" required autocomplete="new-password">
+                    <!-- Mudança de segurança: autocomplete correto para telas de login -->
+                    <input type="password" name="senha" placeholder="Senha de Acesso" required autocomplete="current-password">
                     <i class="fas fa-lock"></i>
                 </div>
 
-                <button type="submit" class="btn-submit">
+                <button type="submit" class="btn-submit" id="btnSubmit">
                     Acessar Sistema <i class="fas fa-arrow-right"></i>
                 </button>
             </form>
@@ -430,12 +471,9 @@
         </div>
     </div>
 
-    <!-- INTERCETOR GÊNESIS VIVA -->
+    <!-- INTERCEPTOR GÊNESIS VIVA -->
     <div id="krypteia-overlay">
-        <!-- O Rosto Gigante (lembre-se de colocar a imagem na pasta static com o nome genesis.png) -->
         <img src="{{ url_for('static', filename='genesis.png') }}" class="genesis-img" alt="Gênesis Krypteia">
-        
-        <!-- Contêiner do texto que será digitado via JavaScript -->
         <div class="krypteia-text-container">
             <span class="krypteia-text" id="k-text"></span>
         </div>
@@ -457,30 +495,105 @@
             }, 3000);
         });
 
-        // Função de interceção do formulário (Krypteia Vivo)
+        /* ==========================================
+           MOTOR DE ÁUDIO SINTÉTICO (HOLOGRÁFICO)
+           ========================================== */
+        let audioCtx;
+
+        // Inicializa o motor de som (Navegadores exigem clique do usuário para liberar áudio)
+        function initAudioEngine() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Bipe curto e futurista para cada letra digitada
+        function playTypingBlip() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'triangle'; // Onda triangular cria um som eletrônico suave
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime); // Tom alto inicial
+            osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.04); // Queda rápida de tom
+            
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime); // Volume baixo
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04); // Desaparece rápido
+            
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.05);
+        }
+
+        // Som de "Acesso Processado/Sucesso" quando termina de digitar
+        function playSuccessChime() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(1600, audioCtx.currentTime + 0.1); // Elevação de tom (sinal positivo)
+            
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.05);
+            gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+            
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.4);
+        }
+
+        /* ==========================================
+           FUNÇÃO DE INTERCEPTAÇÃO E GÊNESIS VIVA
+           ========================================== */
         function iniciarKrypteia(event) {
             event.preventDefault(); // Trava o envio imediato
             
+            // 1. Desperta o Motor de Áudio
+            initAudioEngine();
+            
             const form = document.getElementById('loginForm');
+            const btn = document.getElementById('btnSubmit');
             const krypteiaOverlay = document.getElementById('krypteia-overlay');
             const textElement = document.getElementById('k-text');
             
-            // Ativa a tela escura com o holograma gigante
+            // Trava de segurança no botão para evitar duplo clique
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inicializando...';
+            
+            // Ativa a tela escura com o holograma gigante e as scanlines
             krypteiaOverlay.classList.add('active');
             
-            // Efeito de Digitação Máquina (Sincronizado com o Rosto "falando")
-            const mensagem = "O Krypteia está de olho 👀";
+            // Usamos o operador spread [...] para não quebrar a codificação do Emoji "👀"
+            const caracteres = [..."O Krypteia está de olho 👀"];
             textElement.innerHTML = '';
             let i = 0;
             
             // Inicia a digitação após 0.5s (quando a tela já cobriu tudo)
             setTimeout(() => {
                 const interval = setInterval(() => {
-                    if(i < mensagem.length) {
-                        textElement.innerHTML += mensagem.charAt(i);
+                    if(i < caracteres.length) {
+                        const char = caracteres[i];
+                        textElement.innerHTML += char;
+                        
+                        // Só toca o som se não for um espaço em branco e não for o emoji final
+                        if (char.trim() !== '' && i < caracteres.length - 1) { 
+                            playTypingBlip();
+                        }
+                        
                         i++;
                     } else {
                         clearInterval(interval);
+                        // Toca o som de finalização após a última letra
+                        playSuccessChime();
                     }
                 }, 80); // Velocidade da digitação
             }, 500);

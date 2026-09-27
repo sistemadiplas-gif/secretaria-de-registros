@@ -3,13 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEGURANÇA: Prevenção de Cache para evitar vazamento de dados em computadores públicos -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <title>Diário Oficial da União - Pesquisa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Rawline:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Rawline', Arial, sans-serif; }
         
-        body { background-color: #ffffff; color: #333; }
+        body { 
+            background-color: #ffffff; 
+            color: #333; 
+            /* SEGURANÇA: Dificulta seleção de texto para evitar adulteração visual e cópias */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* Permite seleção apenas nos inputs/selects para não quebrar a usabilidade */
+        input, textarea, select { user-select: auto; -webkit-user-select: auto; }
         
         /* HEADER TOPO */
         .top-header { background-color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 22px 40px; border-bottom: 1px solid #ddd; }
@@ -354,7 +371,7 @@
             <div class="doc-action-row-2">
                 <button class="btn-doc-action"><i class="fas fa-file-signature"></i> VERSÃO CERTIFICADA</button>
                 <button class="btn-doc-action"><i class="fas fa-book-open"></i> DIÁRIO COMPLETO</button>
-                <button class="btn-doc-action"><i class="fas fa-print"></i> IMPRESSÃO</button>
+                <button class="btn-doc-action" onclick="window.print()"><i class="fas fa-print"></i> IMPRESSÃO</button>
             </div>
 
             <!-- Papel Oficial -->
@@ -441,7 +458,7 @@
         <div class="footer-legal">Todo o conteúdo deste site está publicado sob a licença Creative Commons Atribuição-SemDerivações 3.0 Não Adaptada.</div>
     </footer>
 
-    <!-- SCRIPT DE TRANSIÇÃO DAS TELAS -->
+    <!-- SCRIPTS E PROTEÇÃO -->
     <script>
         function abrirPublicacao() {
             document.getElementById('tela-busca').style.display = 'none';
@@ -454,6 +471,24 @@
             document.getElementById('tela-busca').style.display = 'block';
             window.scrollTo(0, 0);
         }
+
+        // ==========================================
+        // SEGURANÇA: Anti-Inspect / Anti-Tampering
+        // ==========================================
+        
+        // Desabilita o botão direito (Inspecionar/Salvar)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault(); 
+        });
+
+        // Desabilita atalhos de teclado de desenvolvedor (F12, Ctrl+Shift+I, etc)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+               (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j')) || 
+               (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+                e.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>

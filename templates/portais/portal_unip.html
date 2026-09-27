@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEGURANÇA: Prevenção de Cache Estrito para evitar vazamento de dados em computadores públicos (LGPD) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <title>Área do(a) Aluno(a) - Universidade Paulista</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -20,7 +26,16 @@
             background-color: #e5e7eb;
             overflow: hidden;
             position: relative;
+            
+            /* SEGURANÇA: Dificulta seleção de texto para evitar adulteração visual e cópias */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
+        
+        /* Permite seleção apenas nos inputs/selects para não quebrar a usabilidade de preenchimento no login */
+        input, textarea, select { user-select: auto; -webkit-user-select: auto; }
 
         /* TELA 1: Painel Esquerdo Azul do Login (Sem Imagem) */
         .left-panel {
@@ -63,7 +78,8 @@
         .input-group input::placeholder { color: #6b7280; font-weight: 700; }
         .input-group input:focus { border-color: #4c7ba8; }
         .btn-entrar { width: 100%; padding: 18px; background-color: #6c8ebf; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 5px; margin-bottom: 25px; transition: background-color 0.2s; }
-        .btn-entrar:hover { background-color: #5578a9; }
+        .btn-entrar:hover:not(:disabled) { background-color: #5578a9; }
+        .btn-entrar:disabled { opacity: 0.7; cursor: not-allowed; }
         #msg-erro { color: #dc3545; font-size: 13px; font-weight: bold; margin-bottom: 15px; display: none; }
         .action-links { display: flex; gap: 12px; justify-content: center; }
         .action-btn { padding: 11px 20px; border: 1px solid #cbd5e1; background: transparent; border-radius: 6px; color: #0d6efd; font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: none; transition: background-color 0.2s; }
@@ -87,7 +103,7 @@
 
         /* AJUSTE: Cabeçalho Azul UNIP */
         .unip-header {
-            background-color: #0f4191; /* Azul escuro oficial em vez de preto */
+            background-color: #0f4191; 
             padding: 10px 30px;
             display: flex;
             justify-content: space-between;
@@ -114,7 +130,7 @@
 
         /* GRADE DE CARDS (SERVIÇOS) */
         #grid-servicos {
-            display: block; /* Visível por padrão ao logar */
+            display: block; 
         }
 
         .unip-grid-container {
@@ -320,10 +336,11 @@
                         <input type="text" id="matricula_input" value="{{ aluno['matricula'] }}" placeholder="RA (NÚMERO DE MATRÍCULA)" readonly>
                     </div>
                     <div class="input-group">
-                        <input type="password" id="senha_input" placeholder="SENHA" required>
+                        <!-- SEGURANÇA: autocomplete="off" para dados sensíveis -->
+                        <input type="password" id="senha_input" placeholder="SENHA" required autocomplete="off">
                     </div>
                     <div id="msg-erro">Senha inválida (utilize o CPF).</div>
-                    <button type="submit" class="btn-entrar">Entrar</button>
+                    <button type="submit" id="btn-entrar" class="btn-entrar">Entrar</button>
                 </form>
                 <div class="action-links"><a href="#" class="action-btn">Esqueceu a senha?</a><a href="#" class="action-btn">Como acessar</a></div>
             </div>
@@ -335,7 +352,7 @@
     <!-- PAINEL INTERNO COMPLETO -->
     <div id="painel-interno">
         
-        <!-- CABEÇALHO ATUALIZADO (Azul e Logo Amarela - CAMINHO LOCAL) -->
+        <!-- CABEÇALHO ATUALIZADO -->
         <div class="unip-header">
             <div class="unip-header-left">
                 <!-- AQUI ENTRA A LOGO AMARELA -->
@@ -454,7 +471,7 @@
         </div>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- SCRIPTS DE LÓGICA E SEGURANÇA -->
     <script>
         document.getElementById('ano-corrente').textContent = new Date().getFullYear();
 
@@ -469,7 +486,11 @@
             }
         });
 
+        // SEGURANÇA: Bloqueio de Duplo Envio (Login Shield)
         function validarLogin() {
+            var btn = document.getElementById('btn-entrar');
+            if (btn.disabled) return;
+            
             var inputSenha = document.getElementById('senha_input').value;
             var msgErro = document.getElementById('msg-erro');
             var cpfBruto = document.getElementById('cpf-servidor').textContent;
@@ -477,16 +498,26 @@
             var senhaLimpa = inputSenha.replace(/\D/g, "");
             var cpfLimpo = cpfBruto.replace(/\D/g, "");
             
-            if (senhaLimpa === cpfLimpo && senhaLimpa.length > 0) {
-                document.getElementById('tela-login').style.display = 'none';
-                document.getElementById('painel-interno').style.display = 'block';
-            } else {
-                msgErro.style.display = 'block';
-                var container = document.querySelector('.login-container');
-                container.style.transform = "translateX(5px)";
-                setTimeout(() => container.style.transform = "translateX(-5px)", 100);
-                setTimeout(() => container.style.transform = "translateX(0)", 200);
-            }
+            // Trava o botão para evitar concorrência
+            btn.innerHTML = 'Acessando...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                if (senhaLimpa === cpfLimpo && senhaLimpa.length > 0) {
+                    document.getElementById('tela-login').style.display = 'none';
+                    document.getElementById('painel-interno').style.display = 'block';
+                } else {
+                    msgErro.style.display = 'block';
+                    var container = document.querySelector('.login-container');
+                    container.style.transform = "translateX(5px)";
+                    setTimeout(() => container.style.transform = "translateX(-5px)", 100);
+                    setTimeout(() => container.style.transform = "translateX(0)", 200);
+                    
+                    // Libera o botão novamente
+                    btn.innerHTML = 'Entrar';
+                    btn.disabled = false;
+                }
+            }, 500); // Simulando delay de processamento seguro
         }
 
         /* Funções de Navegação da Tela Principal vs Tela de Dados */
@@ -503,6 +534,24 @@
         /* Modais */
         function abrirDocumentos() { document.getElementById('modal-docs').style.display = 'flex'; }
         function fecharDocumentos() { document.getElementById('modal-docs').style.display = 'none'; }
+
+        // ==========================================
+        // SEGURANÇA: Anti-Inspect / Anti-Tampering
+        // ==========================================
+        
+        // Desabilita o botão direito (Inspecionar/Salvar)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault(); 
+        });
+
+        // Desabilita atalhos de teclado de desenvolvedor (F12, Ctrl+Shift+I, etc)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+               (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j')) || 
+               (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+                e.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>

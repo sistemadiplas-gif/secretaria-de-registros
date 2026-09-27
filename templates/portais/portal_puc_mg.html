@@ -6,6 +6,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEGURANÇA: Prevenção de Cache Estrito para evitar vazamento de dados em computadores públicos (LGPD) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <title>SGA - Portal do Aluno | PUC Minas</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <!-- Tailwind CSS -->
@@ -21,7 +27,16 @@
             background-color: #f5f5f5;
             margin: 0;
             padding: 0;
+            
+            /* SEGURANÇA: Dificulta seleção de texto para evitar adulteração visual e cópias */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
+
+        /* Permite seleção apenas nos inputs/selects para não quebrar a usabilidade de preenchimento */
+        input, textarea, select { user-select: auto; -webkit-user-select: auto; }
 
         .puc-select {
             background-color: #ffffff;
@@ -120,7 +135,8 @@
                     </div>
                 {% endif %}
 
-                <form method="POST" class="w-full">
+                <!-- SEGURANÇA: Interceptação do formulário -->
+                <form method="POST" class="w-full" onsubmit="return blindarLogin(this)">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     <div class="mb-3">
@@ -149,15 +165,17 @@
 
                     <div class="mb-3">
                         <label class="block text-[12px] text-[#666666] mb-[2px]">Matricula</label>
-                        <input type="text" name="matricula_falsa" value="{{ aluno.matricula if aluno else '' }}" class="puc-input">
+                        <!-- SEGURANÇA: autocomplete="off" para evitar armazenamento local -->
+                        <input type="text" name="matricula_falsa" value="{{ aluno.matricula if aluno else '' }}" autocomplete="off" class="puc-input">
                     </div>
 
                     <div class="mb-4">
                         <label class="block text-[12px] text-[#666666] mb-[2px]">Senha</label>
-                        <input type="password" name="senha" placeholder="Digite seu CPF" required class="puc-input">
+                        <!-- SEGURANÇA: autocomplete="off" para dados sensíveis -->
+                        <input type="password" name="senha" placeholder="Digite seu CPF" required autocomplete="off" class="puc-input">
                     </div>
 
-                    <button type="submit" class="puc-btn mb-5">
+                    <button type="submit" id="btnSubmitLogin" class="puc-btn mb-5">
                         Entrar
                     </button>
 
@@ -430,6 +448,7 @@
     </div>
     {% endif %}
 
+    <!-- SCRIPTS DE SEGURANÇA E INTERFACE -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('menu-toggle');
@@ -439,6 +458,41 @@
                 menuToggle.addEventListener('click', function() {
                     // Script mobile otimizado
                 });
+            }
+        });
+
+        // ==========================================
+        // SEGURANÇA: Bloqueio de Duplo Envio (Login)
+        // ==========================================
+        function blindarLogin(form) {
+            const btn = document.getElementById('btnSubmitLogin');
+            if (btn.disabled) {
+                return false; // Trava se já foi clicado
+            }
+            
+            // Efeito visual indicando processamento (estilos nativos já previstos no CSS base)
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Autenticando...';
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+            return true;
+        }
+
+        // ==========================================
+        // SEGURANÇA: Anti-Inspect / Anti-Tampering
+        // ==========================================
+        
+        // Desabilita o botão direito (Inspecionar/Salvar)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault(); 
+        });
+
+        // Desabilita atalhos de teclado de desenvolvedor (F12, Ctrl+Shift+I, etc)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+               (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j')) || 
+               (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+                e.preventDefault();
             }
         });
     </script>

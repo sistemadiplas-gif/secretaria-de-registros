@@ -6,6 +6,20 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <style>
+    /* SEGURANÇA: Dificulta seleção de texto para evitar cópias não autorizadas do layout */
+    body {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    /* Permite seleção APENAS nos inputs e na barra de pesquisa do select2 para não quebrar a edição */
+    input, textarea, select, .select2-container, .select2-search__field { 
+        user-select: auto !important; 
+        -webkit-user-select: auto !important; 
+    }
+
     .form-container {
         max-width: 800px;
         margin: 0 auto;
@@ -108,9 +122,13 @@
         transition: background 0.2s, transform 0.1s;
         box-shadow: 0 4px 15px rgba(40,167,69,0.3);
     }
-    .btn-atualizar:hover {
+    .btn-atualizar:hover:not(:disabled) {
         background-color: #218838;
         transform: translateY(-1px);
+    }
+    .btn-atualizar:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
     }
 </style>
 
@@ -336,16 +354,51 @@
     </form>
 </div>
 
+<!-- SCRIPTS DE SEGURANÇA E LÓGICA -->
 <script>
     $(document).ready(function() {
         $('#seletor_faculdade').select2({ placeholder: "Pesquise ou selecione a faculdade do aluno...", allowClear: true });
         $('#seletor_orgao').select2({ placeholder: "Pesquise o conselho...", allowClear: true });
 
-        // Normaliza o CPF antes de enviar (remove pontos, traços e espaços)
+        // SEGURANÇA: Normaliza o CPF e Trava o Botão (Double Submit Lock)
         $('form').on('submit', function() {
             var campoCpf = $('input[name="cpf"]');
             campoCpf.val(campoCpf.val().replace(/\D/g, ''));
+
+            var btnAtualizar = $(this).find('.btn-atualizar');
+            
+            // Se já foi clicado, trava o envio para evitar duplicação no banco de dados
+            if (btnAtualizar.prop('disabled')) {
+                return false; 
+            }
+            
+            // Muda o estado do botão para notificar o admin
+            btnAtualizar.prop('disabled', true);
+            btnAtualizar.html('Atualizando Dados... Aguarde ⌛');
+            btnAtualizar.css({
+                'opacity': '0.7',
+                'cursor': 'not-allowed',
+                'background-color': '#218838'
+            });
         });
+    });
+
+    // ==========================================
+    // SEGURANÇA: Anti-Inspect / Anti-Tampering
+    // ==========================================
+    
+    // Desabilita o botão direito (Inspecionar/Salvar)
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault(); 
+    });
+
+    // Desabilita atalhos de teclado de desenvolvedor (F12, Ctrl+Shift+I, etc)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || 
+           (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j')) || 
+           (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+            e.preventDefault();
+        }
     });
 </script>
 {% endblock %}
