@@ -1,5 +1,6 @@
 import os
 import uuid
+from datetime import datetime
 from flask import Blueprint, request, session, redirect, url_for, render_template
 from werkzeug.security import check_password_hash, generate_password_hash
 from database import get_db_connection
@@ -8,6 +9,31 @@ auth_bp = Blueprint('auth', __name__)
 
 ADMIN_USUARIO = os.environ.get('ADMIN_USUARIO', 'admn')
 ADMIN_SENHA = os.environ.get('ADMIN_SENHA', '992136520Fe.')
+
+def registrar_ip_login(tipo_usuario):
+  """Função auxiliar sênior para capturar e gravar o IP no tracking após o login com sucesso."""
+  ip_visitante = request.headers.get('CF-Connecting-IP') or request.headers.get('X-Forwarded-For') or request.remote_addr
+  if ip_visitante and ',' in ip_visitante:
+      ip_visitante = ip_visitante.split(',')[0].strip()
+  if not ip_visitante:
+      ip_visitante = "IP-Oculto"
+
+  try:
+      conn = get_db_connection()
+      agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+      
+      row = conn.execute('SELECT status FROM ip_tracking WHERE ip = ?', (ip_visitante,)).fetchone()
+      
+      if row:
+          conn.execute('UPDATE ip_tracking SET last_access = ?, endpoint = ?, usuario = ?, status = ? WHERE ip = ?', 
+                      (agora, 'index', tipo_usuario, 'ativo', ip_visitante))
+      else:
+          conn.execute('INSERT INTO ip_tracking (ip, last_access, status, endpoint, usuario) VALUES (?, ?, ?, ?, ?)', 
+                      (ip_visitante, agora, 'ativo', 'index', tipo_usuario))
+      conn.commit()
+      conn.close()
+  except Exception as e:
+      print(f"Erro ao registrar IP de login: {e}")
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -32,11 +58,14 @@ def login():
               conn.execute("INSERT INTO master_sessao (id, token) VALUES (1, ?)", (novo_token,))
               conn.commit()
           except Exception as e:
-              print(f"Aviso BD Render (Master): {e}") # Ignora o erro para não quebrar o login
+              print(f"Aviso BD Render (Master): {e}")
           finally:
               conn.close()
       except Exception as e:
           print(f"Erro de conexão BD Render (Master): {e}")
+      
+      # REGISTRA O IP DO ADMIN QUE ENTROU COM SUCESSO
+      registrar_ip_login('Administrador')
       
       return redirect(url_for('index'))
 
@@ -59,6 +88,10 @@ def login():
       session.permanent = True
       session['logado'] = True
       session['cargo'] = 'secretario'
+      
+      # REGISTRA O IP DA EQUIPE QUE ENTROU COM SUCESSO
+      registrar_ip_login('Equipe (Logado)')
+      
       return redirect(url_for('index'))
 
     return render_template('login.html', erro='Credenciais inválidas ou acesso pendente.')
