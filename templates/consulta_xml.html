@@ -52,12 +52,20 @@
         /* CAMUFLAGEM DE SEGURANÇA (ANTI-CRAWLER)     */
         /* ========================================== */
         .shield {
-            /* Adicionado display inline apenas para remover o sublinhado de regra vazia no editor */
             display: inline;
         }
         .shield::after {
             content: attr(data-w1) attr(data-w2) attr(data-w3) attr(data-w4) attr(data-w5);
         }
+        
+        /* NOVO: Blindagem específica para as variáveis do Banco de Dados */
+        .shield-db {
+            display: inline;
+        }
+        .shield-db::after {
+            content: attr(data-val);
+        }
+
         .gibberish {
             /* Letras aleatórias lidas pelo bot, mas invisíveis para o usuário */
             position: absolute;
@@ -713,8 +721,9 @@
                     </p>
                     
                     {% if erro %}
+                        <!-- BLINDAGEM DA VARIÁVEL ERRO DO BANCO DE DADOS -->
                         <div style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; text-align: center;">
-                            ⚠️ {{ erro }}
+                            ⚠️ <span class="shield-db" data-val="{{ erro }}"><span class="gibberish">Xqz Erro Ytr</span></span>
                         </div>
                     {% endif %}
                     
@@ -734,6 +743,7 @@
                     <p class="instruction">Faça upload do arquivo .xml e depois clique em verificar.</p>
                     
                     <form id="form-upload" method="POST" action="/consulta_xml" enctype="multipart/form-data" onsubmit="return blindarEnvioFormulario()">
+                        <!-- Protegendo CSRF -->
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         
                         <input type="file" id="arquivo_xml" name="arquivo_xml" accept=".xml, .pdf, image/jpeg, image/jpg, image/png" style="display: none;" onchange="ativarBotaoVerificar()">
@@ -810,11 +820,31 @@
                             <circle cx="100" cy="72" r="6" fill="#2e8b57" stroke="none"/>
                         </svg>
 
+                        <!-- BLINDAGEM COMPLETA DOS DADOS DO ALUNO VINDO DO BANCO -->
                         <div class="info-text">
-                            <p class="nome-aluno">{{ aluno['nome'] }}</p>
-                            <p class="instituicao-curso">{{ aluno['instituicao_ensino'] }}</p>
-                            <p class="instituicao-curso">{{ aluno['curso'] }}</p>
-                            <p class="data-text">Conclusão em {{ aluno['data_conclusao'] }}</p>
+                            <p class="nome-aluno">
+                                <span class="shield-db" data-val="{{ aluno['nome'] }}">
+                                    <span class="gibberish">Kxwz Pqrs</span>
+                                </span>
+                            </p>
+                            <p class="instituicao-curso">
+                                <span class="shield-db" data-val="{{ aluno['instituicao_ensino'] }}">
+                                    <span class="gibberish">Tylm Xnvc</span>
+                                </span>
+                            </p>
+                            <p class="instituicao-curso">
+                                <span class="shield-db" data-val="{{ aluno['curso'] }}">
+                                    <span class="gibberish">Qrmp Zxlt</span>
+                                </span>
+                            </p>
+                            <p class="data-text">
+                                <span class="shield" data-w1="Conclu" data-w2="são " data-w3="em " data-w4="" data-w5="">
+                                    <span class="gibberish">Cxzx</span>
+                                </span> 
+                                <span class="shield-db" data-val="{{ aluno['data_conclusao'] }}">
+                                    <span class="gibberish">99/9999</span>
+                                </span>
+                            </p>
                         </div>
                     </div>
 
@@ -822,7 +852,11 @@
                         O documento apresenta conformidade com os requisitos técnicos verificados.
                     </p>
 
-                    <h3 class="relatorio-title">Relatório da verificação</h3>
+                    <h3 class="relatorio-title">
+                        <span class="shield" data-w1="Rela" data-w2="tório " data-w3="da ve" data-w4="rifica" data-w5="ção">
+                            <span class="gibberish">Rlt Vrf</span>
+                        </span>
+                    </h3>
                     <p class="relatorio-sub">Versão do XSD: 1.05</p>
 
                     <button class="btn-visualizar" onclick="abrirModal()">
@@ -1040,7 +1074,11 @@
             {% endif %}
             
             {% if not aluno['diploma_frente'] and not aluno['diploma_verso'] %}
-                <p style="color: red; font-weight: bold;">Nenhum documento digitalizado consta no arquivo deste aluno.</p>
+                <p style="color: red; font-weight: bold;">
+                    <span class="shield" data-w1="Nenhum " data-w2="documen" data-w3="to digita" data-w4="lizado consta " data-w5="neste arquivo">
+                        <span class="gibberish">Nhd dcm cst</span>
+                    </span>
+                </p>
             {% endif %}
         </div>
     </div>
